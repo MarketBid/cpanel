@@ -67,13 +67,13 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
 
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
-            <button
+          <button
               className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
-              onClick={() => setOpen((prev) => !prev)}
-              aria-label="Toggle navigation"
-            >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            onClick={() => setOpen((prev) => !prev)}
+            aria-label="Toggle navigation"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
           </div>
         </div>
 

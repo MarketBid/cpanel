@@ -41,11 +41,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <SensitiveInfoProvider>
-            <Router>
-              <ScrollToTop />
-              <Routes>
+      <AuthProvider>
+        <SensitiveInfoProvider>
+          <Router>
+            <ScrollToTop />
+            <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 

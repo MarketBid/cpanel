@@ -22,10 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
 .env
-.bolt/
-issues.md
-.env
+.env.local
+.env.production
+
+# Build outputs
+build/
+.vercel
+.netlify
+
+# Optional: Uncomment if you want to exclude screenshots from git
+# public/screenshots/*.png
+# public/screenshots/*.jpg
+# public/screenshots/*.jpeg
 
 # personal files
+SCREENSHOT_SHOWCASE.md
 design.json
+take-screenshots.md

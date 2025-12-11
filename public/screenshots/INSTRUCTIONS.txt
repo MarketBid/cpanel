@@ -1,0 +1,16 @@
+To add your screenshots:
+
+1. Take screenshots of your application pages
+2. Save them with these exact names in this directory:
+   - dashboard.png
+   - transactions.png
+   - transaction-details.png
+   - create-transaction.png
+   - payment.png
+   - join-transaction.png
+
+OR
+
+Use the screenshots you showed me earlier - save them as PNG files with the names above.
+
+For now, the component will show fallback placeholders until you add the images.

@@ -19,6 +19,7 @@ import PublicLayout from '../components/PublicLayout.tsx';
 import Button from '../components/ui/Button';
 import Carousel from '../components/ui/Carousel';
 import { useAuth } from '../hooks/useAuth';
+import AppShowcase from '../components/AppShowcase';
 
 const valueProps = [
   {
@@ -359,6 +360,9 @@ const Homepage: React.FC = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* App Showcase with Screenshots */}
+      <AppShowcase variant="homepage" />
 
       {/* How it works */}
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20">

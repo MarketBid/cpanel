@@ -13,6 +13,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import PublicLayout from '../components/PublicLayout.tsx';
 import Button from '../components/ui/Button';
+import AppShowcase from '../components/AppShowcase';
 
 const solutionBlocks = [
   {
@@ -181,6 +182,9 @@ const Solutions: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* App Showcase */}
+      <AppShowcase variant="solutions" />
 
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
