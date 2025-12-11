@@ -13,13 +13,18 @@ import {
   Eye,
   EyeOff,
   Briefcase,
-  MessageSquare
+  MessageSquare,
+  Search,
+  Command,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import JoinTransaction from '../pages/JoinTransaction';
 import ScrollToTopButton from './ScrollToTopButton';
 import ThemeToggle from './ThemeToggle';
+import NotificationCenter, { Notification } from './NotificationCenter';
+import CommandPalette from './CommandPalette';
+import { useTransactions } from '../hooks/queries/useTransactions';
 
 interface LayoutProps {
   children: ReactNode;
@@ -27,10 +32,38 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: '1',
+      type: 'success',
+      title: 'Transaction Completed',
+      message: 'Transaction #TX12345 has been successfully completed.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 5),
+      read: false,
+    },
+    {
+      id: '2',
+      type: 'info',
+      title: 'New Transaction',
+      message: 'You have received a new transaction request.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 30),
+      read: false,
+    },
+    {
+      id: '3',
+      type: 'warning',
+      title: 'Payment Pending',
+      message: 'Transaction #TX12344 is awaiting payment confirmation.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+      read: true,
+    },
+  ]);
   const { user, logout } = useAuth();
   const { isVisible, toggleVisibility } = useSensitiveInfo();
   const location = useLocation();
   const navigate = useNavigate();
+  const { data: transactions = [] } = useTransactions();
 
   // Lock body scroll when sidebar is open on mobile (Safari-compatible)
   React.useEffect(() => {
@@ -58,12 +91,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setSidebarOpen(false);
   }, [location.pathname]);
 
-  // Keyboard shortcut for toggling sensitive info (⌘U / Ctrl+U)
+  // Keyboard shortcuts
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Toggle sensitive info (⌘U / Ctrl+U)
       if ((event.metaKey || event.ctrlKey) && event.key === 'u') {
         event.preventDefault();
         toggleVisibility();
+      }
+      // Command palette (⌘K / Ctrl+K)
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        setShowCommandPalette(true);
+      }
+      // Close command palette (Escape)
+      if (event.key === 'Escape' && showCommandPalette) {
+        setShowCommandPalette(false);
       }
     };
 
@@ -71,7 +114,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [toggleVisibility]);
+  }, [toggleVisibility, showCommandPalette]);
+
+  // Notification handlers
+  const handleMarkAsRead = (id: string) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    );
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const handleClearAllNotifications = () => {
+    setNotifications([]);
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
@@ -273,17 +335,43 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
 
-          <div className="flex-1"></div>
+          <div className="flex-1 flex items-center justify-center max-w-xl mx-auto">
+            <button
+              onClick={() => setShowCommandPalette(true)}
+              className="hidden md:flex items-center gap-2 w-full max-w-md px-3 py-2 text-sm text-[var(--text-tertiary)] bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg hover:border-[var(--color-primary)] transition-colors"
+            >
+              <Search className="h-4 w-4" />
+              <span>Search transactions...</span>
+              <div className="ml-auto flex items-center gap-1 px-2 py-0.5 bg-[var(--bg-tertiary)] rounded text-xs">
+                <Command className="h-3 w-3" />
+                <span>K</span>
+              </div>
+            </button>
+          </div>
 
           <div className="flex items-center gap-x-2 sm:gap-x-3">
+            <button
+              onClick={() => setShowCommandPalette(true)}
+              className="md:hidden p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </button>
             <div className="hidden sm:flex items-center gap-x-2 text-[10px] sm:text-xs text-[var(--text-secondary)]">
               <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             </div>
+            <NotificationCenter
+              notifications={notifications}
+              onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllAsRead}
+              onDelete={handleDeleteNotification}
+              onClearAll={handleClearAllNotifications}
+            />
             <ThemeToggle />
             <div className="relative group">
               <button
                 onClick={toggleVisibility}
-                className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-full transition-colors touch-manipulation"
+                className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
                 aria-label={isVisible ? 'Hide sensitive information' : 'Show sensitive information'}
               >
                 {isVisible ? (
@@ -312,6 +400,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </main>
         <ScrollToTopButton />
       </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        transactions={transactions}
+      />
     </div>
   );
 };

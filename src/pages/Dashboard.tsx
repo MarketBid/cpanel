@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'motion/react';
 import {
   Package,
   Plus,
@@ -14,6 +15,12 @@ import {
   TrendingDown,
   Eye,
   Copy,
+  Download,
+  Filter,
+  BarChart3,
+  Activity,
+  Send,
+  Receipt,
 } from 'lucide-react';
 import { TransactionStatus } from '../types';
 import { useAuth } from '../hooks/useAuth.tsx';
@@ -21,16 +28,74 @@ import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { useTransactions } from '../hooks/queries/useTransactions.ts';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Toast from '../components/ui/Toast';
+import AreaChart, { ChartDataPoint } from '../components/ui/AreaChart';
+import Tabs, { Tab } from '../components/ui/Tabs';
+import ProgressBar from '../components/ui/ProgressBar';
+import { SkeletonCard } from '../components/ui/Skeleton';
+import EmptyState from '../components/ui/EmptyState';
+import ExportModal from '../components/ExportModal';
 
 const Dashboard: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [showStatusCards, setShowStatusCards] = useState(true);
+  const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>('week');
+  const [showExportModal, setShowExportModal] = useState(false);
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
   const navigate = useNavigate();
   
-  // Use React Query to fetch transactions with caching
   const { data: transactions = [], isLoading: loading } = useTransactions();
+
+  // Calculate revenue trend data for chart
+  const revenueChartData = useMemo((): ChartDataPoint[] => {
+    if (transactions.length === 0) return [];
+
+    const now = new Date();
+    const data: ChartDataPoint[] = [];
+    const periods = timeframe === 'week' ? 7 : timeframe === 'month' ? 30 : 12;
+    const periodType = timeframe === 'year' ? 'month' : 'day';
+
+    for (let i = periods - 1; i >= 0; i--) {
+      const date = new Date(now);
+      if (periodType === 'month') {
+        date.setMonth(date.getMonth() - i);
+      } else {
+        date.setDate(date.getDate() - i);
+      }
+
+      const periodStart = new Date(date);
+      periodStart.setHours(0, 0, 0, 0);
+      if (periodType === 'month') {
+        periodStart.setDate(1);
+      }
+
+      const periodEnd = new Date(periodStart);
+      if (periodType === 'month') {
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
+      } else {
+        periodEnd.setDate(periodEnd.getDate() + 1);
+      }
+
+      const periodTransactions = transactions.filter(t => {
+        const tDate = new Date(t.created_at);
+        return tDate >= periodStart && tDate < periodEnd &&
+          [TransactionStatus.PAID, TransactionStatus.IN_TRANSIT, TransactionStatus.DELIVERED, TransactionStatus.COMPLETED].includes(t.status);
+      });
+
+      const periodRevenue = periodTransactions.reduce((sum, t) => {
+        return sum + (t.receiver_id === user?.id ? t.amount : 0);
+      }, 0);
+
+      data.push({
+        label: periodType === 'month'
+          ? periodStart.toLocaleDateString('en-US', { month: 'short' })
+          : periodStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        value: periodRevenue,
+      });
+    }
+
+    return data;
+  }, [transactions, timeframe, user?.id]);
 
   const calculateAnalytics = () => {
     const now = new Date();
@@ -121,6 +186,13 @@ const Dashboard: React.FC = () => {
     return { received, sent };
   };
 
+  const getRecentActivity = () => {
+    return transactions
+      .slice()
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 5);
+  };
+
   const copyToClipboard = async (text: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -137,8 +209,16 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <LoadingSpinner size="lg" text="Loading dashboard..." />
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="h-8 w-48 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+          <div className="h-10 w-40 bg-[var(--bg-tertiary)] rounded animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
       </div>
     );
   }
@@ -147,336 +227,302 @@ const Dashboard: React.FC = () => {
   const statusCounts = getStatusCounts();
   const { received, sent } = getRevenueData();
   const totalTransactions = transactions.length;
+  const recentActivity = getRecentActivity();
+
+  if (transactions.length === 0) {
+    return (
+      <EmptyState
+        icon={Package}
+        title="No transactions yet"
+        description="Get started by creating your first transaction to track payments and shipments."
+        action={{
+          label: 'Create Transaction',
+          onClick: () => navigate('/transactions/create'),
+          icon: <Plus className="h-4 w-4" />,
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Dashboard</h1>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Dashboard</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Track your transactions and revenue in real-time
           </p>
         </div>
-        <button
-          onClick={() => navigate('/transactions/create')}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-xs sm:text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors w-full sm:w-auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="sm:inline">Create Transaction</span>
-        </button>
-      </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowExportModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--bg-card)] text-[var(--text-primary)] text-sm font-medium rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--color-primary)] transition-colors shadow-sm"
+          >
+            <Download className="h-4 w-4" />
+            Export
+          </button>
+          <button
+            onClick={() => navigate('/transactions/create')}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
+          >
+            <Plus className="h-4 w-4" />
+            New Transaction
+          </button>
+        </div>
+      </motion.div>
 
-      {/* Analytics Cards - Credit Card Design */}
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-6">
-        {/* Revenue Received Card */}
-        <div className="relative overflow-hidden rounded-lg lg:rounded-2xl shadow-md lg:shadow-lg hover:shadow-xl transition-all duration-300 lg:hover:-translate-y-1">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700"></div>
-          <div className="hidden lg:block absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
-          <div className="hidden lg:block absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24"></div>
-
-          <div className="relative p-4 lg:p-6 text-white">
-            <div className="flex items-center justify-between mb-3 lg:mb-4">
-              <p className="text-xs lg:text-sm text-white/80 font-medium tracking-wide uppercase">Revenue Received</p>
-              <TrendingUp className="h-5 w-5 lg:h-6 lg:w-6 text-white/90" />
+      {/* Quick Stats - Fintech Style */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {/* Revenue Received */}
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-white/80">Revenue Received</span>
+              <TrendingUp className="h-5 w-5 text-white/90" />
             </div>
-            <h3 className="text-2xl lg:text-4xl font-bold tracking-tight text-white">₵{maskAmount(received)}</h3>
-            <p className="hidden lg:block text-xs text-white/70 mt-2 lg:mt-3">Total amount received from completed transactions</p>
+            <div className="text-3xl font-bold mb-1">₵{maskAmount(received)}</div>
+            <div className="flex items-center gap-1 text-xs text-white/80">
+              <TrendingUp className="h-3 w-3" />
+              <span>+{analytics.revenuePercentage}% vs last week</span>
+            </div>
           </div>
         </div>
 
-        {/* Amount Sent Card */}
-        <div className="relative overflow-hidden rounded-lg lg:rounded-2xl shadow-md lg:shadow-lg hover:shadow-xl transition-all duration-300 lg:hover:-translate-y-1">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"></div>
-          <div className="hidden lg:block absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-          <div className="hidden lg:block absolute bottom-0 left-0 w-48 h-48 bg-black/20 rounded-full -ml-24 -mb-24"></div>
-
-          <div className="relative p-4 lg:p-6 text-white">
-            <div className="flex items-center justify-between mb-3 lg:mb-4">
-              <p className="text-xs lg:text-sm text-white/80 font-medium tracking-wide uppercase">Amount Sent</p>
-              <DollarSign className="h-5 w-5 lg:h-6 lg:w-6 text-white/90" />
+        {/* Amount Sent */}
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-white/80">Amount Sent</span>
+              <Send className="h-5 w-5 text-white/90" />
             </div>
-            <h3 className="text-2xl lg:text-4xl font-bold tracking-tight text-white">₵{maskAmount(sent)}</h3>
-            <p className="hidden lg:block text-xs text-white/70 mt-2 lg:mt-3">Total amount sent to secure transactions</p>
+            <div className="text-3xl font-bold mb-1">₵{maskAmount(sent)}</div>
+            <div className="text-xs text-white/70">Total payments made</div>
           </div>
         </div>
 
-        {/* Transaction Volume Card */}
-        <div className="relative overflow-hidden rounded-lg lg:rounded-2xl shadow-md lg:shadow-lg hover:shadow-xl transition-all duration-300 lg:hover:-translate-y-1">
-          <div className={`absolute inset-0 ${analytics.transactionCountChange >= 0
-            ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700'
-            : 'bg-gradient-to-br from-orange-500 via-orange-600 to-red-700'}`}></div>
-          <div className="hidden lg:block absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
-          <div className="hidden lg:block absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24"></div>
-
-          <div className="relative p-4 lg:p-6 text-white">
-            <div className="flex items-center justify-between mb-3 lg:mb-4">
-              <p className="text-xs lg:text-sm text-white/80 font-medium tracking-wide uppercase">Total Transactions</p>
+        {/* Total Transactions */}
+        <div className={`relative overflow-hidden rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow ${
+          analytics.transactionCountChange >= 0
+            ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
+            : 'bg-gradient-to-br from-orange-500 to-red-600'
+        }`}>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-white/80">Total Transactions</span>
+              <Package className="h-5 w-5 text-white/90" />
+            </div>
+            <div className="text-3xl font-bold mb-1">{totalTransactions}</div>
+            <div className="flex items-center gap-1 text-xs text-white/80">
               {analytics.transactionCountChange >= 0 ? (
-                <TrendingUp className="h-5 w-5 lg:h-6 lg:w-6 text-white/90" />
+                <TrendingUp className="h-3 w-3" />
               ) : (
-                <TrendingDown className="h-5 w-5 lg:h-6 lg:w-6 text-white/90" />
+                <TrendingDown className="h-3 w-3" />
               )}
-            </div>
-            <h3 className="text-2xl lg:text-4xl font-bold tracking-tight text-white">{totalTransactions}</h3>
-            <div className="hidden lg:flex items-center gap-2 mt-2 lg:mt-3">
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-sm">
-                {analytics.transactionCountChange >= 0 ? '+' : ''}{analytics.transactionCountChange} ({analytics.transactionCountChange >= 0 ? '+' : ''}{analytics.transactionCountPercentage}%)
+              <span>
+                {analytics.transactionCountChange >= 0 ? '+' : ''}{analytics.transactionCountPercentage}% vs last week
               </span>
-              <p className="text-xs text-white/70">vs last week</p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Transaction Status Breakdown */}
-      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">Transaction Status Overview</h2>
-          <button
-            onClick={() => setShowStatusCards(!showStatusCards)}
-            className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
-          >
-            {showStatusCards ? 'Hide' : 'Show'}
-          </button>
+        {/* Active Transactions */}
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-white/80">Active</span>
+              <Activity className="h-5 w-5 text-white/90" />
+            </div>
+            <div className="text-3xl font-bold mb-1">
+              {statusCounts[TransactionStatus.PENDING] + statusCounts[TransactionStatus.PAID] + statusCounts[TransactionStatus.IN_TRANSIT]}
+            </div>
+            <div className="text-xs text-white/70">Pending & in-transit</div>
+          </div>
         </div>
-        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 ${!showStatusCards ? 'hidden lg:grid' : ''}`}>
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.PENDING)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-pending-bg)] rounded-lg border border-[var(--status-pending-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-pending-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-pending-text)]">{statusCounts[TransactionStatus.PENDING]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-pending-text)] font-medium mt-1">Pending</span>
-          </button>
+      </motion.div>
 
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.PAID)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-paid-bg)] rounded-lg border border-[var(--status-paid-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-paid-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-paid-text)]">{statusCounts[TransactionStatus.PAID]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-paid-text)] font-medium mt-1">Paid</span>
-          </button>
-
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.IN_TRANSIT)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-inTransit-bg)] rounded-lg border border-[var(--status-inTransit-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-inTransit-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-inTransit-text)]">{statusCounts[TransactionStatus.IN_TRANSIT]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-inTransit-text)] font-medium mt-1">In Transit</span>
-          </button>
-
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.DELIVERED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-delivered-bg)] rounded-lg border border-[var(--status-delivered-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <Package className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-delivered-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-delivered-text)]">{statusCounts[TransactionStatus.DELIVERED]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-delivered-text)] font-medium mt-1">Delivered</span>
-          </button>
-
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.COMPLETED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-completed-bg)] rounded-lg border border-[var(--status-completed-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-completed-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-completed-text)]">{statusCounts[TransactionStatus.COMPLETED]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-completed-text)] font-medium mt-1">Completed</span>
-          </button>
-
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.DISPUTED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-disputed-bg)] rounded-lg border border-[var(--status-disputed-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-disputed-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-disputed-text)]">{statusCounts[TransactionStatus.DISPUTED]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-disputed-text)] font-medium mt-1">Disputed</span>
-          </button>
-
-          <button
-            onClick={() => handleStatusClick(TransactionStatus.CANCELLED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-cancelled-bg)] rounded-lg border border-[var(--status-cancelled-border)] hover:opacity-80 transition-colors cursor-pointer"
-          >
-            <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-cancelled-text)] mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-[var(--status-cancelled-text)]">{statusCounts[TransactionStatus.CANCELLED]}</span>
-            <span className="text-[10px] sm:text-xs text-[var(--status-cancelled-text)] font-medium mt-1">Cancelled</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Recent Transactions Table */}
-      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)]">
-        <div className="p-4 sm:p-5 border-b border-[var(--border-default)]">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">Recent Transactions</h2>
+      {/* Revenue Chart */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-6 shadow-sm"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Revenue Trend</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-0.5">Track your earnings over time</p>
+          </div>
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate('/transactions')}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
+              onClick={() => setTimeframe('week')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                timeframe === 'week'
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+              }`}
             >
-              View All
-              <ArrowRight className="h-3.5 w-3.5" />
+              Week
+            </button>
+            <button
+              onClick={() => setTimeframe('month')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                timeframe === 'month'
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+              }`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => setTimeframe('year')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                timeframe === 'year'
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+              }`}
+            >
+              Year
             </button>
           </div>
         </div>
+        <AreaChart
+          data={revenueChartData}
+          height={280}
+          showGrid={true}
+          showAxes={true}
+          animate={true}
+        />
+      </motion.div>
 
-        {/* Mobile Card View */}
-        <div className="md:hidden space-y-3">
-          {transactions.slice(0, 5).map((transaction) => {
-            const isSender = transaction.sender_id === user?.id;
-            const statusConfig: Record<TransactionStatus, { label: string; color: string; bg: string }> = {
-              [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-green-700', bg: 'bg-green-50' },
-              [TransactionStatus.PAID]: { label: 'Paid', color: 'text-green-700', bg: 'bg-green-50' },
-              [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-blue-700', bg: 'bg-blue-50' },
-              [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-green-700', bg: 'bg-green-50' },
-              [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-orange-700', bg: 'bg-orange-50' },
-              [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-red-700', bg: 'bg-red-50' },
-              [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-neutral-700', bg: 'bg-neutral-100' },
-            };
-
-            const status = statusConfig[transaction.status as TransactionStatus] || {
-              label: String(transaction.status || 'Unknown').replace('_', ' '),
-              color: 'text-neutral-700',
-              bg: 'bg-neutral-50'
-            };
-
-            return (
-              <div key={transaction.id} className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg p-3 hover:shadow-sm transition-shadow">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <div className="h-10 w-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
-                      <Package className="h-5 w-5 text-[var(--text-secondary)]" />
+      {/* Status Overview & Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Transaction Status Breakdown */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-6 shadow-sm"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Status Overview</h2>
+            <button
+              onClick={() => navigate('/transactions')}
+              className="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
+            >
+              View All
+            </button>
+          </div>
+          <div className="space-y-4">
+            {[
+              { status: TransactionStatus.PENDING, label: 'Pending', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
+              { status: TransactionStatus.PAID, label: 'Paid', icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
+              { status: TransactionStatus.IN_TRANSIT, label: 'In Transit', icon: Truck, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+              { status: TransactionStatus.COMPLETED, label: 'Completed', icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+            ].map(({ status, label, icon: Icon, color, bg }) => {
+              const count = statusCounts[status];
+              const percentage = totalTransactions > 0 ? (count / totalTransactions) * 100 : 0;
+              return (
+                <div key={status} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-2 rounded-lg ${bg}`}>
+                        <Icon className={`h-4 w-4 ${color}`} />
+                      </div>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">{label}</span>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">{transaction.title}</p>
-                      <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 30)}...</p>
-                    </div>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">{count}</span>
                   </div>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${status.bg} ${status.color} whitespace-nowrap ml-2`}>
-                    {status.label}
-                  </span>
+                  <ProgressBar value={percentage} size="sm" variant="default" />
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-[var(--border-light)]">
-                  <div>
-                    <p className="text-xs text-[var(--text-secondary)] mb-0.5">Amount</p>
-                    <p className={`text-sm font-semibold ${isSender ? 'text-[var(--amount-negative)]' : 'text-[var(--amount-positive)]'}`}>
-                      {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-6 shadow-sm"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Recent Activity</h2>
+            <button
+              onClick={() => navigate('/transactions')}
+              className="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
+            >
+              View All
+            </button>
+          </div>
+          <div className="space-y-4">
+            {recentActivity.map((transaction) => {
+              const isSender = transaction.sender_id === user?.id;
+              return (
+                <div
+                  key={transaction.id}
+                  onClick={() => navigate(`/transactions/${transaction.transaction_id}`)}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer"
+                >
+                  <div className={`p-2 rounded-lg ${isSender ? 'bg-red-50 dark:bg-red-900/20' : 'bg-green-50 dark:bg-green-900/20'}`}>
+                    {isSender ? (
+                      <Send className={`h-4 w-4 ${isSender ? 'text-red-600' : 'text-green-600'}`} />
+                    ) : (
+                      <Receipt className="h-4 w-4 text-green-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+                      {transaction.title}
+                    </p>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      {new Date(transaction.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-[var(--text-secondary)] mb-0.5">Date</p>
-                    <p className="text-xs text-[var(--text-primary)]">
-                      {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    <p className={`text-sm font-semibold ${isSender ? 'text-red-600' : 'text-green-600'}`}>
+                      {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
                     </p>
                   </div>
-                  <button
-                    onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] rounded-lg transition-colors"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    View
-                  </button>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
-              <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Code</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Amount</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Date</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Status</th>
-                <th className="px-5 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border-default)]">
-              {transactions.slice(0, 5).map((transaction) => {
-                const isSender = transaction.sender_id === user?.id;
-                const statusConfig: Record<TransactionStatus, { label: string; color: string; bg: string }> = {
-                  [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-[var(--status-completed-text)]', bg: 'bg-[var(--status-completed-bg)]' },
-                  [TransactionStatus.PAID]: { label: 'Paid', color: 'text-[var(--status-paid-text)]', bg: 'bg-[var(--status-paid-bg)]' },
-                  [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
-                  [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-[var(--status-delivered-text)]', bg: 'bg-[var(--status-delivered-bg)]' },
-                  [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-[var(--status-pending-text)]', bg: 'bg-[var(--status-pending-bg)]' },
-                  [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-[var(--status-disputed-text)]', bg: 'bg-[var(--status-disputed-bg)]' },
-                  [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-[var(--status-cancelled-text)]', bg: 'bg-[var(--status-cancelled-bg)]' },
-                };
-
-                const status = statusConfig[transaction.status as TransactionStatus] || {
-                  label: String(transaction.status || 'Unknown').replace('_', ' '),
-                  color: 'text-neutral-700',
-                  bg: 'bg-neutral-50'
-                };
-
-                return (
-                  <tr key={transaction.id} className="hover:bg-[var(--bg-tertiary)] transition-colors">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
-                          <Package className="h-5 w-5 text-[var(--text-secondary)]" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-[var(--text-primary)] truncate">{transaction.title}</p>
-                          <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 30)}...</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-mono text-[var(--text-primary)]">{transaction.transaction_id}</span>
-                        <button
-                          onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
-                          className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
-                        >
-                          <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`text-sm font-medium ${isSender ? 'text-[var(--amount-negative)]' : 'text-[var(--amount-positive)]'}`}>
-                        {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="text-sm text-[var(--text-primary)]">
-                        {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${status.bg} ${status.color}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${status.color.replace('text-', 'bg-')} mr-1.5`} />
-                        {status.label}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-right">
-                      <button
-                        onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
 
+      {/* Modals */}
       {showToast && (
         <Toast
           message="Copied to clipboard!"
           onClose={() => setShowToast(false)}
         />
       )}
+
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        transactions={transactions}
+      />
     </div>
   );
 };

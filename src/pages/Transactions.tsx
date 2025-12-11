@@ -22,6 +22,7 @@ import { TransactionCard } from '../components/TransactionCard';
 import { useTransactionEvents, TransactionEvent } from '../hooks/useTransactionEvents';
 import { useTransactions, transactionKeys } from '../hooks/queries/useTransactions';
 import { useQueryClient } from '@tanstack/react-query';
+import ExportModal from '../components/ExportModal';
 
 type SortField = 'date' | 'status' | 'amount';
 type SortTransaction = 'asc' | 'desc';
@@ -39,6 +40,7 @@ const Transactions: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showExportModal, setShowExportModal] = useState(false);
   const transactionsPerPage = 15;
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   const dateDropdownRef = useRef<HTMLDivElement>(null);
@@ -422,7 +424,10 @@ const Transactions: React.FC = () => {
                   </div>
                 )}
               </div>
-              <button className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors flex-1">
+              <button 
+                onClick={() => setShowExportModal(true)}
+                className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg hover:bg-[var(--bg-tertiary)] hover:border-[var(--color-primary)] transition-colors flex-1"
+              >
                 <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="text-xs sm:text-sm">Export</span>
               </button>
@@ -679,6 +684,12 @@ const Transactions: React.FC = () => {
           }}
         />
       )}
+
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        transactions={filteredTransactions}
+      />
     </div>
   );
 };
