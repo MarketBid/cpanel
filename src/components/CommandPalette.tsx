@@ -188,7 +188,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
         />
 
         {/* Command palette */}

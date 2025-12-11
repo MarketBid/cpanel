@@ -331,8 +331,14 @@ const Accounts: React.FC = () => {
 
       {/* Add Account Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          {/* Backdrop */}
+          <div 
+            onClick={resetForm}
+            className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
+          />
+          {/* Modal Content */}
+          <div className="relative bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)]">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">Add Payment Method</h2>
               <button
@@ -542,8 +548,14 @@ const Accounts: React.FC = () => {
 
       {/* Edit Account Modal */}
       {showEditModal && editingAccount && (
-        <div className="fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          {/* Backdrop */}
+          <div 
+            onClick={resetEditForm}
+            className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
+          />
+          {/* Modal Content */}
+          <div className="relative bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)]">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">Edit Payment Method</h2>
               <button
@@ -753,8 +765,17 @@ const Accounts: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && deletingAccount && (
-        <div className="fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto animate-fadeIn">
-          <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full shadow-2xl transform animate-scaleIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          {/* Backdrop */}
+          <div 
+            onClick={() => {
+              setShowDeleteModal(false);
+              setDeletingAccount(null);
+            }}
+            className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
+          />
+          {/* Modal Content */}
+          <div className="relative bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full shadow-2xl">
             {/* Icon Header */}
             <div className="flex flex-col items-center pt-8 pb-4 px-6">
               <div className="relative mb-4">
