@@ -89,20 +89,20 @@ const Users: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-neutral-900">Users</h1>
-        <p className="mt-1 text-neutral-600">Browse and connect with other users on the platform.</p>
+        <h1 className="text-3xl font-bold text-[var(--text-primary)]">Users</h1>
+        <p className="mt-1 text-[var(--text-secondary)]">Browse and connect with other users on the platform.</p>
       </div>
 
       <Card>
         <CardContent className="p-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[var(--text-tertiary)]" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search users by name, email, or category..."
-              className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 border border-[var(--border-default)] rounded-xl focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition-all bg-[var(--bg-card)] text-[var(--text-primary)]"
             />
           </div>
         </CardContent>
@@ -119,7 +119,7 @@ const Users: React.FC = () => {
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold text-neutral-900 mb-1">{user.name}</h3>
+                  <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1">{user.name}</h3>
                   {user.is_business && user.business_category && (
                     <Badge variant="info" className="mb-3">
                       <Building className="h-3 w-3 mr-1" />
@@ -129,32 +129,32 @@ const Users: React.FC = () => {
                   {user.rating > 0 && (
                     <div className="flex items-center gap-2 mb-4">
                       <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                      <span className="font-semibold text-neutral-900">{user.rating.toFixed(1)}</span>
-                      <span className="text-sm text-neutral-500">({user.total_ratings})</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{user.rating.toFixed(1)}</span>
+                      <span className="text-sm text-[var(--text-secondary)]">({user.total_ratings})</span>
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-3 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-neutral-600">
-                    <Mail className="h-4 w-4 text-neutral-400" />
+                  <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                    <Mail className="h-4 w-4 text-[var(--text-tertiary)]" />
                     <span className="truncate">{user.email}</span>
                   </div>
                   {user.contact && (
-                    <div className="flex items-center gap-2 text-sm text-neutral-600">
-                      <Phone className="h-4 w-4 text-neutral-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                      <Phone className="h-4 w-4 text-[var(--text-tertiary)]" />
                       <span>{user.contact}</span>
                     </div>
                   )}
                   {user.location && (
-                    <div className="flex items-center gap-2 text-sm text-neutral-600">
-                      <MapPin className="h-4 w-4 text-neutral-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                      <MapPin className="h-4 w-4 text-[var(--text-tertiary)]" />
                       <span>{user.location}</span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex gap-2 pt-4 border-t border-neutral-200">
+                <div className="flex gap-2 pt-4 border-t border-[var(--border-default)]">
                   {user.id !== currentUser?.id && (
                     <Button
                       variant="outline"
@@ -183,17 +183,17 @@ const Users: React.FC = () => {
       ) : (
         <Card>
           <CardContent className="p-16 text-center">
-            <div className="w-20 h-20 mx-auto bg-neutral-100 rounded-3xl flex items-center justify-center mb-6">
-              <UserIcon className="h-10 w-10 text-neutral-400" />
+            <div className="w-20 h-20 mx-auto bg-[var(--bg-tertiary)] rounded-3xl flex items-center justify-center mb-6">
+              <UserIcon className="h-10 w-10 text-[var(--text-tertiary)]" />
             </div>
-            <h3 className="text-xl font-semibold text-neutral-900 mb-2">No users found</h3>
-            <p className="text-neutral-600">Try adjusting your search terms</p>
+            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">No users found</h3>
+            <p className="text-[var(--text-secondary)]">Try adjusting your search terms</p>
           </CardContent>
         </Card>
       )}
 
       {showRatingModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
           <Card className="max-w-md w-full">
             <CardHeader>
               <CardTitle>Rate {showRatingModal.name}</CardTitle>
@@ -205,7 +205,7 @@ const Users: React.FC = () => {
                     {showRatingModal.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <p className="text-neutral-600 mb-4">How would you rate your experience with this user?</p>
+                <p className="text-[var(--text-secondary)] mb-4">How would you rate your experience with this user?</p>
                 <div className="flex justify-center">
                   <StarRating
                     rating={ratingValue}
@@ -238,32 +238,32 @@ const Users: React.FC = () => {
       )}
 
       {showUserModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl border border-neutral-200 max-w-md w-full overflow-hidden animate-fade-in">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 bg-neutral-50">
-              <h2 className="text-xl font-bold text-neutral-900 tracking-tight">User Profile</h2>
-              <button onClick={closeUserModal} className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
-                <X className="h-5 w-5 text-neutral-500" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
+          <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full overflow-hidden animate-fade-in">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-default)] bg-[var(--bg-tertiary)]">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">User Profile</h2>
+              <button onClick={closeUserModal} className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors">
+                <X className="h-5 w-5 text-[var(--text-secondary)]" />
               </button>
             </div>
             <div className="px-6 py-8 space-y-6">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center shadow-lg mb-2">
-                  <span className="text-4xl font-bold text-white">{selectedUser.name.charAt(0).toUpperCase()}</span>
+                <div className="w-20 h-20 bg-[var(--color-primary)] rounded-full flex items-center justify-center shadow-lg mb-2">
+                  <span className="text-4xl font-bold text-[var(--color-primary-text)]">{selectedUser.name.charAt(0).toUpperCase()}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-neutral-900 mb-1">{selectedUser.name}</h3>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{selectedUser.name}</h3>
                 <div className="flex flex-col items-center gap-1">
-                  <span className="text-sm text-neutral-600 flex items-center gap-1">
-                    <Mail className="h-4 w-4 text-neutral-400" /> {selectedUser.email}
+                  <span className="text-sm text-[var(--text-secondary)] flex items-center gap-1">
+                    <Mail className="h-4 w-4 text-[var(--text-tertiary)]" /> {selectedUser.email}
                   </span>
                   {selectedUser.contact && (
-                    <span className="text-sm text-neutral-600 flex items-center gap-1">
-                      <Phone className="h-4 w-4 text-neutral-400" /> {selectedUser.contact}
+                    <span className="text-sm text-[var(--text-secondary)] flex items-center gap-1">
+                      <Phone className="h-4 w-4 text-[var(--text-tertiary)]" /> {selectedUser.contact}
                     </span>
                   )}
                   {selectedUser.location && (
-                    <span className="text-sm text-neutral-600 flex items-center gap-1">
-                      <MapPin className="h-4 w-4 text-neutral-400" /> {selectedUser.location}
+                    <span className="text-sm text-[var(--text-secondary)] flex items-center gap-1">
+                      <MapPin className="h-4 w-4 text-[var(--text-tertiary)]" /> {selectedUser.location}
                     </span>
                   )}
                 </div>
@@ -276,14 +276,14 @@ const Users: React.FC = () => {
                 {selectedUser.rating > 0 && (
                   <div className="flex items-center gap-2 mt-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                    <span className="font-semibold text-neutral-900">{selectedUser.rating.toFixed(1)}</span>
-                    <span className="text-sm text-neutral-500">({selectedUser.total_ratings})</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{selectedUser.rating.toFixed(1)}</span>
+                    <span className="text-sm text-[var(--text-secondary)]">({selectedUser.total_ratings})</span>
                   </div>
                 )}
               </div>
               {selectedUser.social_links && selectedUser.social_links.length > 0 && (
                 <div className="mt-6">
-                  <h4 className="text-sm font-semibold text-neutral-700 mb-3">Social Links</h4>
+                  <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-3">Social Links</h4>
                   <div className="flex flex-wrap gap-3">
                     {selectedUser.social_links.map((link, idx) => (
                       <a
@@ -291,7 +291,7 @@ const Users: React.FC = () => {
                         href={link.value.startsWith('http') ? link.value : `https://${link.value}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-100 hover:bg-primary-50 text-blue-700 font-medium text-sm transition-colors shadow-sm"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--color-primary-light)] text-[var(--color-primary)] font-medium text-sm transition-colors shadow-sm"
                       >
                         <span className="capitalize">{link.name}</span>
                         <span className="truncate max-w-[120px]">{link.value}</span>

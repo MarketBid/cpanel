@@ -134,8 +134,8 @@ const Accounts: React.FC = () => {
     <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-neutral-900">Payment Methods</h1>
-          <p className="mt-0.5 sm:mt-1 text-sm sm:text-base text-neutral-600">Manage your bank and mobile money accounts.</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-primary)]">Payment Methods</h1>
+          <p className="mt-0.5 sm:mt-1 text-sm sm:text-base text-[var(--text-secondary)]">Manage your bank and mobile money accounts.</p>
         </div>
         <Button
           variant="primary"
@@ -311,11 +311,11 @@ const Accounts: React.FC = () => {
       ) : (
         <Card>
           <CardContent className="p-16 text-center">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-3xl flex items-center justify-center mb-6">
-              <CreditCard className="h-10 w-10 text-neutral-400" />
+            <div className="w-20 h-20 mx-auto bg-[var(--bg-tertiary)] rounded-3xl flex items-center justify-center mb-6">
+              <CreditCard className="h-10 w-10 text-[var(--text-tertiary)]" />
             </div>
-            <h3 className="text-xl font-semibold text-neutral-900 mb-2">No payment methods yet</h3>
-            <p className="text-neutral-600 mb-6 max-w-md mx-auto">
+            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">No payment methods yet</h3>
+            <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
               Add your first bank or mobile money account to start accepting payments securely.
             </p>
             <Button 
@@ -331,15 +331,15 @@ const Accounts: React.FC = () => {
 
       {/* Add Account Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl border border-neutral-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-neutral-200">
-              <h2 className="text-xl font-semibold text-neutral-900">Add Payment Method</h2>
+        <div className="fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)]">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">Add Payment Method</h2>
               <button
                 onClick={resetForm}
-                className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-neutral-500" />
+                <X className="h-5 w-5 text-[var(--text-secondary)]" />
               </button>
             </div>
 
@@ -456,7 +456,7 @@ const Accounts: React.FC = () => {
               {/* Form Fields */}
               <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Account Name
                 </label>
                 <input
@@ -465,20 +465,20 @@ const Accounts: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder="e.g., Main Savings Account"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Account Type
                 </label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                 >
                   <option value={AccountType.BANK}>Bank Account</option>
                   <option value={AccountType.MOMO}>Mobile Money</option>
@@ -486,7 +486,7 @@ const Accounts: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Account Number
                 </label>
                 <input
@@ -495,13 +495,13 @@ const Accounts: React.FC = () => {
                   value={formData.number}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder={formData.type === AccountType.BANK ? "Account number" : "Mobile number"}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Service Provider
                 </label>
                 <input
@@ -510,7 +510,7 @@ const Accounts: React.FC = () => {
                   value={formData.service_provider}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
                 />
               </div>
@@ -542,15 +542,15 @@ const Accounts: React.FC = () => {
 
       {/* Edit Account Modal */}
       {showEditModal && editingAccount && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl border border-neutral-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-neutral-200">
-              <h2 className="text-xl font-semibold text-neutral-900">Edit Payment Method</h2>
+        <div className="fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)]">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">Edit Payment Method</h2>
               <button
                 onClick={resetEditForm}
-                className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-neutral-500" />
+                <X className="h-5 w-5 text-[var(--text-secondary)]" />
               </button>
             </div>
 
@@ -667,7 +667,7 @@ const Accounts: React.FC = () => {
               {/* Form Fields */}
               <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Account Name
                 </label>
                 <input
@@ -676,20 +676,20 @@ const Accounts: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder="e.g., Main Savings Account"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Account Type
                 </label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                 >
                   <option value={AccountType.BANK}>Bank Account</option>
                   <option value={AccountType.MOMO}>Mobile Money</option>
@@ -697,7 +697,7 @@ const Accounts: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Account Number
                 </label>
                 <input
@@ -706,13 +706,13 @@ const Accounts: React.FC = () => {
                   value={formData.number}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder={formData.type === AccountType.BANK ? "Account number" : "Mobile number"}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Service Provider
                 </label>
                 <input
@@ -721,7 +721,7 @@ const Accounts: React.FC = () => {
                   value={formData.service_provider}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
                 />
               </div>
@@ -753,36 +753,36 @@ const Accounts: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && deletingAccount && (
-        <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-2xl border border-neutral-200 max-w-md w-full shadow-2xl transform animate-scaleIn">
+        <div className="fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto animate-fadeIn">
+          <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full shadow-2xl transform animate-scaleIn">
             {/* Icon Header */}
             <div className="flex flex-col items-center pt-8 pb-4 px-6">
               <div className="relative mb-4">
-                <div className="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-75"></div>
-                <div className="relative w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
-                  <Trash2 className="h-8 w-8 text-white" />
+                <div className="absolute inset-0 bg-[var(--status-disputed-bg)] rounded-full animate-ping opacity-75"></div>
+                <div className="relative w-16 h-16 bg-[var(--status-disputed-text)] rounded-full flex items-center justify-center shadow-lg">
+                  <Trash2 className="h-8 w-8 text-[var(--status-disputed-bg)]" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-neutral-900 mb-2">Delete Payment Method?</h3>
-              <p className="text-sm text-neutral-600 text-center leading-relaxed">
+              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Delete Payment Method?</h3>
+              <p className="text-sm text-[var(--text-secondary)] text-center leading-relaxed">
                 Are you sure you want to remove this account? This action cannot be undone.
               </p>
             </div>
 
             {/* Account Preview */}
             <div className="mx-6 mb-6">
-              <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-200">
+              <div className="bg-[var(--bg-tertiary)] rounded-xl p-4 border border-[var(--border-default)]">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-[var(--bg-tertiary)] rounded-lg flex items-center justify-center flex-shrink-0">
                     {deletingAccount.type === AccountType.BANK ? (
-                      <CreditCard className="h-6 w-6 text-neutral-600" />
+                      <CreditCard className="h-6 w-6 text-[var(--text-secondary)]" />
                     ) : (
-                      <Wallet className="h-6 w-6 text-neutral-600" />
+                      <Wallet className="h-6 w-6 text-[var(--text-secondary)]" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-neutral-900 truncate">{deletingAccount.name}</p>
-                    <p className="text-xs text-neutral-500 font-mono">
+                    <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{deletingAccount.name}</p>
+                    <p className="text-xs text-[var(--text-secondary)] font-mono">
                       {deletingAccount.number.replace(/(\d{4})(?=\d)/g, '$1 ')}
                     </p>
                   </div>
@@ -798,14 +798,14 @@ const Accounts: React.FC = () => {
                   setDeletingAccount(null);
                 }}
                 disabled={submitting}
-                className="flex-1 px-4 py-3 text-sm font-semibold text-neutral-700 bg-neutral-100 rounded-xl hover:bg-neutral-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
+                className="flex-1 px-4 py-3 text-sm font-semibold text-[var(--text-primary)] bg-[var(--bg-tertiary)] rounded-xl hover:bg-[var(--border-light)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={submitting}
-                className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
+                className="flex-1 px-4 py-3 text-sm font-semibold text-[var(--text-inverse)] bg-[var(--status-disputed-text)] rounded-xl hover:bg-[var(--status-disputed-border)] transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">

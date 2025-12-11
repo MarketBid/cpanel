@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff, ShieldCheck, Zap, CreditCard } from 'lucide-re
 import { useAuth } from '../hooks/useAuth.tsx';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import ThemeToggle from '../components/ThemeToggle';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -49,13 +50,16 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-6xl flex gap-8 items-center">
         <div className="hidden lg:flex flex-1 flex-col justify-center">
-          <h1 className="text-5xl font-bold text-neutral-900 mb-4 tracking-tight">
-            Welcome to <span className="text-emerald-600">Clarsix</span>
+          <h1 className="text-5xl font-bold text-[var(--text-primary)] mb-4 tracking-tight">
+            Welcome to <span className="text-[var(--color-primary)]">Clarsix</span>
           </h1>
-          <p className="text-xl text-neutral-600 mb-12 leading-relaxed">
+          <p className="text-xl text-[var(--text-secondary)] mb-12 leading-relaxed">
             Secure escrow protection for freelancers, businesses, and online transactions
           </p>
 
@@ -65,45 +69,45 @@ const Login: React.FC = () => {
                 <ShieldCheck className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-900 mb-1">Universal Protection</h3>
-                <p className="text-neutral-600">Secure escrow for all transaction types</p>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">Universal Protection</h3>
+                <p className="text-[var(--text-secondary)]">Secure escrow for all transaction types</p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-2xl flex items-center justify-center flex-shrink-0">
                 <Zap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-900 mb-1">Trusted Escrow</h3>
-                <p className="text-neutral-600">Neutral third-party protection for both parties</p>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">Trusted Escrow</h3>
+                <p className="text-[var(--text-secondary)]">Neutral third-party protection for both parties</p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-2xl flex items-center justify-center flex-shrink-0">
                 <CreditCard className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-neutral-900 mb-1">24-Hour Buyer Protection</h3>
-                <p className="text-neutral-600">Inspect goods or work before payment is released to seller</p>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">24-Hour Buyer Protection</h3>
+                <p className="text-[var(--text-secondary)]">Inspect goods or work before payment is released to seller</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="w-full lg:w-[480px] flex-shrink-0">
-          <div className="bg-white rounded-3xl shadow-2xl border-2 border-emerald-100 p-8 sm:p-10">
+          <div className="bg-[var(--bg-card)] rounded-3xl shadow-2xl border-2 border-[var(--color-primary-light)] p-8 sm:p-10">
             <div className="text-center mb-8">
               <Link to="/" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
                 <svg width="72" height="72" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-18 h-18">
                   <g transform="translate(100, 100)">
                     <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
-                      fill="black"
-                      stroke="black"
+                      fill="var(--text-primary)"
+                      stroke="var(--text-primary)"
                       strokeWidth="4" />
-                    <circle cx="0" cy="0" r="32" fill="black" stroke="white" strokeWidth="4" />
-                    <rect x="0" y="-38" width="38" height="76" fill="black" />
+                    <circle cx="0" cy="0" r="32" fill="var(--text-primary)" stroke="white" strokeWidth="4" />
+                    <rect x="0" y="-38" width="38" height="76" fill="var(--text-primary)" />
                     <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
                     <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
                     <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
@@ -112,14 +116,14 @@ const Login: React.FC = () => {
                     <text x="-15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
                   </g>
                 </svg>
-                <span className="text-2xl font-bold text-neutral-900">Clarsix</span>
+                <span className="text-2xl font-bold text-[var(--text-primary)]">Clarsix</span>
               </Link>
-              <h2 className="text-3xl font-bold text-neutral-900 mb-2">Welcome back</h2>
-              <p className="text-neutral-600">Sign in to your account</p>
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Welcome back</h2>
+              <p className="text-[var(--text-secondary)]">Sign in to your account</p>
             </div>
 
             {error && (
-              <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm animate-slide-down">
+              <div className="mb-6 bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] text-[var(--alert-error-text)] px-4 py-3 rounded-xl text-sm animate-slide-down">
                 {error}
               </div>
             )}
@@ -159,7 +163,7 @@ const Login: React.FC = () => {
                   }
                 />
                 <div className="mt-2 text-right">
-                  <Link to="#" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
+                  <Link to="#" className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
                     Forgot password?
                   </Link>
                 </div>
@@ -176,9 +180,9 @@ const Login: React.FC = () => {
               </Button>
 
               <div className="text-center pt-4">
-                <p className="text-sm text-neutral-600">
+                <p className="text-sm text-[var(--text-secondary)]">
                   Don't have an account?{' '}
-                  <Link to="/register" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+                  <Link to="/register" className="font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
                     Sign up
                   </Link>
                 </p>

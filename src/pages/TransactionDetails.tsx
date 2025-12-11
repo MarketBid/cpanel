@@ -237,15 +237,15 @@ const TransactionDetails: React.FC = () => {
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
       case TransactionStatus.PENDING:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[var(--status-pending-bg)] text-[var(--status-pending-text)]';
       case TransactionStatus.PAID:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[var(--status-paid-bg)] text-[var(--status-paid-text)]';
       case TransactionStatus.COMPLETED:
-        return 'bg-green-100 text-green-800';
+        return 'bg-[var(--status-completed-bg)] text-[var(--status-completed-text)]';
       case TransactionStatus.DISPUTED:
-        return 'bg-red-100 text-red-800';
+        return 'bg-[var(--status-disputed-bg)] text-[var(--status-disputed-text)]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled-text)]';
     }
   };
 
@@ -451,12 +451,12 @@ const TransactionDetails: React.FC = () => {
     return (
       <div className="text-center py-12">
         <div className="max-w-md mx-auto">
-          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Transaction not found</h3>
-          <p className="text-gray-600 mb-4">The transaction you're looking for doesn't exist.</p>
+          <Package className="h-12 w-12 text-[var(--text-tertiary)] mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Transaction not found</h3>
+          <p className="text-[var(--text-secondary)] mb-4">The transaction you're looking for doesn't exist.</p>
           <Link
             to="/transactions"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
           >
             Back to Transactions
           </Link>
@@ -466,13 +466,13 @@ const TransactionDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50">
+    <div className="min-h-screen bg-[var(--bg-secondary)]">
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header with Breadcrumb */}
         <div className="mb-8">
           <button
             onClick={() => navigate('/transactions')}
-            className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 transition-colors mb-4 group"
+            className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4 group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm font-medium">Back to Transactions</span>
@@ -480,15 +480,15 @@ const TransactionDetails: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">Transaction Details</h1>
-              <p className="text-sm sm:text-base text-neutral-600">Track and manage your transaction</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-2">Transaction Details</h1>
+              <p className="text-sm sm:text-base text-[var(--text-secondary)]">Track and manage your transaction</p>
             </div>
 
             <div className="flex items-center gap-3">
               {/* View Contract Button */}
               <button
                 onClick={() => generateContractPDF(transaction)}
-                className="flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-colors shadow-sm hover:shadow-md"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm hover:shadow-md"
               >
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">View Contract</span>
@@ -502,7 +502,7 @@ const TransactionDetails: React.FC = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-6 text-sm animate-slide-down">
+          <div className="bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] text-[var(--alert-error-text)] px-4 py-3 rounded-xl mb-6 text-sm animate-slide-down">
             {error}
           </div>
         )}
@@ -514,14 +514,14 @@ const TransactionDetails: React.FC = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Service Details Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
+            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-4 sm:p-6 hover:shadow-md transition-shadow">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-lg sm:text-xl font-bold text-neutral-900 flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5 text-neutral-900" />
+                  <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <ShoppingCart className="h-5 w-5 text-[var(--text-primary)]" />
                     Transaction Details
                   </h2>
-                  <span className="text-sm text-neutral-500">#{transaction.transaction_id}</span>
+                  <span className="text-sm text-[var(--text-secondary)]">#{transaction.transaction_id}</span>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(normalizeStatus(transaction.status))}`}>
                     {normalizeStatus(transaction.status).replace('_', ' ')}
                   </span>
@@ -529,7 +529,7 @@ const TransactionDetails: React.FC = () => {
                 {(isSender || (user?.id === transaction.receiver_id)) && normalizeStatus(transaction.status) === TransactionStatus.PENDING && (
                   <button
                     onClick={() => navigate('/transactions/edit', { state: { editingTransaction: transaction } })}
-                    className="flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
                   >
                     <CreditCard className="h-4 w-4" />
                     <span>Edit Transaction</span>
@@ -537,39 +537,39 @@ const TransactionDetails: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 bg-gradient-to-br from-neutral-50 to-white rounded-xl border border-neutral-100">
-                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-2xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-                  <Package className="h-8 w-8 sm:h-12 sm:w-12 text-neutral-900" />
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)]">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[var(--bg-tertiary)] rounded-2xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+                  <Package className="h-8 w-8 sm:h-12 sm:w-12 text-[var(--text-primary)]" />
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-bold text-base sm:text-lg text-neutral-900 mb-2">{transaction.title}</h3>
-                  <p className="text-sm sm:text-base text-neutral-600 mb-3">{transaction.description}</p>
+                  <h3 className="font-bold text-base sm:text-lg text-[var(--text-primary)] mb-2">{transaction.title}</h3>
+                  <p className="text-sm sm:text-base text-[var(--text-secondary)] mb-3">{transaction.description}</p>
                 </div>
                 <div className="text-center sm:text-right">
-                  <div className="text-xs sm:text-sm text-neutral-500 mb-1">Total Amount</div>
-                  <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-neutral-900 to-neutral-700 bg-clip-text text-transparent">
+                  <div className="text-xs sm:text-sm text-[var(--text-secondary)] mb-1">Total Amount</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
                     {formatAmount(transaction.amount)}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-neutral-200">
+              <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
                 <div className="space-y-3">
-                  <div className="flex justify-between text-neutral-600">
+                  <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>Subtotal</span>
                     <span className="font-medium">{formatAmount(transaction.amount)}</span>
                   </div>
-                  <div className="flex justify-between text-neutral-600">
+                  <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>Shipping</span>
                     <span className="font-medium">₵0.00</span>
                   </div>
-                  <div className="flex justify-between text-neutral-600">
+                  <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>Tax</span>
                     <span className="font-medium">₵0.00</span>
                   </div>
-                  <div className="flex justify-between text-xl font-bold text-neutral-900 pt-3 border-t border-neutral-200">
+                  <div className="flex justify-between text-xl font-bold text-[var(--text-primary)] pt-3 border-t border-[var(--border-default)]">
                     <span>Total</span>
-                    <span className="bg-gradient-to-r from-neutral-900 to-neutral-700 bg-clip-text text-transparent">
+                    <span className="text-[var(--text-primary)]">
                       {formatAmount(transaction.amount)}
                     </span>
                   </div>
@@ -578,24 +578,24 @@ const TransactionDetails: React.FC = () => {
             </div>
 
             {/* Participants Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
-              <h2 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 sm:mb-6 flex items-center gap-2">
-                <Users className="h-5 w-5 text-neutral-900" />
+            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-4 sm:p-6 hover:shadow-md transition-shadow">
+              <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-4 sm:mb-6 flex items-center gap-2">
+                <Users className="h-5 w-5 text-[var(--text-primary)]" />
                 Participants
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Sender */}
-                <div className="p-4 sm:p-6 bg-gradient-to-br from-neutral-50 to-white rounded-xl border border-neutral-200">
+                <div className="p-4 sm:p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)]">
                   <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-neutral-800 to-neutral-900 rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--color-secondary)] rounded-xl flex items-center justify-center text-[var(--text-inverse)] font-bold text-base sm:text-lg shadow-lg">
                       {transaction.sender?.name?.charAt(0).toUpperCase() || 'S'}
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-sm sm:text-base text-neutral-900">Sender</h3>
+                        <h3 className="font-bold text-sm sm:text-base text-[var(--text-primary)]">Sender</h3>
                         {user?.id === transaction.sender_id && (
-                          <span className="text-xs bg-gradient-to-r from-neutral-800 to-neutral-900 text-white px-2 py-1 rounded-full font-medium">
+                          <span className="text-xs bg-[var(--color-secondary)] text-[var(--text-inverse)] px-2 py-1 rounded-full font-medium">
                             You
                           </span>
                         )}
@@ -604,28 +604,28 @@ const TransactionDetails: React.FC = () => {
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-base sm:text-lg font-semibold text-neutral-900">{transaction.sender?.name}</p>
-                      <p className="text-xs sm:text-sm text-neutral-600">{transaction.sender?.email}</p>
+                      <p className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">{transaction.sender?.name}</p>
+                      <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{transaction.sender?.email}</p>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-neutral-500 mb-1">Contact</div>
-                      <div className="text-neutral-900">{transaction.sender?.contact || 'N/A'}</div>
+                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Contact</div>
+                      <div className="text-[var(--text-primary)]">{transaction.sender?.contact || 'N/A'}</div>
                     </div>
 
                   </div>
                 </div>
 
                 {/* Receiver */}
-                <div className="p-4 sm:p-6 bg-gradient-to-br from-neutral-50 to-white rounded-xl border border-neutral-200">
+                <div className="p-4 sm:p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)]">
                   <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--color-secondary-light)] rounded-xl flex items-center justify-center text-[var(--text-inverse)] font-bold text-base sm:text-lg shadow-lg">
                       {transaction.receiver?.name?.charAt(0).toUpperCase() || 'R'}
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-sm sm:text-base text-neutral-900">Receiver</h3>
+                        <h3 className="font-bold text-sm sm:text-base text-[var(--text-primary)]">Receiver</h3>
                         {user?.id === transaction.receiver_id && (
-                          <span className="text-xs bg-gradient-to-r from-neutral-700 to-neutral-800 text-white px-2 py-1 rounded-full font-medium">
+                          <span className="text-xs bg-[var(--color-secondary-light)] text-[var(--text-inverse)] px-2 py-1 rounded-full font-medium">
                             You
                           </span>
                         )}
@@ -634,12 +634,12 @@ const TransactionDetails: React.FC = () => {
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-base sm:text-lg font-semibold text-neutral-900">{transaction.receiver?.name}</p>
-                      <p className="text-xs sm:text-sm text-neutral-600">{transaction.receiver?.email}</p>
+                      <p className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">{transaction.receiver?.name}</p>
+                      <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{transaction.receiver?.email}</p>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-neutral-500 mb-1">Contact</div>
-                      <div className="text-neutral-900">{transaction.receiver?.contact || 'N/A'}</div>
+                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Contact</div>
+                      <div className="text-[var(--text-primary)]">{transaction.receiver?.contact || 'N/A'}</div>
                     </div>
 
                   </div>
@@ -667,9 +667,9 @@ const TransactionDetails: React.FC = () => {
 
             {/* Quick Actions */}
             {availableActions.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-                <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-yellow-500" />
+              <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6">
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-[var(--status-pending-text)]" />
                   Quick Actions
                 </h3>
                 <div className="space-y-3">
@@ -693,9 +693,9 @@ const TransactionDetails: React.FC = () => {
             )}
 
             {/* Timeline Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-              <h2 className="text-lg font-bold text-neutral-900 mb-6 flex items-center gap-2">
-                <Clock className="h-5 w-5 text-neutral-900" />
+            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <Clock className="h-5 w-5 text-[var(--text-primary)]" />
                 Activity Timeline
               </h2>
 
@@ -708,24 +708,24 @@ const TransactionDetails: React.FC = () => {
                     <div key={step.key} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isComplete
-                          ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg'
-                          : 'bg-neutral-100'
+                          ? 'bg-[var(--status-completed-text)] shadow-lg'
+                          : 'bg-[var(--bg-tertiary)]'
                           }`}>
-                          <Icon className={`h-5 w-5 ${isComplete ? 'text-white' : 'text-neutral-400'
+                          <Icon className={`h-5 w-5 ${isComplete ? 'text-[var(--status-completed-bg)]' : 'text-[var(--text-tertiary)]'
                             }`} />
                         </div>
                         {index < activityTimeline.length - 1 && (
-                          <div className={`w-0.5 h-full mt-2 ${isComplete ? 'bg-gradient-to-b from-green-500 to-emerald-600' : 'bg-neutral-200'
+                          <div className={`w-0.5 h-full mt-2 ${isComplete ? 'bg-[var(--status-completed-text)]' : 'bg-[var(--border-default)]'
                             }`}></div>
                         )}
                       </div>
 
                       <div className="flex-1 pb-8">
-                        <h3 className={`font-semibold mb-1 ${isComplete ? 'text-neutral-900' : 'text-neutral-500'
+                        <h3 className={`font-semibold mb-1 ${isComplete ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'
                           }`}>
                           {step.label}
                         </h3>
-                        <p className="text-sm text-neutral-600">{step.description}</p>
+                        <p className="text-sm text-[var(--text-secondary)]">{step.description}</p>
 
                         {/* Milestones List */}
                         {step.key === 'delivered' && transaction?.contract_type === ContractType.MILESTONE_BASED && transaction.milestones && (
@@ -735,27 +735,27 @@ const TransactionDetails: React.FC = () => {
                               const fundsReleased = (transaction.amount * milestone.amount_percentage) / 100;
 
                               return (
-                                <div key={milestone.id} className="bg-neutral-50 rounded-lg p-3 border border-neutral-200">
+                                <div key={milestone.id} className="bg-[var(--bg-tertiary)] rounded-lg p-3 border border-[var(--border-default)]">
                                   <div className="flex justify-between items-start mb-2">
                                     <div>
-                                      <h4 className="text-sm font-medium text-neutral-900">Milestone {mIndex + 1}: {milestone.description}</h4>
-                                      <p className="text-xs text-neutral-500 mt-1">Due: {milestone.due_date}</p>
+                                      <h4 className="text-sm font-medium text-[var(--text-primary)]">Milestone {mIndex + 1}: {milestone.description}</h4>
+                                      <p className="text-xs text-[var(--text-secondary)] mt-1">Due: {milestone.due_date}</p>
                                     </div>
-                                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${isMilestoneComplete ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${isMilestoneComplete ? 'bg-[var(--status-completed-bg)] text-[var(--status-completed-text)]' : 'bg-[var(--status-pending-bg)] text-[var(--status-pending-text)]'}`}>
                                       {isMilestoneComplete ? 'Completed' : 'Pending'}
                                     </span>
                                   </div>
 
-                                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-neutral-200">
-                                    <div className="text-xs text-neutral-600">
-                                      Funds to release: <span className="font-medium text-neutral-900">{formatAmount(fundsReleased)}</span>
+                                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-[var(--border-default)]">
+                                    <div className="text-xs text-[var(--text-secondary)]">
+                                      Funds to release: <span className="font-medium text-[var(--text-primary)]">{formatAmount(fundsReleased)}</span>
                                     </div>
 
                                     {!isMilestoneComplete && isReceiver && (
                                       <button
                                         onClick={() => markMilestoneComplete(milestone.id)}
                                         disabled={updating}
-                                        className="text-xs bg-neutral-900 text-white px-3 py-1.5 rounded-lg hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                                        className="text-xs bg-[var(--color-primary)] text-[var(--color-primary-text)] px-3 py-1.5 rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-50"
                                       >
                                         {updating ? 'Updating...' : 'Mark Complete'}
                                       </button>
@@ -777,16 +777,16 @@ const TransactionDetails: React.FC = () => {
 
         {/* Modals */}
         {showWaitModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl border border-neutral-200 p-8 max-w-sm w-full mx-4 shadow-2xl">
-              <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-yellow-600" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm">
+            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-8 max-w-sm w-full mx-4 shadow-2xl">
+              <div className="w-16 h-16 bg-[var(--status-pending-bg)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Clock className="h-8 w-8 text-[var(--status-pending-text)]" />
               </div>
-              <h3 className="text-xl font-bold text-neutral-900 mb-2 text-center">Please Wait</h3>
-              <p className="text-neutral-600 mb-6 text-center">Wait for the receiver to acknowledge the transaction is delivered before marking as received.</p>
+              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 text-center">Please Wait</h3>
+              <p className="text-[var(--text-secondary)] mb-6 text-center">Wait for the receiver to acknowledge the transaction is delivered before marking as received.</p>
               <button
                 onClick={() => setShowWaitModal(false)}
-                className="w-full py-3 px-4 rounded-xl bg-neutral-900 text-white font-medium hover:bg-neutral-800 transition-all"
+                className="w-full py-3 px-4 rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] font-medium hover:bg-[var(--color-primary-hover)] transition-all"
               >
                 OK
               </button>

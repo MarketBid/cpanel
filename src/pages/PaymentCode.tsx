@@ -100,10 +100,10 @@ const PaymentCode: React.FC = () => {
             {isPaid ? (
               <CheckCircle className="h-8 w-8 text-[#10B981]" />
             ) : (
-              <Package className="h-8 w-8 text-[#1A1A1A]" />
+              <Package className="h-8 w-8 text-[var(--text-primary)]" />
             )}
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] mb-2">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
             {isPaid ? 'Payment Completed' : 'Secure Payment'}
           </h1>
           <p className="text-[#6B7280]">

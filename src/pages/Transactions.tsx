@@ -245,13 +245,13 @@ const Transactions: React.FC = () => {
 
   const getStatusColor = (status: TransactionStatus) => {
     const colors: Record<TransactionStatus, { bg: string; text: string; btransaction: string }> = {
-      [TransactionStatus.PENDING]: { bg: 'bg-orange-50', text: 'text-orange-700', btransaction: 'border-orange-200' },
-      [TransactionStatus.PAID]: { bg: 'bg-green-50', text: 'text-green-700', btransaction: 'border-green-200' },
-      [TransactionStatus.IN_TRANSIT]: { bg: 'bg-blue-50', text: 'text-blue-700', btransaction: 'border-blue-200' },
-      [TransactionStatus.DELIVERED]: { bg: 'bg-green-50', text: 'text-green-700', btransaction: 'border-green-200' },
-      [TransactionStatus.COMPLETED]: { bg: 'bg-green-50', text: 'text-green-700', btransaction: 'border-green-200' },
-      [TransactionStatus.DISPUTED]: { bg: 'bg-red-50', text: 'text-red-700', btransaction: 'border-red-200' },
-      [TransactionStatus.CANCELLED]: { bg: 'bg-neutral-50', text: 'text-neutral-700', btransaction: 'border-neutral-200' },
+      [TransactionStatus.PENDING]: { bg: 'bg-[var(--status-pending-bg)]', text: 'text-[var(--status-pending-text)]', btransaction: 'border-[var(--status-pending-border)]' },
+      [TransactionStatus.PAID]: { bg: 'bg-[var(--status-paid-bg)]', text: 'text-[var(--status-paid-text)]', btransaction: 'border-[var(--status-paid-border)]' },
+      [TransactionStatus.IN_TRANSIT]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', btransaction: 'border-[var(--status-inTransit-border)]' },
+      [TransactionStatus.DELIVERED]: { bg: 'bg-[var(--status-delivered-bg)]', text: 'text-[var(--status-delivered-text)]', btransaction: 'border-[var(--status-delivered-border)]' },
+      [TransactionStatus.COMPLETED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', btransaction: 'border-[var(--status-completed-border)]' },
+      [TransactionStatus.DISPUTED]: { bg: 'bg-[var(--status-disputed-bg)]', text: 'text-[var(--status-disputed-text)]', btransaction: 'border-[var(--status-disputed-border)]' },
+      [TransactionStatus.CANCELLED]: { bg: 'bg-[var(--status-cancelled-bg)]', text: 'text-[var(--status-cancelled-text)]', btransaction: 'border-[var(--status-cancelled-border)]' },
     };
     return colors[status];
   };
@@ -269,8 +269,8 @@ const Transactions: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-neutral-900">My Transactions</h1>
-            <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">
+            <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">My Transactions</h1>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
               Manage and track all your transactions
             </p>
           </div>
@@ -278,24 +278,24 @@ const Transactions: React.FC = () => {
         </div>
         <button
           onClick={() => navigate('/transactions/create')}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-900 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-xs sm:text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           Create Transaction
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-neutral-200">
-        <div className="p-4 sm:p-5 border-b border-neutral-200">
+      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)]">
+        <div className="p-4 sm:p-5 border-b border-[var(--border-default)]">
           <div className="flex flex-col gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--text-tertiary)]" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search transactions..."
-                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-neutral-200 rounded-lg focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -303,22 +303,22 @@ const Transactions: React.FC = () => {
                 <button
                   onClick={() => setShowDateDropdown(!showDateDropdown)}
                   className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm border rounded-lg transition-colors w-full ${hasActiveDateFilter
-                    ? 'bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800'
-                    : 'text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]'
+                    : 'text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-tertiary)]'
                     }`}
                 >
                   <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span className="text-xs sm:text-sm">Date Filter</span>
-                  {hasActiveDateFilter && <span className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px]">✓</span>}
+                  {hasActiveDateFilter && <span className="ml-1 px-1.5 py-0.5 bg-[var(--color-primary-text)]/20 rounded text-[10px]">✓</span>}
                 </button>
                 {showDateDropdown && (
-                  <div className="absolute top-full left-0 right-0 sm:left-auto sm:right-0 sm:w-80 mt-2 bg-white border border-neutral-200 rounded-xl shadow-xl z-50 p-4">
+                  <div className="absolute top-full left-0 right-0 sm:left-auto sm:right-0 sm:w-80 mt-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-neutral-700">Filter by Date</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">Filter by Date</span>
                       {hasActiveDateFilter && (
                         <button
                           onClick={clearDateFilter}
-                          className="text-xs text-neutral-600 hover:text-neutral-900 font-medium"
+                          className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium"
                         >
                           Clear
                         </button>
@@ -326,8 +326,8 @@ const Transactions: React.FC = () => {
                     </div>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                          From Date <span className="hidden sm:inline text-neutral-400">(DD/MM/YYYY)</span>
+                        <label className="block text-xs font-medium text-[var(--text-primary)] mb-1.5">
+                          From Date <span className="hidden sm:inline text-[var(--text-tertiary)]">(DD/MM/YYYY)</span>
                         </label>
                         <input
                           type="date"
@@ -335,12 +335,12 @@ const Transactions: React.FC = () => {
                           onChange={(e) => setDateFrom(e.target.value)}
                           max={dateTo || undefined}
                           placeholder="dd/mm/yyyy"
-                          className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 placeholder:lowercase"
+                          className="w-full px-3 py-2 text-sm border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] placeholder:lowercase bg-[var(--bg-card)] text-[var(--text-primary)]"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                          To Date <span className="hidden sm:inline text-neutral-400">(DD/MM/YYYY)</span>
+                        <label className="block text-xs font-medium text-[var(--text-primary)] mb-1.5">
+                          To Date <span className="hidden sm:inline text-[var(--text-tertiary)]">(DD/MM/YYYY)</span>
                         </label>
                         <input
                           type="date"
@@ -348,18 +348,18 @@ const Transactions: React.FC = () => {
                           onChange={(e) => setDateTo(e.target.value)}
                           min={dateFrom || undefined}
                           placeholder="dd/mm/yyyy"
-                          className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 placeholder:lowercase"
+                          className="w-full px-3 py-2 text-sm border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] placeholder:lowercase bg-[var(--bg-card)] text-[var(--text-primary)]"
                         />
                       </div>
                       {hasActiveDateFilter && (
-                        <div className="pt-2 border-t border-neutral-200">
-                          <div className="text-xs text-neutral-600">
+                        <div className="pt-2 border-t border-[var(--border-default)]">
+                          <div className="text-xs text-[var(--text-secondary)]">
                             Showing transactions from{' '}
-                            <span className="font-medium text-neutral-900">
+                            <span className="font-medium text-[var(--text-primary)]">
                               {dateFrom ? new Date(dateFrom).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'beginning'}
                             </span>
                             {' '}to{' '}
-                            <span className="font-medium text-neutral-900">
+                            <span className="font-medium text-[var(--text-primary)]">
                               {dateTo ? new Date(dateTo).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'today'}
                             </span>
                           </div>
@@ -373,22 +373,22 @@ const Transactions: React.FC = () => {
                 <button
                   onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                   className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm border rounded-lg transition-colors w-full ${statusFilters.length > 0
-                    ? 'bg-neutral-900 text-white border-neutral-900 hover:bg-neutral-800'
-                    : 'text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]'
+                    : 'text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-tertiary)]'
                     }`}
                 >
                   <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span className="text-xs sm:text-sm">Status Filter</span>
-                  {statusFilters.length > 0 && <span className="ml-1 px-1.5 py-0.5 bg-white/20 rounded text-[10px]">{statusFilters.length}</span>}
+                  {statusFilters.length > 0 && <span className="ml-1 px-1.5 py-0.5 bg-[var(--color-primary-text)]/20 rounded text-[10px]">{statusFilters.length}</span>}
                 </button>
                 {showStatusDropdown && (
-                  <div className="absolute top-full left-0 right-0 sm:left-auto sm:right-0 sm:w-72 mt-2 bg-white border border-neutral-200 rounded-xl shadow-xl z-50 p-4">
+                  <div className="absolute top-full left-0 right-0 sm:left-auto sm:right-0 sm:w-72 mt-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-neutral-700">Filter by Status</span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">Filter by Status</span>
                       {statusFilters.length > 0 && (
                         <button
                           onClick={clearStatusFilters}
-                          className="text-xs text-neutral-600 hover:text-neutral-900 font-medium"
+                          className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium"
                         >
                           Clear All
                         </button>
@@ -403,16 +403,16 @@ const Transactions: React.FC = () => {
                             key={status}
                             className={`flex items-center gap-3 cursor-pointer rounded-lg px-3 py-2 transition-colors border ${isChecked
                               ? `${colors.bg} ${colors.border}`
-                              : 'border-transparent hover:bg-neutral-50'
+                              : 'border-transparent hover:bg-[var(--bg-tertiary)]'
                               }`}
                           >
                             <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => toggleStatusFilter(status)}
-                              className="w-4 h-4 text-neutral-900 border-neutral-300 rounded focus:ring-neutral-900"
+                              className="w-4 h-4 text-[var(--color-primary)] border-[var(--border-medium)] rounded focus:ring-[var(--color-primary)]"
                             />
-                            <span className={`text-sm font-medium capitalize ${isChecked ? colors.text : 'text-neutral-700'}`}>
+                            <span className={`text-sm font-medium capitalize ${isChecked ? colors.text : 'text-[var(--text-primary)]'}`}>
                               {status.replace('_', ' ')}
                             </span>
                           </label>
@@ -422,7 +422,7 @@ const Transactions: React.FC = () => {
                   </div>
                 )}
               </div>
-              <button className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-neutral-700 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors flex-1">
+              <button className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors flex-1">
                 <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="text-xs sm:text-sm">Export</span>
               </button>
@@ -441,13 +441,13 @@ const Transactions: React.FC = () => {
             })
           ) : (
             <div className="flex flex-col items-center py-12">
-              <div className="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center mb-4">
-                <Package className="h-8 w-8 text-neutral-400" />
+              <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center mb-4">
+                <Package className="h-8 w-8 text-[var(--text-tertiary)]" />
               </div>
-              <h3 className="text-base font-semibold text-neutral-900 mb-1">
+              <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
                 {searchTerm || statusFilters.length > 0 || hasActiveDateFilter ? 'No transactions found' : 'No transactions yet'}
               </h3>
-              <p className="text-sm text-neutral-600 mb-4">
+              <p className="text-sm text-[var(--text-secondary)] mb-4">
                 {searchTerm || statusFilters.length > 0 || hasActiveDateFilter
                   ? 'Try adjusting your filters or search terms'
                   : 'Get started by creating your first transaction'}
@@ -455,7 +455,7 @@ const Transactions: React.FC = () => {
               {!searchTerm && statusFilters.length === 0 && !hasActiveDateFilter && (
                 <button
                   onClick={() => navigate('/transactions/create')}
-                  className="flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   Create Transaction
@@ -468,14 +468,14 @@ const Transactions: React.FC = () => {
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-neutral-50 border-b border-neutral-200">
+            <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
               <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Transaction</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Code</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Code</th>
                 <th className="px-5 py-3 text-left">
                   <button
                     onClick={() => handleColumnSort('amount')}
-                    className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wider hover:text-neutral-700 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors"
                   >
                     <span>Amount</span>
                     {sortField === 'amount' ? (
@@ -492,7 +492,7 @@ const Transactions: React.FC = () => {
                 <th className="px-5 py-3 text-left">
                   <button
                     onClick={() => handleColumnSort('date')}
-                    className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wider hover:text-neutral-700 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors"
                   >
                     <span>Date</span>
                     {sortField === 'date' ? (
@@ -509,7 +509,7 @@ const Transactions: React.FC = () => {
                 <th className="px-5 py-3 text-left">
                   <button
                     onClick={() => handleColumnSort('status')}
-                    className="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wider hover:text-neutral-700 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors"
                   >
                     <span>Status</span>
                     {sortField === 'status' ? (
@@ -523,21 +523,21 @@ const Transactions: React.FC = () => {
                     )}
                   </button>
                 </th>
-                <th className="px-5 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+                <th className="px-5 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200">
+            <tbody className="divide-y divide-[var(--border-default)]">
               {paginatedTransactions.length > 0 ? (
                 paginatedTransactions.map((transaction) => {
                   const isSender = transaction.sender_id === user?.id;
                   const statusConfig: Record<TransactionStatus, { label: string; color: string; bg: string }> = {
-                    [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-green-700', bg: 'bg-green-50' },
-                    [TransactionStatus.PAID]: { label: 'Paid', color: 'text-green-700', bg: 'bg-green-50' },
-                    [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-blue-700', bg: 'bg-blue-50' },
-                    [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-green-700', bg: 'bg-green-50' },
-                    [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-orange-700', bg: 'bg-orange-50' },
-                    [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-red-700', bg: 'bg-red-50' },
-                    [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-neutral-700', bg: 'bg-neutral-100' },
+                    [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-[var(--status-completed-text)]', bg: 'bg-[var(--status-completed-bg)]' },
+                    [TransactionStatus.PAID]: { label: 'Paid', color: 'text-[var(--status-paid-text)]', bg: 'bg-[var(--status-paid-bg)]' },
+                    [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
+                    [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-[var(--status-delivered-text)]', bg: 'bg-[var(--status-delivered-bg)]' },
+                    [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-[var(--status-pending-text)]', bg: 'bg-[var(--status-pending-bg)]' },
+                    [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-[var(--status-disputed-text)]', bg: 'bg-[var(--status-disputed-bg)]' },
+                    [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-[var(--status-cancelled-text)]', bg: 'bg-[var(--status-cancelled-bg)]' },
                   };
 
                   // Provide a fallback config if status is not found, and log for debugging
@@ -548,36 +548,36 @@ const Transactions: React.FC = () => {
                   };
 
                   return (
-                    <tr key={transaction.id} className="hover:bg-neutral-50 transition-colors">
+                    <tr key={transaction.id} className="hover:bg-[var(--bg-tertiary)] transition-colors">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                            <Package className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-600" />
+                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
+                            <Package className="h-4 w-4 sm:h-5 sm:w-5 text-[var(--text-secondary)]" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-xs sm:text-sm font-medium text-neutral-900 truncate">{transaction.title}</p>
-                            <p className="text-[10px] sm:text-xs text-neutral-500 truncate">{transaction.description?.slice(0, 20)}...</p>
+                            <p className="text-xs sm:text-sm font-medium text-[var(--text-primary)] truncate">{transaction.title}</p>
+                            <p className="text-[10px] sm:text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 20)}...</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs sm:text-sm font-mono text-neutral-700">{transaction.transaction_id}</span>
+                          <span className="text-xs sm:text-sm font-mono text-[var(--text-primary)]">{transaction.transaction_id}</span>
                           <button
                             onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
-                            className="p-1 hover:bg-neutral-100 rounded transition-colors"
+                            className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
                           >
-                            <Copy className="h-3 w-3 text-neutral-400" />
+                            <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
                           </button>
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`text-xs sm:text-sm font-medium ${isSender ? 'text-red-600' : 'text-green-600'}`}>
+                        <span className={`text-xs sm:text-sm font-medium ${isSender ? 'text-[var(--amount-negative)]' : 'text-[var(--amount-positive)]'}`}>
                           {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
                         </span>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="text-xs sm:text-sm text-neutral-700">
+                        <span className="text-xs sm:text-sm text-[var(--text-primary)]">
                           {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </td>
@@ -590,7 +590,7 @@ const Transactions: React.FC = () => {
                       <td className="px-5 py-4 text-right">
                         <button
                           onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-                          className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                          className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
                         >
                           <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           <span className="hidden sm:inline">View</span>
@@ -603,13 +603,13 @@ const Transactions: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="px-5 py-16 text-center">
                     <div className="flex flex-col items-center">
-                      <div className="w-16 h-16 bg-neutral-100 rounded-xl flex items-center justify-center mb-4">
-                        <Package className="h-8 w-8 text-neutral-400" />
+                      <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center mb-4">
+                        <Package className="h-8 w-8 text-[var(--text-tertiary)]" />
                       </div>
-                      <h3 className="text-base font-semibold text-neutral-900 mb-1">
+                      <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
                         {searchTerm || statusFilters.length > 0 || hasActiveDateFilter ? 'No transactions found' : 'No transactions yet'}
                       </h3>
-                      <p className="text-sm text-neutral-600 mb-4">
+                      <p className="text-sm text-[var(--text-secondary)] mb-4">
                         {searchTerm || statusFilters.length > 0 || hasActiveDateFilter
                           ? 'Try adjusting your filters or search terms'
                           : 'Get started by creating your first transaction'}
@@ -617,7 +617,7 @@ const Transactions: React.FC = () => {
                       {!searchTerm && statusFilters.length === 0 && !hasActiveDateFilter && (
                         <button
                           onClick={() => navigate('/transactions/create')}
-                          className="flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
                         >
                           <Plus className="h-4 w-4" />
                           Create Transaction
@@ -632,14 +632,14 @@ const Transactions: React.FC = () => {
         </div>
 
         {filteredTransactions.length > 0 && (
-          <div className="px-5 py-4 border-t border-neutral-200">
-            <div className="flex items-center justify-between text-xs text-neutral-500">
+          <div className="px-5 py-4 border-t border-[var(--border-default)]">
+            <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
               <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length} entries</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
@@ -649,8 +649,8 @@ const Transactions: React.FC = () => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-1.5 rounded-lg transition-colors ${currentPage === page
-                        ? 'bg-neutral-900 text-white'
-                        : 'text-neutral-600 hover:bg-neutral-100'
+                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
                         }`}
                     >
                       {page}
@@ -660,7 +660,7 @@ const Transactions: React.FC = () => {
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>

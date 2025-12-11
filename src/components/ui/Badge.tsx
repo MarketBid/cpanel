@@ -11,21 +11,21 @@ interface BadgeProps {
 
 const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', className = '', dot = false }) => {
   const variantStyles = {
-    default: 'bg-[rgba(4,128,91,0.14)] text-[#024B35]',
-    success: 'bg-[rgba(16,185,129,0.12)] text-[#0F9B73]',
-    warning: 'bg-[rgba(245,158,11,0.12)] text-[#B7791F]',
-    error: 'bg-[rgba(239,68,68,0.12)] text-[#B91C1C]',
-    info: 'bg-[rgba(59,130,246,0.12)] text-[#1D4ED8]',
-    neutral: 'bg-[#F3F4F6] text-[#4B5563]',
+    default: 'bg-[var(--status-paid-bg)] text-[var(--status-paid-text)] dark:bg-[var(--status-paid-bg)] dark:text-[var(--status-paid-text)]',
+    success: 'bg-[var(--status-paid-bg)] text-[var(--status-paid-text)] dark:bg-[var(--status-paid-bg)] dark:text-[var(--status-paid-text)]',
+    warning: 'bg-[var(--status-pending-bg)] text-[var(--status-pending-text)] dark:bg-[var(--status-pending-bg)] dark:text-[var(--status-pending-text)]',
+    error: 'bg-[var(--status-disputed-bg)] text-[var(--status-disputed-text)] dark:bg-[var(--status-disputed-bg)] dark:text-[var(--status-disputed-text)]',
+    info: 'bg-[var(--alert-info-bg)] text-[var(--alert-info-text)] dark:bg-[var(--alert-info-bg)] dark:text-[var(--alert-info-text)]',
+    neutral: 'bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled-text)] dark:bg-[var(--status-cancelled-bg)] dark:text-[var(--status-cancelled-text)]',
   };
 
   const dotStyles = {
-    default: 'bg-[#04805B]',
-    success: 'bg-[#10B981]',
-    warning: 'bg-[#F59E0B]',
-    error: 'bg-[#EF4444]',
-    info: 'bg-[#3B82F6]',
-    neutral: 'bg-[#6B7280]',
+    default: 'bg-[var(--color-primary)]',
+    success: 'bg-[var(--status-paid-text)]',
+    warning: 'bg-[var(--status-pending-text)]',
+    error: 'bg-[var(--status-disputed-text)]',
+    info: 'bg-[var(--alert-info-text)]',
+    neutral: 'bg-[var(--status-cancelled-text)]',
   };
 
   return (

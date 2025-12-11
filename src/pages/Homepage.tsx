@@ -87,7 +87,7 @@ const Homepage: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <PublicLayout backgroundClassName="bg-[#F5F7F7]">
+    <PublicLayout backgroundClassName="bg-[var(--bg-secondary)]">
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(4,128,91,0.16),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(2,80,55,0.18),transparent_40%),linear-gradient(135deg,#0E1F1A_0%,#0B1814_35%,#0E1F1A_100%)]" />
@@ -169,7 +169,7 @@ const Homepage: React.FC = () => {
       </section>
 
       {/* Value props */}
-      <section className="bg-white py-16 sm:py-20 lg:py-24">
+      <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -183,7 +183,7 @@ const Homepage: React.FC = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-sm font-bold uppercase tracking-[0.12em] text-[#04805B]"
+              className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
             >
               Why Clarsix
             </motion.p>
@@ -192,7 +192,7 @@ const Homepage: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A1F16] mt-3 text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3 text-balance"
             >
               Escrow-grade assurance with automation, compliance, and clarity.
             </motion.h2>
@@ -222,7 +222,7 @@ const Homepage: React.FC = () => {
                   }}
                   transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  className="rounded-2xl border border-[#E6E8EA] bg-[#F5F7F7] p-6 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-shadow duration-300"
+                  className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-tertiary)] p-6 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-shadow duration-300"
                 >
                   <motion.div
                     initial={{ scale: 0 }}
@@ -230,12 +230,12 @@ const Homepage: React.FC = () => {
                     viewport={{ once: true }}
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200, damping: 15 }}
-                    className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#04805B] to-[#025037] text-white flex items-center justify-center mb-4"
+                    className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white flex items-center justify-center mb-4"
                   >
                     <Icon className="h-5 w-5" />
                   </motion.div>
-                  <h3 className="text-xl font-bold text-[#0A1F16] mb-2">{card.title}</h3>
-                  <p className="text-sm text-[#4B5563] leading-relaxed">{card.desc}</p>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">{card.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{card.desc}</p>
                 </motion.div>
               );
             })}
@@ -295,7 +295,7 @@ const Homepage: React.FC = () => {
               <Button
                 variant="primary"
                 onClick={() => navigate('/solutions')}
-                className="bg-white text-[#0a1f17] hover:bg-[#E6E8EA] border border-white/20"
+                className="bg-white text-[var(--color-primary-dark)] hover:bg-white/90 border border-white/20 !text-[var(--color-primary-dark)]"
                 rightIcon={<ArrowRight className="h-4 w-4" />}
               >
                 Explore solutions
@@ -361,7 +361,7 @@ const Homepage: React.FC = () => {
       </section>
 
       {/* How it works */}
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-[var(--bg-primary)] py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -375,7 +375,7 @@ const Homepage: React.FC = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-sm font-bold uppercase tracking-[0.12em] text-[#04805B]"
+              className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
             >
               How it works
             </motion.p>
@@ -384,7 +384,7 @@ const Homepage: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A1F16] mt-3"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
             >
               From agreement to release with zero guesswork.
             </motion.h2>
@@ -413,7 +413,7 @@ const Homepage: React.FC = () => {
                   }}
                   transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  className="rounded-2xl border border-[#E6E8EA] bg-[#F5F7F7] p-6 space-y-3 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-shadow duration-300"
+                  className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-tertiary)] p-6 space-y-3 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-shadow duration-300"
                 >
                   <div className="flex items-center gap-3">
                     <motion.div
@@ -421,7 +421,7 @@ const Homepage: React.FC = () => {
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: idx * 0.2 + 0.3, type: 'spring', stiffness: 200, damping: 15 }}
-                      className="h-10 w-10 rounded-xl bg-[#04805B]/10 text-[#04805B] flex items-center justify-center font-bold"
+                      className="h-10 w-10 rounded-xl bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center font-bold"
                     >
                       {idx + 1}
                     </motion.div>
@@ -431,11 +431,11 @@ const Homepage: React.FC = () => {
                       viewport={{ once: true }}
                       transition={{ delay: idx * 0.2 + 0.4, type: 'spring', stiffness: 200, damping: 15 }}
                     >
-                      <Icon className="h-5 w-5 text-[#025037]" />
+                      <Icon className="h-5 w-5 text-[var(--color-primary-dark)]" />
                     </motion.div>
                   </div>
-                  <h3 className="text-lg font-bold text-[#0A1F16]">{step.title}</h3>
-                  <p className="text-sm text-[#4B5563] leading-relaxed">{step.desc}</p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">{step.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{step.desc}</p>
                 </motion.div>
               );
             })}
@@ -444,7 +444,7 @@ const Homepage: React.FC = () => {
       </section>
 
       {/* Analytics preview */}
-      <section className="bg-[#F5F7F7] py-16 sm:py-20 lg:py-24">
+      <section className="bg-[var(--bg-secondary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <motion.div
@@ -459,7 +459,7 @@ const Homepage: React.FC = () => {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="text-sm font-bold uppercase tracking-[0.12em] text-[#04805B]"
+                className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
               >
                 Visibility
               </motion.p>
@@ -468,7 +468,7 @@ const Homepage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl sm:text-4xl font-black text-[#0A1F16]"
+                className="text-3xl sm:text-4xl font-black text-[var(--text-primary)]"
               >
                 Live controls, audit-ready evidence.
               </motion.h2>
@@ -477,7 +477,7 @@ const Homepage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg text-[#4B5563] leading-relaxed"
+                className="text-lg text-[var(--text-secondary)] leading-relaxed"
               >
                 Monitor funds, inspection windows, and compliance health in one place. Export audit logs instantly, share status links with counterparties, and keep finance and legal aligned.
               </motion.p>
@@ -503,7 +503,7 @@ const Homepage: React.FC = () => {
                     }}
                     transition={{ duration: 0.3, delay: index * 0.1 + 0.3 }}
                     whileHover={{ scale: 1.05 }}
-                    className="px-3 py-1 rounded-full text-xs font-semibold bg-[#04805B]/10 text-[#025037]"
+                    className="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-primary-light)] text-[var(--color-primary-dark)]"
                   >
                     {badge}
                   </motion.span>
@@ -521,7 +521,7 @@ const Homepage: React.FC = () => {
                 items={analyticsCards.map((card, index) => ({
                   ...card,
                   id: index,
-                  icon: React.createElement(card.icon, { className: 'h-5 w-5 text-[#04805B]' }),
+                  icon: React.createElement(card.icon, { className: 'h-5 w-5 text-[var(--color-primary)]' }),
                 }))}
                 baseWidth={420}
                 loop={true}
@@ -530,19 +530,19 @@ const Homepage: React.FC = () => {
                 pauseOnHover={true}
                 renderItem={(item) => {
                   return (
-                    <div className="w-full h-full rounded-2xl border border-[#E6E8EA] bg-white p-6 space-y-3 shadow-[0_12px_28px_rgba(0,0,0,0.06)] flex flex-col justify-between">
+                    <div className="w-full h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-6 space-y-3 shadow-[0_12px_28px_rgba(0,0,0,0.06)] flex flex-col justify-between">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {item.icon}
-                          <p className="text-sm font-semibold text-[#4B5563] uppercase tracking-[0.08em]">{item.label}</p>
+                          <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-[0.08em]">{item.label}</p>
                         </div>
                         {item.badge && (
-                          <span className="text-xs px-2.5 py-1 rounded-full bg-[#04805B]/10 text-[#025037] font-semibold">
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] font-semibold">
                             {item.badge}
                           </span>
                         )}
                       </div>
-                      <p className="text-3xl font-black text-[#0A1F16]">{item.value}</p>
+                      <p className="text-3xl font-black text-[var(--text-primary)]">{item.value}</p>
                     </div>
                   );
                 }}
@@ -553,7 +553,7 @@ const Homepage: React.FC = () => {
       </section>
 
       {/* Trust */}
-      <section className="bg-white py-16 sm:py-20 lg:py-24">
+      <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -567,7 +567,7 @@ const Homepage: React.FC = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-sm font-bold uppercase tracking-[0.12em] text-[#04805B]"
+              className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
             >
               Trust signals
             </motion.p>
@@ -576,7 +576,7 @@ const Homepage: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A1F16] mt-3"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
             >
               Security, transparency, and control in every step.
             </motion.h2>
@@ -604,8 +604,8 @@ const Homepage: React.FC = () => {
                     visible: { opacity: 1, y: 0 },
                   }}
                   transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                  whileHover={{ y: -6, borderColor: '#04805B', transition: { duration: 0.3 } }}
-                  className="rounded-2xl border border-[#E6E8EA] p-5 bg-[#F5F7F7] transition-all duration-300"
+                  whileHover={{ y: -6, borderColor: 'var(--color-primary)', transition: { duration: 0.3 } }}
+                  className="rounded-2xl border border-[var(--border-default)] p-5 bg-[var(--bg-tertiary)] transition-all duration-300"
                 >
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
@@ -613,12 +613,12 @@ const Homepage: React.FC = () => {
                     viewport={{ once: true }}
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200, damping: 15 }}
-                    className="h-10 w-10 rounded-xl bg-[#EEF1F0] flex items-center justify-center text-[#04805B] mb-3"
+                    className="h-10 w-10 rounded-xl bg-[var(--bg-tertiary)] flex items-center justify-center text-[var(--color-primary)] mb-3"
                   >
                     <Icon className="h-5 w-5" />
                   </motion.div>
-                  <h3 className="text-lg font-bold text-[#0A1F16] mb-2">{pillar.title}</h3>
-                  <p className="text-sm text-[#4B5563] leading-relaxed">{pillar.desc}</p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{pillar.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{pillar.desc}</p>
                 </motion.div>
               );
             })}
@@ -627,7 +627,7 @@ const Homepage: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-gradient-to-r from-[#04805B] via-[#059268] to-[#025037] text-white py-16 sm:py-20 lg:py-24">
+      <section className="bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-primary-hover)] to-[var(--color-primary-dark)] text-white py-16 sm:py-20 lg:py-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <motion.p
             initial={{ opacity: 0 }}
@@ -671,7 +671,7 @@ const Homepage: React.FC = () => {
               <Button
                 size="lg"
                 variant="secondary"
-                className="bg-white text-[#0a1f17] hover:bg-white/90"
+                className="bg-white text-[var(--color-primary-dark)] hover:bg-white/90"
                 onClick={() => navigate(isAuthenticated ? '/transactions/create' : '/register')}
               >
                 {isAuthenticated ? 'Open a transaction' : 'Create your account'}

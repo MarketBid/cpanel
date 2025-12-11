@@ -52,40 +52,40 @@ const JoinTransaction: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50 py-12 px-4">
+    <div className="min-h-screen bg-[var(--bg-secondary)] py-12 px-4">
       <div className="max-w-3xl mx-auto">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl shadow-xl p-8 mb-8 text-white">
+        <div className="bg-[var(--color-secondary)] rounded-2xl shadow-xl p-8 mb-8 text-[var(--text-inverse)]">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-              <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <div className="w-16 h-16 bg-[var(--text-inverse)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+              <svg className="h-8 w-8 text-[var(--text-inverse)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-3xl font-bold mb-1 text-white">Join Transaction</h1>
-              <p className="text-white/80">Enter the Transaction ID to join an existing transaction</p>
+              <h1 className="text-3xl font-bold mb-1 text-[var(--text-inverse)]">Join Transaction</h1>
+              <p className="text-[var(--text-inverse)]/80">Enter the Transaction ID to join an existing transaction</p>
             </div>
           </div>
         </div>
 
         {!transaction && (
-          <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-8">
+          <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-8">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
-                  <svg className="h-5 w-5 text-neutral-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center">
+                  <svg className="h-5 w-5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h2 className="text-xl font-bold text-neutral-900">Enter Transaction Details</h2>
+                <h2 className="text-xl font-bold text-[var(--text-primary)]">Enter Transaction Details</h2>
               </div>
-              <p className="text-neutral-600">Please paste the Transaction ID you received from the person you are transacting with.</p>
+              <p className="text-[var(--text-secondary)]">Please paste the Transaction ID you received from the person you are transacting with.</p>
             </div>
 
             <form onSubmit={handleConfirm} className="space-y-6">
               <div>
-                <label htmlFor="transaction_id" className="block text-sm font-medium text-neutral-700 mb-2">
+                <label htmlFor="transaction_id" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Transaction ID
                 </label>
                 <input
@@ -95,7 +95,7 @@ const JoinTransaction: React.FC = () => {
                   required
                   value={transactionId}
                   onChange={e => setTransactionId(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:ring-2 focus:ring-neutral-200 transition-colors text-base"
+                  className="w-full px-4 py-3 border-2 border-[var(--border-default)] rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-colors text-base bg-[var(--bg-card)] text-[var(--text-primary)]"
                   placeholder="Enter transaction ID"
                 />
               </div>
@@ -103,7 +103,7 @@ const JoinTransaction: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || !transactionId}
-                className="w-full py-3 text-base font-semibold rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100"
+                className="w-full py-3 text-base font-semibold rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -114,12 +114,12 @@ const JoinTransaction: React.FC = () => {
               </button>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 animate-slide-down">
+                <div className="bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] rounded-xl p-4 animate-slide-down">
                   <div className="flex items-start gap-3">
-                    <svg className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-[var(--alert-error-text)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p className="text-red-700 text-sm">{error}</p>
+                    <p className="text-[var(--alert-error-text)] text-sm">{error}</p>
                   </div>
                 </div>
               )}
@@ -130,49 +130,49 @@ const JoinTransaction: React.FC = () => {
         {transaction && (
           <form onSubmit={handleJoin} className="space-y-6">
             {/* Transaction Preview Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-8">
+            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-8">
               <div className="flex items-center gap-3 mb-6">
                 <button
                   type="button"
                   onClick={() => { setTransaction(null); setError(null); setMessage(null); setAgreed(false); setTransactionId(''); }}
-                  className="p-2 rounded-xl hover:bg-neutral-100 transition-colors"
+                  className="p-2 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors"
                   aria-label="Back"
                 >
-                  <svg className="h-5 w-5 text-neutral-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <h2 className="text-2xl font-bold text-neutral-900">Review Transaction</h2>
+                <h2 className="text-2xl font-bold text-[var(--text-primary)]">Review Transaction</h2>
               </div>
 
-              <div className="p-6 bg-gradient-to-br from-neutral-50 to-white rounded-xl border border-neutral-200 mb-6">
+              <div className="p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)] mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-xs font-medium text-neutral-700 mb-1">Transaction ID</div>
+                      <div className="text-xs font-medium text-[var(--text-primary)] mb-1">Transaction ID</div>
                       <div className="flex items-center gap-2">
-                        <div className="text-neutral-900 font-mono text-sm break-all bg-white px-3 py-2 rounded-lg border border-neutral-200">{transaction.transaction_id}</div>
+                        <div className="text-[var(--text-primary)] font-mono text-sm break-all bg-[var(--bg-card)] px-3 py-2 rounded-lg border border-[var(--border-default)]">{transaction.transaction_id}</div>
                         <button
                           type="button"
                           onClick={() => navigator.clipboard.writeText(transaction.transaction_id)}
-                          className="p-2 hover:bg-neutral-100 rounded-lg transition-colors flex-shrink-0"
+                          className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors flex-shrink-0"
                           title="Copy Transaction ID"
                         >
-                          <Copy className="h-4 w-4 text-neutral-600" />
+                          <Copy className="h-4 w-4 text-[var(--text-secondary)]" />
                         </button>
                       </div>
                     </div>
 
                     <div>
-                      <div className="text-xs font-medium text-neutral-500 mb-1">Service Title</div>
-                      <div className="text-neutral-900 font-medium">{transaction.title}</div>
+                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Service Title</div>
+                      <div className="text-[var(--text-primary)] font-medium">{transaction.title}</div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <div className="text-xs font-medium text-neutral-500 mb-1">Amount</div>
-                      <div className="text-2xl font-bold bg-gradient-to-r from-neutral-900 to-neutral-800 bg-clip-text text-transparent">
+                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Amount</div>
+                      <div className="text-2xl font-bold text-[var(--text-primary)]">
                         ₵{maskAmount(transaction.amount)}
                       </div>
                     </div>
@@ -180,25 +180,25 @@ const JoinTransaction: React.FC = () => {
                     <div className="flex gap-8">
                       {transaction.sender && (
                         <div>
-                          <div className="text-xs font-medium text-neutral-500 mb-1">Sender</div>
-                          <div className="text-neutral-900 font-medium">{transaction.sender.name}</div>
+                          <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Sender</div>
+                          <div className="text-[var(--text-primary)] font-medium">{transaction.sender.name}</div>
                         </div>
                       )}
                       {transaction.receiver && (
                         <div>
-                          <div className="text-xs font-medium text-neutral-500 mb-1">Receiver</div>
-                          <div className="text-neutral-900 font-medium">{transaction.receiver.name}</div>
+                          <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Receiver</div>
+                          <div className="text-[var(--text-primary)] font-medium">{transaction.receiver.name}</div>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-neutral-200 flex justify-end">
+                <div className="mt-6 pt-6 border-t border-[var(--border-default)] flex justify-end">
                   <button
                     type="button"
                     onClick={() => generateContractPDF(transaction)}
-                    className="flex items-center gap-2 px-4 py-2 text-white bg-neutral-900 hover:bg-neutral-800 rounded-lg text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] rounded-lg text-sm font-medium transition-colors"
                   >
                     <FileText className="h-4 w-4" />
                     View Full Contract Details
@@ -207,23 +207,23 @@ const JoinTransaction: React.FC = () => {
               </div>
 
               {/* Terms Agreement */}
-              <div className="flex items-start gap-3 p-4 bg-neutral-50 rounded-xl border border-neutral-200 mb-6">
+              <div className="flex items-start gap-3 p-4 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)] mb-6">
                 <input
                   id="agree"
                   type="checkbox"
                   checked={agreed}
                   onChange={e => setAgreed(e.target.checked)}
-                  className="mt-1 h-5 w-5 text-neutral-900 border-neutral-300 rounded focus:ring-neutral-500"
+                  className="mt-1 h-5 w-5 text-[var(--color-primary)] border-[var(--border-medium)] rounded focus:ring-[var(--color-primary)]"
                 />
-                <label htmlFor="agree" className="text-sm text-neutral-700">
-                  I agree to the <a href="#" className="text-neutral-900 font-medium hover:text-neutral-700 underline">Terms of Use</a> and understand that funds will be held in escrow until transaction completion.
+                <label htmlFor="agree" className="text-sm text-[var(--text-primary)]">
+                  I agree to the <a href="#" className="text-[var(--color-primary)] font-medium hover:opacity-80 underline">Terms of Use</a> and understand that funds will be held in escrow until transaction completion.
                 </label>
               </div>
 
               <button
                 type="submit"
                 disabled={joining || !agreed}
-                className="w-full py-4 text-base font-bold rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100 shadow-lg"
+                className="w-full py-4 text-base font-bold rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100 shadow-lg"
               >
                 {joining ? (
                   <span className="flex items-center justify-center gap-2">
@@ -234,23 +234,23 @@ const JoinTransaction: React.FC = () => {
               </button>
 
               {message && (
-                <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 animate-slide-down">
+                <div className="bg-[var(--alert-success-bg)] border border-[var(--alert-success-border)] rounded-xl p-4 animate-slide-down">
                   <div className="flex items-start gap-3">
-                    <svg className="h-5 w-5 text-neutral-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-[var(--alert-success-text)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p className="text-neutral-700 font-medium text-sm">{message}</p>
+                    <p className="text-[var(--alert-success-text)] font-medium text-sm">{message}</p>
                   </div>
                 </div>
               )}
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 animate-slide-down">
+                <div className="bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] rounded-xl p-4 animate-slide-down">
                   <div className="flex items-start gap-3">
-                    <svg className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-[var(--alert-error-text)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p className="text-red-700 text-sm">{error}</p>
+                    <p className="text-[var(--alert-error-text)] text-sm">{error}</p>
                   </div>
                 </div>
               )}

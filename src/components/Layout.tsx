@@ -19,6 +19,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import JoinTransaction from '../pages/JoinTransaction';
 import ScrollToTopButton from './ScrollToTopButton';
+import ThemeToggle from './ThemeToggle';
 
 interface LayoutProps {
   children: ReactNode;
@@ -90,32 +91,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const SidebarContent = () => (
     <>
-      <div className="flex h-14 sm:h-16 shrink-0 items-center justify-between px-4 sm:px-6 border-b border-[#E5E7EB] bg-white/80 backdrop-blur-sm">
+      <div className="flex h-14 sm:h-16 shrink-0 items-center justify-between px-4 sm:px-6 border-b border-[var(--border-default)] bg-[var(--bg-sidebar)]/80 backdrop-blur-sm dark:bg-[var(--bg-sidebar)]/90">
         <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
           <svg width="56" height="56" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 sm:w-14 sm:h-14">
             <g transform="translate(100, 100)">
               <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
-                    fill="black"
-                    stroke="black"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    className="text-[var(--text-primary)]"
                     strokeWidth="4"/>
-              <circle cx="0" cy="0" r="32" fill="black" stroke="white" strokeWidth="4"/>
-              <rect x="0" y="-38" width="38" height="76" fill="black"/>
-              <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-              <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-              <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-              <text x="-15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-              <text x="-26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-              <text x="-15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+              <circle cx="0" cy="0" r="32" fill="currentColor" stroke="var(--bg-sidebar)" strokeWidth="4" className="text-[var(--text-primary)]"/>
+              <rect x="0" y="-38" width="38" height="76" fill="currentColor" className="text-[var(--text-primary)]"/>
+              <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
+              <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
+              <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
+              <text x="-15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
+              <text x="-26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
+              <text x="-15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
             </g>
           </svg>
-          <h1 className="text-sm sm:text-base font-bold text-[#1A1A1A]">Clarsix</h1>
+          <h1 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">Clarsix</h1>
         </Link>
         <button
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-2 hover:bg-[#F3F4F6] active:bg-[#E5E7EB] rounded-lg transition-colors touch-manipulation"
+          className="lg:hidden p-2 hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
           aria-label="Close sidebar"
         >
-          <X className="h-5 w-5 text-[#6B7280]" />
+          <X className="h-5 w-5 text-[var(--text-secondary)]" />
         </button>
       </div>
 
@@ -143,11 +145,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       onClick={() => setSidebarOpen(false)}
                       className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 ${
                         isActive
-                          ? 'bg-[#04805B] text-white'
-                          : 'text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] active:bg-[#E5E7EB]'
+                          ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
                       }`}
                     >
-                      <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${isActive ? 'text-white' : 'text-[#9CA3AF]'}`} />
+                      <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${isActive ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
                       {item.name}
                       {isActive && <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-auto" />}
                     </Link>
@@ -163,29 +165,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               onClick={() => setSidebarOpen(false)}
               className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${
                 location.pathname === '/profile'
-                  ? 'bg-[#04805B] text-white'
-                  : 'text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] active:bg-[#E5E7EB]'
+                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
               }`}
             >
-              <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/profile' ? 'text-white' : 'text-[#9CA3AF]'}`} />
+              <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/profile' ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
               Settings
             </Link>
 
-            <div className="rounded-lg border border-[#E5E7EB] p-2.5 sm:p-3 bg-white/90 backdrop-blur-sm">
+            <div className="rounded-lg border border-[var(--border-default)] p-2.5 sm:p-3 bg-[var(--bg-card)]/90 backdrop-blur-sm">
               <div className="flex items-center gap-x-2 sm:gap-x-3 mb-2 sm:mb-3">
-                <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[#1A1A1A] flex items-center justify-center">
-                  <span className="text-white font-semibold text-xs sm:text-sm">
+                <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center">
+                  <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="truncate font-medium text-[#1A1A1A] text-[11px] sm:text-xs">{user?.name}</p>
-                  <p className="truncate text-[10px] sm:text-[11px] text-[#6B7280]">{user?.email}</p>
+                  <p className="truncate font-medium text-[var(--text-primary)] text-[11px] sm:text-xs">{user?.name}</p>
+                  <p className="truncate text-[10px] sm:text-[11px] text-[var(--text-secondary)]">{user?.email}</p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-white bg-[#04805B] hover:bg-[#059268] active:bg-[#03724E] rounded-lg transition-all touch-manipulation active:scale-95"
+                className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-lg transition-all touch-manipulation active:scale-95"
               >
                 <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 Log Out
@@ -198,7 +200,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-mesh">
+    <div className="min-h-screen bg-[var(--bg-secondary)]">
       {/* Mobile sidebar */}
       <div
         className={`fixed inset-0 z-50 lg:hidden ${
@@ -211,7 +213,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-neutral-900/60 transition-opacity duration-300 ease-in-out ${
+          className={`fixed inset-0 bg-[var(--text-inverse)]/60 transition-opacity duration-300 ease-in-out ${
             sidebarOpen ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
@@ -226,7 +228,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Sidebar panel */}
         <div
-          className={`fixed inset-y-0 left-0 w-64 max-w-[80vw] bg-white/95 backdrop-blur-md border-r border-[#E5E7EB] shadow-2xl transition-transform duration-300 ease-in-out ${
+          className={`fixed inset-y-0 left-0 w-64 max-w-[80vw] bg-[var(--bg-sidebar)]/95 backdrop-blur-md border-r border-[var(--border-default)] shadow-2xl transition-transform duration-300 ease-in-out ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           style={{
@@ -253,7 +255,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 xl:lg:w-64 lg:flex-col">
-        <div className="flex grow flex-col overflow-y-auto bg-white/95 backdrop-blur-md border-r border-[#E5E7EB] shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+        <div className="flex grow flex-col overflow-y-auto bg-[var(--bg-sidebar)]/95 backdrop-blur-md border-r border-[var(--border-default)] shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
           <SidebarContent />
         </div>
       </div>
@@ -261,10 +263,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main content */}
       <div className="lg:pl-56 xl:lg:pl-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[#E5E7EB] bg-white/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm">
+        <div className="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm">
           <button
             type="button"
-            className="p-2 text-[#1A1A1A] lg:hidden hover:bg-[#F3F4F6] active:bg-[#E5E7EB] rounded-lg transition-colors touch-manipulation"
+            className="p-2 text-[var(--text-primary)] lg:hidden hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open sidebar"
           >
@@ -274,13 +276,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex-1"></div>
 
           <div className="flex items-center gap-x-2 sm:gap-x-3">
-            <div className="hidden sm:flex items-center gap-x-2 text-[10px] sm:text-xs text-[#6B7280]">
+            <div className="hidden sm:flex items-center gap-x-2 text-[10px] sm:text-xs text-[var(--text-secondary)]">
               <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             </div>
+            <ThemeToggle />
             <div className="relative group">
               <button
                 onClick={toggleVisibility}
-                className="p-2 text-[#4B5563] hover:bg-[#F3F4F6] active:bg-[#E5E7EB] rounded-full transition-colors touch-manipulation"
+                className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-full transition-colors touch-manipulation"
                 aria-label={isVisible ? 'Hide sensitive information' : 'Show sensitive information'}
               >
                 {isVisible ? (
@@ -289,13 +292,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                 )}
               </button>
-              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-[#111827] text-white text-xs font-medium rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 shadow-lg">
+              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-[var(--text-inverse)] text-[var(--bg-primary)] text-xs font-medium rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 shadow-lg">
                 {isVisible ? 'Hide sensitive info (⌘U)' : 'Show sensitive info (⌘U)'}
-                <div className="absolute -top-1 right-4 w-2 h-2 bg-[#111827] transform rotate-45"></div>
+                <div className="absolute -top-1 right-4 w-2 h-2 bg-[var(--text-inverse)] transform rotate-45"></div>
               </div>
             </div>
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[#1A1A1A] flex items-center justify-center cursor-pointer hover:bg-[#2D2D2D] transition-colors">
-              <span className="text-white font-semibold text-xs sm:text-sm">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-secondary-light)] transition-colors">
+              <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
                 {user?.name?.charAt(0).toUpperCase()}
               </span>
             </div>

@@ -157,14 +157,14 @@ const Profile: React.FC = () => {
         <CardContent className="p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-neutral-800 to-neutral-900 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl sm:text-3xl font-bold text-white">
                   {user.name.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-neutral-900 truncate">{user.name}</h1>
-                <p className="text-sm sm:text-base text-neutral-600 mt-0.5 sm:mt-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-primary)] truncate">{user.name}</h1>
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-0.5 sm:mt-1">
                   {user.is_business ? 'Business Account' : 'Personal Account'}
                 </p>
                 {user.rating > 0 && (
@@ -240,8 +240,8 @@ const Profile: React.FC = () => {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-100 rounded-lg sm:rounded-xl flex items-center justify-center">
-                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[var(--color-primary-light)] rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-[var(--color-primary)]" />
                 </div>
                 <CardTitle>Personal Information</CardTitle>
               </div>
@@ -292,28 +292,28 @@ const Profile: React.FC = () => {
               ) : (
                 <>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-neutral-500">Full Name</label>
-                    <p className="text-neutral-900 font-medium">{user.name}</p>
+                    <label className="text-sm font-medium text-[var(--text-tertiary)]">Full Name</label>
+                    <p className="text-[var(--text-primary)] font-medium">{user.name}</p>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-neutral-500">Email Address</label>
+                    <label className="text-sm font-medium text-[var(--text-tertiary)]">Email Address</label>
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-neutral-400" />
-                      <p className="text-neutral-900">{user.email}</p>
+                      <Mail className="h-4 w-4 text-[var(--text-tertiary)]" />
+                      <p className="text-[var(--text-primary)]">{user.email}</p>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-neutral-500">Phone Number</label>
+                    <label className="text-sm font-medium text-[var(--text-tertiary)]">Phone Number</label>
                     <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-neutral-400" />
-                      <p className="text-neutral-900">{user.contact}</p>
+                      <Phone className="h-4 w-4 text-[var(--text-tertiary)]" />
+                      <p className="text-[var(--text-primary)]">{user.contact}</p>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-neutral-500">Date of Birth</label>
+                    <label className="text-sm font-medium text-[var(--text-tertiary)]">Date of Birth</label>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-neutral-400" />
-                      <p className="text-neutral-900">
+                      <Calendar className="h-4 w-4 text-[var(--text-tertiary)]" />
+                      <p className="text-[var(--text-primary)]">
                         {user.date_of_birth
                           ? new Date(user.date_of_birth).toLocaleDateString()
                           : 'Not specified'
@@ -322,10 +322,10 @@ const Profile: React.FC = () => {
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-neutral-500">Location</label>
+                    <label className="text-sm font-medium text-[var(--text-tertiary)]">Location</label>
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-neutral-400" />
-                      <p className="text-neutral-900">{user.location || 'Not specified'}</p>
+                      <MapPin className="h-4 w-4 text-[var(--text-tertiary)]" />
+                      <p className="text-[var(--text-primary)]">{user.location || 'Not specified'}</p>
                     </div>
                   </div>
                 </>
@@ -338,15 +338,15 @@ const Profile: React.FC = () => {
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
-                    <User className="h-5 w-5 text-neutral-900" />
+                  <div className="w-10 h-10 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center">
+                    <User className="h-5 w-5 text-[var(--text-primary)]" />
                   </div>
                   <CardTitle>Business Information</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-[var(--text-secondary)]">
                     Business Category
                   </label>
                   {editing ? (
@@ -364,20 +364,20 @@ const Profile: React.FC = () => {
                       ))}
                     </select>
                   ) : (
-                    <p className="text-neutral-900 font-medium">{user.business_category || 'Not specified'}</p>
+                    <p className="text-[var(--text-primary)] font-medium">{user.business_category || 'Not specified'}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-[var(--text-secondary)]">
                     Rating
                   </label>
                   <div className="flex items-center gap-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                    <span className="text-neutral-900 font-semibold">
+                    <span className="text-[var(--text-primary)] font-semibold">
                       {user.rating.toFixed(1)}
                     </span>
-                    <span className="text-neutral-500">
+                    <span className="text-[var(--text-tertiary)]">
                       ({user.total_ratings} reviews)
                     </span>
                   </div>
@@ -416,13 +416,13 @@ const Profile: React.FC = () => {
                   {formData.social_media_links.map((link, index) => (
                     <div key={index} className="flex gap-3 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           Platform
                         </label>
                         <select
                           value={link.name}
                           onChange={(e) => handleSocialLinkChange(index, 'name', e.target.value)}
-                          className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                         >
                           {SOCIAL_MEDIA_OPTIONS.map((option) => (
                             <option key={option} value={option}>
@@ -434,28 +434,28 @@ const Profile: React.FC = () => {
 
                       {link.name === 'other' && (
                         <div className="flex-1">
-                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                          <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                             Custom Name
                           </label>
                           <input
                             type="text"
                             value={link.customName || ''}
                             onChange={(e) => handleSocialLinkChange(index, 'customName', e.target.value)}
-                            className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                             placeholder="Platform name"
                           />
                         </div>
                       )}
 
                       <div className="flex-2">
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           {link.name === 'whatsapp' ? 'Phone Number' : 'URL/Username'}
                         </label>
                         <input
                           type="text"
                           value={link.value}
                           onChange={(e) => handleSocialLinkChange(index, 'value', e.target.value)}
-                          className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
                           placeholder={
                             link.name === 'whatsapp'
                               ? '+233541234567'
@@ -477,7 +477,7 @@ const Profile: React.FC = () => {
                   ))}
 
                   {formData.social_media_links.length === 0 && (
-                    <div className="text-center py-8 text-neutral-500">
+                    <div className="text-center py-8 text-[var(--text-tertiary)]">
                       <p>No media links added yet.</p>
                       <Button
                         type="button"
@@ -496,14 +496,14 @@ const Profile: React.FC = () => {
                   {user.social_links && user.social_links.length > 0 ? (
                     user.social_links.map((link, index) => (
                       <div key={index} className="space-y-1">
-                        <label className="text-sm font-medium text-neutral-500 capitalize">
+                        <label className="text-sm font-medium text-[var(--text-tertiary)] capitalize">
                           {link.name}
                         </label>
-                        <p className="text-neutral-900 break-all">{link.value}</p>
+                        <p className="text-[var(--text-primary)] break-all">{link.value}</p>
                       </div>
                     ))
                   ) : (
-                    <p className="text-neutral-500 col-span-2">No media links specified</p>
+                    <p className="text-[var(--text-tertiary)] col-span-2">No media links specified</p>
                   )}
                 </div>
               )}

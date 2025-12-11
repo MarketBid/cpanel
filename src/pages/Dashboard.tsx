@@ -152,14 +152,14 @@ const Dashboard: React.FC = () => {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-neutral-900">Dashboard</h1>
-          <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
             Track your transactions and revenue in real-time
           </p>
         </div>
         <button
           onClick={() => navigate('/transactions/create')}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-900 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-xs sm:text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           <span className="sm:inline">Create Transaction</span>
@@ -229,12 +229,12 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Transaction Status Breakdown */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-4 sm:p-6">
+      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="text-sm sm:text-base font-semibold text-neutral-900">Transaction Status Overview</h2>
+          <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">Transaction Status Overview</h2>
           <button
             onClick={() => setShowStatusCards(!showStatusCards)}
-            className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+            className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
           >
             {showStatusCards ? 'Hide' : 'Show'}
           </button>
@@ -242,77 +242,77 @@ const Dashboard: React.FC = () => {
         <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 ${!showStatusCards ? 'hidden lg:grid' : ''}`}>
           <button
             onClick={() => handleStatusClick(TransactionStatus.PENDING)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-pending-bg)] rounded-lg border border-[var(--status-pending-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-orange-700">{statusCounts[TransactionStatus.PENDING]}</span>
-            <span className="text-[10px] sm:text-xs text-orange-600 font-medium mt-1">Pending</span>
+            <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-pending-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-pending-text)]">{statusCounts[TransactionStatus.PENDING]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-pending-text)] font-medium mt-1">Pending</span>
           </button>
 
           <button
             onClick={() => handleStatusClick(TransactionStatus.PAID)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-paid-bg)] rounded-lg border border-[var(--status-paid-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-green-700">{statusCounts[TransactionStatus.PAID]}</span>
-            <span className="text-[10px] sm:text-xs text-green-600 font-medium mt-1">Paid</span>
+            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-paid-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-paid-text)]">{statusCounts[TransactionStatus.PAID]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-paid-text)] font-medium mt-1">Paid</span>
           </button>
 
           <button
             onClick={() => handleStatusClick(TransactionStatus.IN_TRANSIT)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-inTransit-bg)] rounded-lg border border-[var(--status-inTransit-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-blue-700">{statusCounts[TransactionStatus.IN_TRANSIT]}</span>
-            <span className="text-[10px] sm:text-xs text-blue-600 font-medium mt-1">In Transit</span>
+            <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-inTransit-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-inTransit-text)]">{statusCounts[TransactionStatus.IN_TRANSIT]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-inTransit-text)] font-medium mt-1">In Transit</span>
           </button>
 
           <button
             onClick={() => handleStatusClick(TransactionStatus.DELIVERED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-delivered-bg)] rounded-lg border border-[var(--status-delivered-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <Package className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-green-700">{statusCounts[TransactionStatus.DELIVERED]}</span>
-            <span className="text-[10px] sm:text-xs text-green-600 font-medium mt-1">Delivered</span>
+            <Package className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-delivered-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-delivered-text)]">{statusCounts[TransactionStatus.DELIVERED]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-delivered-text)] font-medium mt-1">Delivered</span>
           </button>
 
           <button
             onClick={() => handleStatusClick(TransactionStatus.COMPLETED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-completed-bg)] rounded-lg border border-[var(--status-completed-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-green-700">{statusCounts[TransactionStatus.COMPLETED]}</span>
-            <span className="text-[10px] sm:text-xs text-green-600 font-medium mt-1">Completed</span>
+            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-completed-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-completed-text)]">{statusCounts[TransactionStatus.COMPLETED]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-completed-text)] font-medium mt-1">Completed</span>
           </button>
 
           <button
             onClick={() => handleStatusClick(TransactionStatus.DISPUTED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-disputed-bg)] rounded-lg border border-[var(--status-disputed-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-red-700">{statusCounts[TransactionStatus.DISPUTED]}</span>
-            <span className="text-[10px] sm:text-xs text-red-600 font-medium mt-1">Disputed</span>
+            <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-disputed-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-disputed-text)]">{statusCounts[TransactionStatus.DISPUTED]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-disputed-text)] font-medium mt-1">Disputed</span>
           </button>
 
           <button
             onClick={() => handleStatusClick(TransactionStatus.CANCELLED)}
-            className="flex flex-col items-center p-3 sm:p-4 bg-neutral-50 rounded-lg border border-neutral-200 hover:bg-neutral-100 transition-colors cursor-pointer"
+            className="flex flex-col items-center p-3 sm:p-4 bg-[var(--status-cancelled-bg)] rounded-lg border border-[var(--status-cancelled-border)] hover:opacity-80 transition-colors cursor-pointer"
           >
-            <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-neutral-600 mb-1.5 sm:mb-2" />
-            <span className="text-xl sm:text-2xl font-bold text-neutral-700">{statusCounts[TransactionStatus.CANCELLED]}</span>
-            <span className="text-[10px] sm:text-xs text-neutral-600 font-medium mt-1">Cancelled</span>
+            <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--status-cancelled-text)] mb-1.5 sm:mb-2" />
+            <span className="text-xl sm:text-2xl font-bold text-[var(--status-cancelled-text)]">{statusCounts[TransactionStatus.CANCELLED]}</span>
+            <span className="text-[10px] sm:text-xs text-[var(--status-cancelled-text)] font-medium mt-1">Cancelled</span>
           </button>
         </div>
       </div>
 
       {/* Recent Transactions Table */}
-      <div className="bg-white rounded-xl border border-neutral-200">
-        <div className="p-4 sm:p-5 border-b border-neutral-200">
+      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)]">
+        <div className="p-4 sm:p-5 border-b border-[var(--border-default)]">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-semibold text-neutral-900">Recent Transactions</h2>
+            <h2 className="text-sm sm:text-base font-semibold text-[var(--text-primary)]">Recent Transactions</h2>
             <button
               onClick={() => navigate('/transactions')}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
             >
               View All
               <ArrowRight className="h-3.5 w-3.5" />
@@ -341,37 +341,37 @@ const Dashboard: React.FC = () => {
             };
 
             return (
-              <div key={transaction.id} className="bg-white border border-neutral-200 rounded-lg p-3 hover:shadow-sm transition-shadow">
+              <div key={transaction.id} className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg p-3 hover:shadow-sm transition-shadow">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <div className="h-10 w-10 rounded-lg bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                      <Package className="h-5 w-5 text-neutral-600" />
+                    <div className="h-10 w-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
+                      <Package className="h-5 w-5 text-[var(--text-secondary)]" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-neutral-900 truncate">{transaction.title}</p>
-                      <p className="text-xs text-neutral-500 truncate">{transaction.description?.slice(0, 30)}...</p>
+                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">{transaction.title}</p>
+                      <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 30)}...</p>
                     </div>
                   </div>
                   <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${status.bg} ${status.color} whitespace-nowrap ml-2`}>
                     {status.label}
                   </span>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--border-light)]">
                   <div>
-                    <p className="text-xs text-neutral-500 mb-0.5">Amount</p>
-                    <p className={`text-sm font-semibold ${isSender ? 'text-red-600' : 'text-green-600'}`}>
+                    <p className="text-xs text-[var(--text-secondary)] mb-0.5">Amount</p>
+                    <p className={`text-sm font-semibold ${isSender ? 'text-[var(--amount-negative)]' : 'text-[var(--amount-positive)]'}`}>
                       {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-neutral-500 mb-0.5">Date</p>
-                    <p className="text-xs text-neutral-700">
+                    <p className="text-xs text-[var(--text-secondary)] mb-0.5">Date</p>
+                    <p className="text-xs text-[var(--text-primary)]">
                       {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                   </div>
                   <button
                     onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] rounded-lg transition-colors"
                   >
                     <Eye className="h-3.5 w-3.5" />
                     View
@@ -385,27 +385,27 @@ const Dashboard: React.FC = () => {
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-neutral-50 border-b border-neutral-200">
+            <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
               <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Transaction</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Code</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Amount</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Date</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Status</th>
-                <th className="px-5 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Code</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Amount</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Date</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Status</th>
+                <th className="px-5 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200">
+            <tbody className="divide-y divide-[var(--border-default)]">
               {transactions.slice(0, 5).map((transaction) => {
                 const isSender = transaction.sender_id === user?.id;
                 const statusConfig: Record<TransactionStatus, { label: string; color: string; bg: string }> = {
-                  [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-green-700', bg: 'bg-green-50' },
-                  [TransactionStatus.PAID]: { label: 'Paid', color: 'text-green-700', bg: 'bg-green-50' },
-                  [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-blue-700', bg: 'bg-blue-50' },
-                  [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-green-700', bg: 'bg-green-50' },
-                  [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-orange-700', bg: 'bg-orange-50' },
-                  [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-red-700', bg: 'bg-red-50' },
-                  [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-neutral-700', bg: 'bg-neutral-100' },
+                  [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-[var(--status-completed-text)]', bg: 'bg-[var(--status-completed-bg)]' },
+                  [TransactionStatus.PAID]: { label: 'Paid', color: 'text-[var(--status-paid-text)]', bg: 'bg-[var(--status-paid-bg)]' },
+                  [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
+                  [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-[var(--status-delivered-text)]', bg: 'bg-[var(--status-delivered-bg)]' },
+                  [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-[var(--status-pending-text)]', bg: 'bg-[var(--status-pending-bg)]' },
+                  [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-[var(--status-disputed-text)]', bg: 'bg-[var(--status-disputed-bg)]' },
+                  [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-[var(--status-cancelled-text)]', bg: 'bg-[var(--status-cancelled-bg)]' },
                 };
 
                 const status = statusConfig[transaction.status as TransactionStatus] || {
@@ -415,36 +415,36 @@ const Dashboard: React.FC = () => {
                 };
 
                 return (
-                  <tr key={transaction.id} className="hover:bg-neutral-50 transition-colors">
+                  <tr key={transaction.id} className="hover:bg-[var(--bg-tertiary)] transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                          <Package className="h-5 w-5 text-neutral-600" />
+                        <div className="h-10 w-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
+                          <Package className="h-5 w-5 text-[var(--text-secondary)]" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-neutral-900 truncate">{transaction.title}</p>
-                          <p className="text-xs text-neutral-500 truncate">{transaction.description?.slice(0, 30)}...</p>
+                          <p className="text-sm font-medium text-[var(--text-primary)] truncate">{transaction.title}</p>
+                          <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 30)}...</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-mono text-neutral-700">{transaction.transaction_id}</span>
+                        <span className="text-sm font-mono text-[var(--text-primary)]">{transaction.transaction_id}</span>
                         <button
                           onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
-                          className="p-1 hover:bg-neutral-100 rounded transition-colors"
+                          className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
                         >
-                          <Copy className="h-3 w-3 text-neutral-400" />
+                          <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
                         </button>
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`text-sm font-medium ${isSender ? 'text-red-600' : 'text-green-600'}`}>
+                      <span className={`text-sm font-medium ${isSender ? 'text-[var(--amount-negative)]' : 'text-[var(--amount-positive)]'}`}>
                         {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-sm text-neutral-700">
+                      <span className="text-sm text-[var(--text-primary)]">
                         {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
                     </td>
@@ -457,7 +457,7 @@ const Dashboard: React.FC = () => {
                     <td className="px-5 py-4 text-right">
                       <button
                         onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         View

@@ -180,20 +180,20 @@ const CreateTransaction: React.FC = () => {
           Back
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-neutral-900">Create New Transaction</h1>
-          <p className="text-neutral-600 mt-1">Set up a secure escrow payment for your transaction</p>
+          <h1 className="text-3xl font-bold text-[var(--text-primary)]">Create New Transaction</h1>
+          <p className="text-[var(--text-secondary)] mt-1">Set up a secure escrow payment for your transaction</p>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 animate-slide-down">
+        <div className="bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] rounded-2xl p-6 animate-slide-down">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Info className="h-6 w-6 text-red-600" />
+            <div className="w-12 h-12 bg-[var(--alert-error-bg)] rounded-xl flex items-center justify-center flex-shrink-0">
+              <Info className="h-6 w-6 text-[var(--alert-error-text)]" />
             </div>
             <div>
-              <h3 className="font-semibold text-red-900 mb-1">Error</h3>
-              <p className="text-red-700">{error}</p>
+              <h3 className="font-semibold text-[var(--alert-error-text)] mb-1">Error</h3>
+              <p className="text-[var(--alert-error-text)]">{error}</p>
             </div>
           </div>
         </div>
@@ -215,8 +215,8 @@ const CreateTransaction: React.FC = () => {
                 type="button"
                 onClick={() => setRole('receiver')}
                 className={`py-4 px-4 rounded-xl font-semibold transition-all duration-150 ${role === 'receiver'
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] shadow-md'
+                  : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-light)]'
                   }`}
               >
                 I am the Payment Receiver
@@ -245,16 +245,16 @@ const CreateTransaction: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+            <div className="bg-[var(--color-primary-light)] border border-[var(--color-primary)]/30 rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
+                <div className="w-10 h-10 bg-[var(--color-primary)] rounded-xl flex items-center justify-center">
+                  <span className="text-[var(--color-primary-text)] font-bold text-sm">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-primary-900">You are the {role === 'sender' ? 'Sender' : 'Receiver'}</p>
-                  <p className="text-sm text-primary-700">{user?.name} ({user?.email})</p>
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">You are the {role === 'sender' ? 'Sender' : 'Receiver'}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">{user?.name} ({user?.email})</p>
                 </div>
               </div>
             </div>
@@ -309,8 +309,8 @@ const CreateTransaction: React.FC = () => {
 
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Description <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                Description <span className="text-[var(--alert-error-text)]">*</span>
               </label>
               <textarea
                 name="description"
@@ -325,16 +325,16 @@ const CreateTransaction: React.FC = () => {
 
             {/* Contract Type Selection */}
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Contract Type <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                Contract Type <span className="text-[var(--alert-error-text)]">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, contract_type: ContractType.TIME_BASED }))}
                   className={`py-3 px-4 rounded-lg font-medium transition-all duration-150 text-sm ${formData.contract_type === ContractType.TIME_BASED
-                    ? 'bg-[#04805B] text-white shadow-md border border-[#04805B]'
-                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border border-transparent'
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] shadow-md border border-[var(--color-primary)]'
+                    : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-light)] border border-transparent'
                     }`}
                 >
                   Time-Based Completion
@@ -343,8 +343,8 @@ const CreateTransaction: React.FC = () => {
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, contract_type: ContractType.MILESTONE_BASED }))}
                   className={`py-3 px-4 rounded-lg font-medium transition-all duration-150 text-sm ${formData.contract_type === ContractType.MILESTONE_BASED
-                    ? 'bg-[#04805B] text-white shadow-md border border-[#04805B]'
-                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border border-transparent'
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] shadow-md border border-[var(--color-primary)]'
+                    : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-light)] border border-transparent'
                     }`}
                 >
                   Milestone-Based Completion
@@ -354,8 +354,8 @@ const CreateTransaction: React.FC = () => {
 
             {/* Time-Based Configuration */}
             {formData.contract_type === ContractType.TIME_BASED && (
-              <div className="space-y-4 p-4 bg-neutral-50 rounded-xl border border-neutral-200 animate-fade-in">
-                <h4 className="font-semibold text-neutral-900">Time-Based Settings</h4>
+              <div className="space-y-4 p-4 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)] animate-fade-in">
+                <h4 className="font-semibold text-[var(--text-primary)]">Time-Based Settings</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     label="Completion Date"
@@ -400,11 +400,11 @@ const CreateTransaction: React.FC = () => {
             {formData.contract_type === ContractType.MILESTONE_BASED && (
               <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-neutral-900">Milestones</h4>
+                  <h4 className="font-semibold text-[var(--text-primary)]">Milestones</h4>
                   <button
                     type="button"
                     onClick={addMilestone}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-[#04805B] hover:bg-[#059268] active:bg-[#03724E] rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-lg transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                     Add Milestone
@@ -412,15 +412,15 @@ const CreateTransaction: React.FC = () => {
                 </div>
 
                 {milestones.map((milestone, index) => (
-                  <div key={milestone.id} className="p-4 bg-neutral-50 rounded-xl border border-neutral-200 space-y-3 relative">
+                  <div key={milestone.id} className="p-4 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)] space-y-3 relative">
                     <button
                       type="button"
                       onClick={() => removeMilestone(milestone.id)}
-                      className="absolute top-4 right-4 text-neutral-400 hover:text-red-500 transition-colors"
+                      className="absolute top-4 right-4 text-[var(--text-tertiary)] hover:text-[var(--alert-error-text)] transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
-                    <h5 className="text-sm font-medium text-neutral-700">Milestone {index + 1}</h5>
+                    <h5 className="text-sm font-medium text-[var(--text-primary)]">Milestone {index + 1}</h5>
                     <Input
                       label="Description"
                       value={milestone.description}
@@ -452,7 +452,7 @@ const CreateTransaction: React.FC = () => {
                   </div>
                 ))}
                 <div className="text-sm text-right font-medium">
-                  Total Percentage: <span className={milestones.reduce((sum, m) => sum + m.amount_percentage, 0) === 100 ? 'text-green-600' : 'text-red-600'}>
+                  Total Percentage: <span className={milestones.reduce((sum, m) => sum + m.amount_percentage, 0) === 100 ? 'text-[var(--amount-positive)]' : 'text-[var(--amount-negative)]'}>
                     {milestones.reduce((sum, m) => sum + m.amount_percentage, 0)}%
                   </span>
                 </div>
@@ -500,8 +500,8 @@ const CreateTransaction: React.FC = () => {
           <CardContent className="space-y-6">
             {/* Refund Policy */}
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Refund Protection Policy <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                Refund Protection Policy <span className="text-[var(--alert-error-text)]">*</span>
               </label>
               <select
                 value={formData.refund_policy.type}
@@ -519,8 +519,8 @@ const CreateTransaction: React.FC = () => {
               </select>
 
               {formData.refund_policy.type === RefundPolicyType.CONDITIONAL_REFUND && (
-                <div className="p-4 bg-orange-50 rounded-xl border border-orange-100 space-y-3">
-                  <p className="text-sm font-medium text-orange-900">Select applicable conditions:</p>
+                <div className="p-4 bg-[var(--status-pending-bg)] rounded-xl border border-[var(--status-pending-border)] space-y-3">
+                  <p className="text-sm font-medium text-[var(--status-pending-text)]">Select applicable conditions:</p>
                   <div className="space-y-2">
                     {[
                       "Service not started",
@@ -532,7 +532,7 @@ const CreateTransaction: React.FC = () => {
                         <div className="relative flex items-center">
                           <input
                             type="checkbox"
-                            className="peer h-4 w-4 rounded border-orange-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                            className="peer h-4 w-4 rounded border-[var(--status-pending-border)] text-[var(--status-pending-text)] focus:ring-[var(--status-pending-text)] cursor-pointer"
                             checked={formData.refund_policy.conditions?.includes(condition) || false}
                             onChange={(e) => {
                               const currentConditions = formData.refund_policy.conditions || [];
@@ -550,14 +550,14 @@ const CreateTransaction: React.FC = () => {
                             }}
                           />
                         </div>
-                        <span className="text-sm text-orange-800 group-hover:text-orange-900 transition-colors">
+                        <span className="text-sm text-[var(--status-pending-text)] group-hover:opacity-80 transition-colors">
                           {condition}
                         </span>
                       </label>
                     ))}
                   </div>
                   {(!formData.refund_policy.conditions || formData.refund_policy.conditions.length === 0) && (
-                    <p className="text-xs text-red-500 mt-2">Please select at least one condition.</p>
+                    <p className="text-xs text-[var(--alert-error-text)] mt-2">Please select at least one condition.</p>
                   )}
                 </div>
               )}
@@ -591,16 +591,16 @@ const CreateTransaction: React.FC = () => {
             </div>
 
             {/* Fee Configuration */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[var(--border-default)]">
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Refund Processing Fee
                 </label>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl font-bold text-neutral-900">5%</span>
-                  <span className="text-sm text-neutral-500">of payment amount</span>
+                  <span className="text-2xl font-bold text-[var(--text-primary)]">5%</span>
+                  <span className="text-sm text-[var(--text-secondary)]">of payment amount</span>
                 </div>
-                <label className="block text-xs font-medium text-neutral-600 mb-1">Who pays?</label>
+                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Who pays?</label>
                 <select
                   value={formData.fee_config.refund_fee_payer}
                   onChange={(e) => setFormData(prev => ({
@@ -616,14 +616,14 @@ const CreateTransaction: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   Cancellation Fee
                 </label>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl font-bold text-neutral-900">10%</span>
-                  <span className="text-sm text-neutral-500">of payment amount</span>
+                  <span className="text-2xl font-bold text-[var(--text-primary)]">10%</span>
+                  <span className="text-sm text-[var(--text-secondary)]">of payment amount</span>
                 </div>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Fee retained if payment sender cancels after work begins.
                 </p>
               </div>
@@ -647,63 +647,63 @@ const CreateTransaction: React.FC = () => {
           <CardContent>
             <div className="space-y-6">
               {/* Agreement Header */}
-              <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-                <h4 className="font-semibold text-neutral-900 mb-3">Agreement Details</h4>
+              <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-default)]">
+                <h4 className="font-semibold text-[var(--text-primary)] mb-3">Agreement Details</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Service</span>
-                    <span className="font-medium text-neutral-900">{formData.title || 'Not specified'}</span>
+                    <span className="text-[var(--text-secondary)]">Service</span>
+                    <span className="font-medium text-[var(--text-primary)]">{formData.title || 'Not specified'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Contract Type</span>
-                    <span className="font-medium text-neutral-900">
+                    <span className="text-[var(--text-secondary)]">Contract Type</span>
+                    <span className="font-medium text-[var(--text-primary)]">
                       {formData.contract_type === ContractType.TIME_BASED ? 'Time-Based Completion' : 'Milestone-Based Completion'}
                     </span>
                   </div>
                   {formData.contract_type === ContractType.TIME_BASED && (
                     <div className="flex justify-between">
-                      <span className="text-neutral-600">Completion Due</span>
-                      <span className="font-medium text-neutral-900">
+                      <span className="text-[var(--text-secondary)]">Completion Due</span>
+                      <span className="font-medium text-[var(--text-primary)]">
                         {formData.time_based_config?.completion_date} at {formData.time_based_config?.completion_time}
                       </span>
                     </div>
                   )}
                   {formData.contract_type === ContractType.MILESTONE_BASED && (
                     <div className="flex justify-between">
-                      <span className="text-neutral-600">Milestones</span>
-                      <span className="font-medium text-neutral-900">{milestones.length} defined</span>
+                      <span className="text-[var(--text-secondary)]">Milestones</span>
+                      <span className="font-medium text-[var(--text-primary)]">{milestones.length} defined</span>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Protection & Fees Summary */}
-              <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-                <h4 className="font-semibold text-neutral-900 mb-3">Protection & Fees</h4>
+              <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-default)]">
+                <h4 className="font-semibold text-[var(--text-primary)] mb-3">Protection & Fees</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Refund Policy</span>
-                    <span className="font-medium text-neutral-900 capitalize">
+                    <span className="text-[var(--text-secondary)]">Refund Policy</span>
+                    <span className="font-medium text-[var(--text-primary)] capitalize">
                       {formData.refund_policy.type.replace(/_/g, ' ')}
                     </span>
                   </div>
                   {formData.refund_policy.type === RefundPolicyType.CONDITIONAL_REFUND && (
                     <div className="flex justify-between">
-                      <span className="text-neutral-600">Conditions</span>
-                      <span className="font-medium text-neutral-900">
+                      <span className="text-[var(--text-secondary)]">Conditions</span>
+                      <span className="font-medium text-[var(--text-primary)]">
                         {formData.refund_policy.conditions?.length || 0} selected
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Refund Fee (5%)</span>
-                    <span className="font-medium text-neutral-900 capitalize">
+                    <span className="text-[var(--text-secondary)]">Refund Fee (5%)</span>
+                    <span className="font-medium text-[var(--text-primary)] capitalize">
                       Paid by {formData.fee_config.refund_fee_payer}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Cancellation Fee</span>
-                    <span className="font-medium text-neutral-900">10% (if cancelled by sender)</span>
+                    <span className="text-[var(--text-secondary)]">Cancellation Fee</span>
+                    <span className="font-medium text-[var(--text-primary)]">10% (if cancelled by sender)</span>
                   </div>
                 </div>
               </div>
@@ -711,8 +711,8 @@ const CreateTransaction: React.FC = () => {
               {/* Financial Summary */}
               <div className="space-y-3 pt-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-neutral-600">Sender</span>
-                  <span className="font-medium text-neutral-900">
+                  <span className="text-[var(--text-secondary)]">Sender</span>
+                  <span className="font-medium text-[var(--text-primary)]">
                     {role === 'sender'
                       ? `${user?.name} (You)`
                       : (manualSenderId
@@ -721,8 +721,8 @@ const CreateTransaction: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-neutral-600">Receiver</span>
-                  <span className="font-medium text-neutral-900">
+                  <span className="text-[var(--text-secondary)]">Receiver</span>
+                  <span className="font-medium text-[var(--text-primary)]">
                     {role === 'receiver'
                       ? `${user?.name} (You)`
                       : (manualReceiverId
@@ -731,14 +731,14 @@ const CreateTransaction: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="pt-4 border-t-2 border-neutral-300">
+                <div className="pt-4 border-t-2 border-[var(--border-medium)]">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-neutral-900">Total Amount</span>
-                    <span className="text-2xl font-bold text-neutral-900">
+                    <span className="text-lg font-semibold text-[var(--text-primary)]">Total Amount</span>
+                    <span className="text-2xl font-bold text-[var(--text-primary)]">
                       ₵{maskAmount(formData.amount)}
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-500 mt-1 text-right">
+                  <p className="text-xs text-[var(--text-secondary)] mt-1 text-right">
                     Funds will be held in secure escrow until completion.
                   </p>
                 </div>
@@ -747,14 +747,14 @@ const CreateTransaction: React.FC = () => {
           </CardContent>
         </Card>
 
-        <div className="bg-primary-50 border border-primary-200 rounded-xl p-6">
+        <div className="bg-[var(--color-primary-light)] border border-[var(--color-primary)]/30 rounded-xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Shield className="h-5 w-5 text-primary-600" />
+            <div className="w-10 h-10 bg-[var(--color-primary)]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Shield className="h-5 w-5 text-[var(--color-primary)]" />
             </div>
             <div>
-              <h3 className="font-semibold text-primary-900 mb-1">Secure Escrow Protection</h3>
-              <p className="text-sm text-primary-700">
+              <h3 className="font-semibold text-[var(--text-primary)] mb-1">Secure Escrow Protection</h3>
+              <p className="text-sm text-[var(--text-secondary)]">
                 Your payment will be held securely until delivery is confirmed. Both parties are protected throughout the transaction.
               </p>
             </div>

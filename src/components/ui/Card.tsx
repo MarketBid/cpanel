@@ -23,7 +23,7 @@ interface CardHeaderProps {
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className = '' }) => {
   return (
-    <div className={`px-6 py-5 border-b border-[#E5E7EB] ${className}`}>
+    <div className={`px-6 py-5 border-b border-[var(--border-default)] ${className}`}>
       {children}
     </div>
   );
@@ -36,7 +36,7 @@ interface CardTitleProps {
 
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }) => {
   return (
-    <h3 className={`text-lg font-semibold text-[#1A1A1A] ${className}`}>
+    <h3 className={`text-lg font-semibold text-[var(--text-primary)] ${className}`}>
       {children}
     </h3>
   );
@@ -49,7 +49,7 @@ interface CardDescriptionProps {
 
 export const CardDescription: React.FC<CardDescriptionProps> = ({ children, className = '' }) => {
   return (
-    <p className={`text-sm text-[#6B7280] ${className}`}>
+    <p className={`text-sm text-[var(--text-secondary)] ${className}`}>
       {children}
     </p>
   );
@@ -75,7 +75,7 @@ interface CardFooterProps {
 
 export const CardFooter: React.FC<CardFooterProps> = ({ children, className = '' }) => {
   return (
-    <div className={`px-6 py-4 border-t border-[#E5E7EB] ${className}`}>
+    <div className={`px-6 py-4 border-t border-[var(--border-default)] ${className}`}>
       {children}
     </div>
   );

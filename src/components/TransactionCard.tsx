@@ -33,34 +33,34 @@ export const TransactionCard = ({ transaction, isSender }: TransactionCardProps)
     <div className="card card-hover p-4">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <div className="h-11 w-11 rounded-lg bg-[#F3F4F6] flex items-center justify-center flex-shrink-0">
-            <Package className="h-5 w-5 text-[#4B5563]" />
+          <div className="h-11 w-11 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
+            <Package className="h-5 w-5 text-[var(--text-secondary)]" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-[#1A1A1A] truncate">{transaction.title}</p>
-            <p className="text-xs text-[#6B7280] truncate">{transaction.description?.slice(0, 30)}...</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{transaction.title}</p>
+            <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 30)}...</p>
           </div>
         </div>
         <span className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] font-semibold ${status.bg} ${status.color} whitespace-nowrap ml-2`}>
           {status.label}
         </span>
       </div>
-      <div className="flex items-center justify-between pt-3 border-t border-[#E5E7EB]">
+      <div className="flex items-center justify-between pt-3 border-t border-[var(--border-default)]">
         <div>
-          <p className="text-xs text-[#6B7280] mb-0.5">Amount</p>
+          <p className="text-xs text-[var(--text-secondary)] mb-0.5">Amount</p>
           <p className={`text-sm font-semibold ${isSender ? 'text-[#B91C1C]' : 'text-[#0F9B73]'}`}>
             {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-[#6B7280] mb-0.5">Date</p>
-          <p className="text-xs text-[#1A1A1A]">
+          <p className="text-xs text-[var(--text-secondary)] mb-0.5">Date</p>
+          <p className="text-xs text-[var(--text-primary)]">
             {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
           </p>
         </div>
         <button
           onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-[#04805B] hover:bg-[#059268] active:bg-[#03724E] rounded-lg transition-colors"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-lg transition-colors"
         >
           <Eye className="h-3.5 w-3.5" />
           View

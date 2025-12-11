@@ -29,15 +29,15 @@ const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-[#04805B] text-white hover:bg-[#059268] active:bg-[#03724E] shadow-[0_8px_24px_rgba(4,128,91,0.35)] focus-visible:ring-[rgba(4,128,91,0.45)] focus-visible:ring-offset-[#E6F3EE]',
+      'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] focus-visible:ring-[var(--color-primary)]/45 focus-visible:ring-offset-[var(--bg-primary)]',
     secondary:
-      'bg-[#1A1A1A] text-white hover:bg-[#2D2D2D] active:bg-[#111111] focus-visible:ring-[#111111]',
+      'bg-[var(--color-secondary)] text-[var(--text-inverse)] hover:bg-[var(--color-secondary-light)] active:bg-[var(--color-secondary-dark)] focus-visible:ring-[var(--color-secondary)]',
     outline:
-      'border-2 border-[#D1D5DB] text-[#1A1A1A] bg-white hover:bg-[#F8F9FA] active:bg-[#E5E7EB] focus-visible:ring-[#04805B]',
+      'border-2 border-[var(--border-medium)] text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] focus-visible:ring-[var(--color-primary)]',
     ghost:
-      'text-[#4B5563] hover:bg-[#F3F4F6] active:bg-[#E5E7EB] focus-visible:ring-[#04805B]',
+      'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] focus-visible:ring-[var(--color-primary)]',
     danger:
-      'bg-[#EF4444] text-white hover:bg-[#DC2626] active:bg-[#B91C1C] shadow-sm hover:shadow-md focus-visible:ring-[#F87171]',
+      'bg-[var(--status-disputed-text)] text-[var(--text-inverse)] hover:bg-[var(--status-disputed-border)] active:bg-[var(--status-disputed-text)]/80 shadow-sm hover:shadow-md focus-visible:ring-[var(--status-disputed-text)]',
   };
 
   const sizeStyles = {

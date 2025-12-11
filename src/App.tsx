@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './hooks/useAuth.tsx';
 import { SensitiveInfoProvider } from './hooks/useSensitiveInfo';
+import { ThemeProvider } from './hooks/useTheme';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Homepage from './pages/Homepage';
@@ -39,11 +40,12 @@ function ScrollToTop() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SensitiveInfoProvider>
-          <Router>
-            <ScrollToTop />
-            <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <SensitiveInfoProvider>
+            <Router>
+              <ScrollToTop />
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
@@ -206,6 +208,7 @@ function App() {
           </Router>
         </SensitiveInfoProvider>
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
