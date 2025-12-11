@@ -1,0 +1,22 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Geometric symbol using negative space - hexagon with internal elements -->
+  <g transform="translate(100, 100)">
+    <!-- Outer hexagon -->
+    <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
+          fill="black"
+          stroke="black"
+          stroke-width="4"/>
+
+    <!-- Internal geometric element - creates "C" shape with negative space -->
+    <circle cx="0" cy="0" r="32" fill="black" stroke="white" stroke-width="4"/>
+    <rect x="0" y="-38" width="38" height="76" fill="black"/>
+
+    <!-- Six asterisks representing "six" -->
+    <text x="15" y="-15" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white">*</text>
+    <text x="26" y="0" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white">*</text>
+    <text x="15" y="15" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white">*</text>
+    <text x="-15" y="15" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white">*</text>
+    <text x="-26" y="0" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white">*</text>
+    <text x="-15" y="-15" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white">*</text>
+  </g>
+</svg>

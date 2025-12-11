@@ -1,0 +1,316 @@
+import React, { ReactNode, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  LayoutGrid,
+  Package,
+  CreditCard,
+  Menu,
+  LogOut,
+  Users,
+  Settings,
+  X,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  Briefcase,
+  MessageSquare
+} from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
+import JoinTransaction from '../pages/JoinTransaction';
+import ScrollToTopButton from './ScrollToTopButton';
+
+interface LayoutProps {
+  children: ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const { isVisible, toggleVisibility } = useSensitiveInfo();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Lock body scroll when sidebar is open on mobile (Safari-compatible)
+  React.useEffect(() => {
+    if (sidebarOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [sidebarOpen]);
+
+  // Close sidebar on route change (Safari compatibility)
+  React.useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Keyboard shortcut for toggling sensitive info (⌘U / Ctrl+U)
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'u') {
+        event.preventDefault();
+        toggleVisibility();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [toggleVisibility]);
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
+    // { name: 'Marketplace', href: '/marketplace', icon: Briefcase },
+    // { name: 'Chats', href: '/chats', icon: MessageSquare },
+    { name: 'Transactions', href: '/transactions', icon: Package },
+    { name: 'Join Transaction', href: '/transactions/join', icon: Users },
+    // { name: 'Build Site', href: '/build-site', icon: LayoutGrid },
+    { name: 'Payments', href: '/accounts', icon: CreditCard },
+    { name: 'Users', href: '/users', icon: Users },
+  ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const SidebarContent = () => (
+    <>
+      <div className="flex h-14 sm:h-16 shrink-0 items-center justify-between px-4 sm:px-6 border-b border-[#E5E7EB] bg-white/80 backdrop-blur-sm">
+        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
+          <svg width="56" height="56" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 sm:w-14 sm:h-14">
+            <g transform="translate(100, 100)">
+              <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
+                    fill="black"
+                    stroke="black"
+                    strokeWidth="4"/>
+              <circle cx="0" cy="0" r="32" fill="black" stroke="white" strokeWidth="4"/>
+              <rect x="0" y="-38" width="38" height="76" fill="black"/>
+              <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+              <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+              <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+              <text x="-15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+              <text x="-26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+              <text x="-15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
+            </g>
+          </svg>
+          <h1 className="text-sm sm:text-base font-bold text-[#1A1A1A]">Clarsix</h1>
+        </Link>
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="lg:hidden p-2 hover:bg-[#F3F4F6] active:bg-[#E5E7EB] rounded-lg transition-colors touch-manipulation"
+          aria-label="Close sidebar"
+        >
+          <X className="h-5 w-5 text-[#6B7280]" />
+        </button>
+      </div>
+
+      <nav className="flex flex-1 flex-col p-3 sm:p-4">
+        <ul role="list" className="flex flex-1 flex-col gap-y-6 sm:gap-y-7">
+          <li>
+            <ul role="list" className="space-y-0.5 sm:space-y-1">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                let isActive = false;
+                if (item.href === '/transactions') {
+                  isActive = location.pathname === '/transactions' || (location.pathname.startsWith('/transactions/') && location.pathname !== '/transactions/join');
+                } else if (item.href === '/transactions/join') {
+                  isActive = location.pathname === '/transactions/join';
+                } else if (item.href === '/accounts' && location.pathname.startsWith('/payment/initiate-payment')) {
+                  isActive = true;
+                } else {
+                  isActive = location.pathname.startsWith(item.href);
+                }
+
+                return (
+                  <li key={item.name}>
+                    <Link
+                      to={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 ${
+                        isActive
+                          ? 'bg-[#04805B] text-white'
+                          : 'text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] active:bg-[#E5E7EB]'
+                      }`}
+                    >
+                      <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${isActive ? 'text-white' : 'text-[#9CA3AF]'}`} />
+                      {item.name}
+                      {isActive && <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-auto" />}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </li>
+
+          <li className="mt-auto">
+            <Link
+              to="/profile"
+              onClick={() => setSidebarOpen(false)}
+              className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${
+                location.pathname === '/profile'
+                  ? 'bg-[#04805B] text-white'
+                  : 'text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] active:bg-[#E5E7EB]'
+              }`}
+            >
+              <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/profile' ? 'text-white' : 'text-[#9CA3AF]'}`} />
+              Settings
+            </Link>
+
+            <div className="rounded-lg border border-[#E5E7EB] p-2.5 sm:p-3 bg-white/90 backdrop-blur-sm">
+              <div className="flex items-center gap-x-2 sm:gap-x-3 mb-2 sm:mb-3">
+                <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[#1A1A1A] flex items-center justify-center">
+                  <span className="text-white font-semibold text-xs sm:text-sm">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="truncate font-medium text-[#1A1A1A] text-[11px] sm:text-xs">{user?.name}</p>
+                  <p className="truncate text-[10px] sm:text-[11px] text-[#6B7280]">{user?.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-white bg-[#04805B] hover:bg-[#059268] active:bg-[#03724E] rounded-lg transition-all touch-manipulation active:scale-95"
+              >
+                <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                Log Out
+              </button>
+            </div>
+          </li>
+        </ul>
+      </nav>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-mesh">
+      {/* Mobile sidebar */}
+      <div
+        className={`fixed inset-0 z-50 lg:hidden ${
+          sidebarOpen ? '' : 'pointer-events-none'
+        }`}
+        style={{
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)'
+        }}
+      >
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 bg-neutral-900/60 transition-opacity duration-300 ease-in-out ${
+            sidebarOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            WebkitBackdropFilter: 'blur(4px)',
+            backdropFilter: 'blur(4px)',
+            WebkitTransform: 'translate3d(0, 0, 0)',
+            transform: 'translate3d(0, 0, 0)'
+          }}
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Sidebar panel */}
+        <div
+          className={`fixed inset-y-0 left-0 w-64 max-w-[80vw] bg-white/95 backdrop-blur-md border-r border-[#E5E7EB] shadow-2xl transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          style={{
+            WebkitTransform: sidebarOpen ? 'translate3d(0, 0, 0)' : 'translate3d(-100%, 0, 0)',
+            transform: sidebarOpen ? 'translate3d(0, 0, 0)' : 'translate3d(-100%, 0, 0)',
+            willChange: sidebarOpen ? 'transform' : 'auto',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            perspective: 1000,
+            WebkitPerspective: 1000
+          }}
+        >
+          <div
+            className="flex flex-col h-full overflow-y-auto"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain'
+            }}
+          >
+            <SidebarContent />
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop sidebar */}
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 xl:lg:w-64 lg:flex-col">
+        <div className="flex grow flex-col overflow-y-auto bg-white/95 backdrop-blur-md border-r border-[#E5E7EB] shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+          <SidebarContent />
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="lg:pl-56 xl:lg:pl-64">
+        {/* Top bar */}
+        <div className="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[#E5E7EB] bg-white/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm">
+          <button
+            type="button"
+            className="p-2 text-[#1A1A1A] lg:hidden hover:bg-[#F3F4F6] active:bg-[#E5E7EB] rounded-lg transition-colors touch-manipulation"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open sidebar"
+          >
+            <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+          </button>
+
+          <div className="flex-1"></div>
+
+          <div className="flex items-center gap-x-2 sm:gap-x-3">
+            <div className="hidden sm:flex items-center gap-x-2 text-[10px] sm:text-xs text-[#6B7280]">
+              <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            </div>
+            <div className="relative group">
+              <button
+                onClick={toggleVisibility}
+                className="p-2 text-[#4B5563] hover:bg-[#F3F4F6] active:bg-[#E5E7EB] rounded-full transition-colors touch-manipulation"
+                aria-label={isVisible ? 'Hide sensitive information' : 'Show sensitive information'}
+              >
+                {isVisible ? (
+                  <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                ) : (
+                  <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                )}
+              </button>
+              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-[#111827] text-white text-xs font-medium rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 shadow-lg">
+                {isVisible ? 'Hide sensitive info (⌘U)' : 'Show sensitive info (⌘U)'}
+                <div className="absolute -top-1 right-4 w-2 h-2 bg-[#111827] transform rotate-45"></div>
+              </div>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[#1A1A1A] flex items-center justify-center cursor-pointer hover:bg-[#2D2D2D] transition-colors">
+              <span className="text-white font-semibold text-xs sm:text-sm">
+                {user?.name?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <main className="py-4 sm:py-6 lg:py-8">
+          <div className="px-3 sm:px-4 lg:px-8 max-w-[1400px] mx-auto">
+            {location.pathname === '/transactions/join' ? <JoinTransaction /> : children}
+          </div>
+        </main>
+        <ScrollToTopButton />
+      </div>
+    </div>
+  );
+};
+
+export default Layout;
