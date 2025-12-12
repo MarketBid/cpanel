@@ -159,19 +159,6 @@ const AppShowcase: React.FC<AppShowcaseProps> = ({ variant = 'homepage' }) => {
                       }
                     }}
                   />
-                  {/* Privacy blur for transaction IDs */}
-                  <style>{`
-                    .transaction-id-blur {
-                      position: absolute;
-                      background: rgba(255, 255, 255, 0.9);
-                      backdrop-filter: blur(8px);
-                      -webkit-backdrop-filter: blur(8px);
-                      pointer-events: none;
-                    }
-                    .dark .transaction-id-blur {
-                      background: rgba(0, 0, 0, 0.7);
-                    }
-                  `}</style>
                 </div>
               </motion.div>
             </motion.div>
@@ -209,23 +196,11 @@ const AppShowcase: React.FC<AppShowcaseProps> = ({ variant = 'homepage' }) => {
                     src="/screenshots/transactions.png" 
                     alt="Transactions list" 
                     className="w-full h-full object-cover rounded"
-                    style={{ filter: 'blur(0px)' }}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                     }}
                   />
-                  {/* Blur overlay for transaction IDs - positioned over CODE column */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="transaction-id-blur" style={{ 
-                      position: 'absolute',
-                      left: '35%',
-                      right: '35%',
-                      top: '25%',
-                      height: '60%',
-                      borderRadius: '4px'
-                    }} />
-                  </div>
                 </div>
               </motion.div>
               <motion.div
@@ -275,17 +250,6 @@ const AppShowcase: React.FC<AppShowcaseProps> = ({ variant = 'homepage' }) => {
                       target.style.display = 'none';
                     }}
                   />
-                  {/* Blur overlay for transaction ID */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="transaction-id-blur" style={{ 
-                      position: 'absolute',
-                      left: '20%',
-                      right: '20%',
-                      top: '15%',
-                      height: '12%',
-                      borderRadius: '4px'
-                    }} />
-                  </div>
                 </div>
               </motion.div>
               <motion.div
@@ -360,18 +324,6 @@ const AppShowcase: React.FC<AppShowcaseProps> = ({ variant = 'homepage' }) => {
                           target.style.display = 'none';
                         }}
                       />
-                      {/* Privacy blur for transaction IDs */}
-                      <div className="absolute inset-0 pointer-events-none">
-                        <div className="transaction-id-blur" style={{ 
-                          position: 'absolute',
-                          left: '25%',
-                          right: '25%',
-                          top: '20%',
-                          height: '15%',
-                          borderRadius: '6px',
-                          zIndex: 10
-                        }} />
-                      </div>
                       {/* Overlay on hover - improved contrast for light mode */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6" style={{ zIndex: 20 }}>
                         <div className="text-white">
@@ -464,17 +416,6 @@ const AppShowcase: React.FC<AppShowcaseProps> = ({ variant = 'homepage' }) => {
                           target.style.display = 'none';
                         }}
                       />
-                      {/* Privacy blur for transaction IDs */}
-                      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
-                        <div className="transaction-id-blur" style={{ 
-                          position: 'absolute',
-                          left: '20%',
-                          right: '20%',
-                          top: '22%',
-                          height: '12%',
-                          borderRadius: '6px'
-                        }} />
-                      </div>
                       {/* Gradient overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: 10 }} />
                     </div>
