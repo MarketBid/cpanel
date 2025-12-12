@@ -380,9 +380,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                 )}
               </button>
-              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-[var(--text-inverse)] text-[var(--bg-primary)] text-xs font-medium rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50 shadow-lg">
+              {/* Tooltip */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 text-xs font-medium text-white bg-slate-900 dark:bg-slate-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50">
                 {isVisible ? 'Hide sensitive info (⌘U)' : 'Show sensitive info (⌘U)'}
-                <div className="absolute -top-1 right-4 w-2 h-2 bg-[var(--text-inverse)] transform rotate-45"></div>
+                {/* Tooltip arrow */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 border-4 border-transparent border-b-slate-900 dark:border-b-slate-700" />
               </div>
             </div>
             <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-secondary-light)] transition-colors">

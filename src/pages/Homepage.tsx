@@ -237,8 +237,8 @@ const Homepage: React.FC = () => {
                     size="lg"
                     variant="primary"
                     onClick={() => navigate(isAuthenticated ? '/transactions/create' : '/register')}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_20px_50px_rgba(16,185,129,0.35)] border-0"
-                    rightIcon={<ArrowRight className="h-5 w-5" />}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_20px_50px_rgba(16,185,129,0.35)] border-0 !text-white"
+                    rightIcon={<ArrowRight className="h-5 w-5 !text-white" />}
                   >
                     {isAuthenticated ? 'Open a transaction' : 'Start free trial'}
                   </Button>
@@ -832,7 +832,7 @@ const Homepage: React.FC = () => {
               <Button
                 size="lg"
                 variant="secondary"
-                className="bg-white text-[var(--color-primary-dark)] hover:bg-white/90"
+                className="bg-white !text-slate-900 hover:bg-white/90 dark:!text-slate-900"
                 onClick={() => navigate(isAuthenticated ? '/transactions/create' : '/register')}
               >
                 {isAuthenticated ? 'Open a transaction' : 'Create your account'}

@@ -179,7 +179,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
-                      className={`p-4 hover:bg-[var(--bg-tertiary)] transition-colors ${
+                      className={`p-4 ${
                         !notification.read ? 'bg-[var(--color-primary-light)]/20' : ''
                       }`}
                     >

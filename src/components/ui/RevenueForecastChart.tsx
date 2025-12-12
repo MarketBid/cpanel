@@ -35,11 +35,12 @@ interface RevenueForecastChartProps {
   maskAmount?: (amount: number) => string;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, maskAmount }: any) => {
   if (!active || !payload || payload.length === 0) return null;
 
   const sentThis = payload.find((p: any) => p.dataKey === 'sentThisPeriod');
   const receivedThis = payload.find((p: any) => p.dataKey === 'receivedThisPeriod');
+  const formatAmount = maskAmount || ((amount: number) => amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
   return (
     <motion.div
@@ -56,7 +57,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Amount Received</span>
           </div>
           <div className="text-base font-bold text-gray-900 dark:text-white">
-            ₵{receivedThis.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ₵{formatAmount(receivedThis.value)}
           </div>
         </div>
       )}
@@ -68,7 +69,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Amount Sent</span>
           </div>
           <div className="text-base font-bold text-gray-900 dark:text-white">
-            ₵{sentThis.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ₵{formatAmount(sentThis.value)}
           </div>
         </div>
       )}
@@ -100,6 +101,13 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
   }, [data]);
 
   const formatYAxis = (value: number) => {
+    // Check if sensitive info is hidden by testing maskAmount
+    const masked = maskAmount(value);
+    if (masked === '••••••') {
+      // Return abbreviated masked value for Y-axis
+      return '•••';
+    }
+    // Otherwise format normally with abbreviations
     if (value >= 1000) {
       return `₵${(value / 1000).toFixed(0)}K`;
     }
@@ -188,7 +196,7 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
               axisLine={false}
               tickFormatter={formatYAxis}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip maskAmount={maskAmount} />} />
             
             {/* Vertical reference line on hover */}
             {hoveredIndex !== null && chartData[hoveredIndex] && (
