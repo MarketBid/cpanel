@@ -28,7 +28,7 @@ import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { useTransactions } from '../hooks/queries/useTransactions.ts';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Toast from '../components/ui/Toast';
-import AreaChart, { ChartDataPoint } from '../components/ui/AreaChart';
+import RevenueForecastChart, { RevenueDataPoint } from '../components/ui/RevenueForecastChart';
 import Tabs, { Tab } from '../components/ui/Tabs';
 import ProgressBar from '../components/ui/ProgressBar';
 import { SkeletonCard } from '../components/ui/Skeleton';
@@ -38,7 +38,7 @@ import ExportModal from '../components/ExportModal';
 const Dashboard: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [showStatusCards, setShowStatusCards] = useState(true);
-  const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>('week');
+  const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
   const [showExportModal, setShowExportModal] = useState(false);
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
@@ -46,51 +46,79 @@ const Dashboard: React.FC = () => {
   
   const { data: transactions = [], isLoading: loading } = useTransactions();
 
-  // Calculate revenue trend data for chart
-  const revenueChartData = useMemo((): ChartDataPoint[] => {
+  // Calculate revenue trend data for chart with sent and received
+  const revenueChartData = useMemo((): RevenueDataPoint[] => {
     if (transactions.length === 0) return [];
 
     const now = new Date();
-    const data: ChartDataPoint[] = [];
-    const periods = timeframe === 'week' ? 7 : timeframe === 'month' ? 30 : 12;
-    const periodType = timeframe === 'year' ? 'month' : 'day';
+    const data: RevenueDataPoint[] = [];
+    
+    let periods: number;
+    let periodType: 'day' | 'month' | 'year';
+    let periodLabel: (date: Date) => string;
+    
+    if (timeframe === 'weekly') {
+      periods = 7;
+      periodType = 'day';
+      periodLabel = (date) => date.toLocaleDateString('en-US', { weekday: 'short' });
+    } else if (timeframe === 'monthly') {
+      periods = 12;
+      periodType = 'month';
+      periodLabel = (date) => date.toLocaleDateString('en-US', { month: 'short' });
+    } else {
+      periods = 5;
+      periodType = 'year';
+      periodLabel = (date) => date.getFullYear().toString();
+    }
 
     for (let i = periods - 1; i >= 0; i--) {
       const date = new Date(now);
-      if (periodType === 'month') {
+      
+      // Calculate this period
+      let thisPeriodStart: Date;
+      let thisPeriodEnd: Date;
+      
+      if (periodType === 'day') {
+        // Calculate day going backwards from today (last 7 days)
+        const daysBack = i;
+        thisPeriodStart = new Date(now);
+        thisPeriodStart.setDate(now.getDate() - daysBack);
+        thisPeriodStart.setHours(0, 0, 0, 0);
+        thisPeriodEnd = new Date(thisPeriodStart);
+        thisPeriodEnd.setDate(thisPeriodStart.getDate() + 1);
+      } else if (periodType === 'month') {
         date.setMonth(date.getMonth() - i);
+        thisPeriodStart = new Date(date.getFullYear(), date.getMonth(), 1);
+        thisPeriodStart.setHours(0, 0, 0, 0);
+        thisPeriodEnd = new Date(date.getFullYear(), date.getMonth() + 1, 1);
       } else {
-        date.setDate(date.getDate() - i);
+        date.setFullYear(date.getFullYear() - i);
+        thisPeriodStart = new Date(date.getFullYear(), 0, 1);
+        thisPeriodStart.setHours(0, 0, 0, 0);
+        thisPeriodEnd = new Date(date.getFullYear() + 1, 0, 1);
       }
 
-      const periodStart = new Date(date);
-      periodStart.setHours(0, 0, 0, 0);
-      if (periodType === 'month') {
-        periodStart.setDate(1);
-      }
-
-      const periodEnd = new Date(periodStart);
-      if (periodType === 'month') {
-        periodEnd.setMonth(periodEnd.getMonth() + 1);
-      } else {
-        periodEnd.setDate(periodEnd.getDate() + 1);
-      }
-
-      const periodTransactions = transactions.filter(t => {
+      const thisPeriodTransactions = transactions.filter(t => {
         const tDate = new Date(t.created_at);
-        return tDate >= periodStart && tDate < periodEnd &&
+        return tDate >= thisPeriodStart && tDate < thisPeriodEnd &&
           [TransactionStatus.PAID, TransactionStatus.IN_TRANSIT, TransactionStatus.DELIVERED, TransactionStatus.COMPLETED].includes(t.status);
       });
 
-      const periodRevenue = periodTransactions.reduce((sum, t) => {
+      const sentThisPeriod = thisPeriodTransactions.reduce((sum, t) => {
+        return sum + (t.sender_id === user?.id ? t.amount : 0);
+      }, 0);
+
+      const receivedThisPeriod = thisPeriodTransactions.reduce((sum, t) => {
         return sum + (t.receiver_id === user?.id ? t.amount : 0);
       }, 0);
 
       data.push({
-        label: periodType === 'month'
-          ? periodStart.toLocaleDateString('en-US', { month: 'short' })
-          : periodStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        value: periodRevenue,
+        label: periodLabel(thisPeriodStart),
+        date: thisPeriodStart,
+        sentThisPeriod,
+        sentLastPeriod: 0,
+        receivedThisPeriod,
+        receivedLastPeriod: 0,
       });
     }
 
@@ -229,6 +257,33 @@ const Dashboard: React.FC = () => {
   const totalTransactions = transactions.length;
   const recentActivity = getRecentActivity();
 
+  // Calculate totals for the chart
+  const chartTotals = useMemo(() => {
+    if (revenueChartData.length === 0) {
+      return {
+        totalSent: 0,
+        totalReceived: 0,
+        sentChange: 0,
+        receivedChange: 0,
+        sentChangePercent: 0,
+        receivedChangePercent: 0,
+      };
+    }
+
+    // Sum all periods
+    const totalSent = revenueChartData.reduce((sum, period) => sum + period.sentThisPeriod, 0);
+    const totalReceived = revenueChartData.reduce((sum, period) => sum + period.receivedThisPeriod, 0);
+
+    return {
+      totalSent,
+      totalReceived,
+      sentChange: 0,
+      receivedChange: 0,
+      sentChangePercent: 0,
+      receivedChangePercent: 0,
+    };
+  }, [revenueChartData]);
+
   if (transactions.length === 0) {
     return (
       <EmptyState
@@ -245,7 +300,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -349,7 +404,7 @@ const Dashboard: React.FC = () => {
             <div className="text-3xl font-bold mb-1">
               {statusCounts[TransactionStatus.PENDING] + statusCounts[TransactionStatus.PAID] + statusCounts[TransactionStatus.IN_TRANSIT]}
             </div>
-            <div className="text-xs text-white/70">Pending & in-transit</div>
+            <div className="text-xs text-white/70">Pending, Paid & in-transit</div>
           </div>
         </div>
       </motion.div>
@@ -359,52 +414,18 @@ const Dashboard: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-6 shadow-sm"
       >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Revenue Trend</h2>
-            <p className="text-sm text-[var(--text-secondary)] mt-0.5">Track your earnings over time</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setTimeframe('week')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                timeframe === 'week'
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
-              }`}
-            >
-              Week
-            </button>
-            <button
-              onClick={() => setTimeframe('month')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                timeframe === 'month'
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
-              }`}
-            >
-              Month
-            </button>
-            <button
-              onClick={() => setTimeframe('year')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                timeframe === 'year'
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
-              }`}
-            >
-              Year
-            </button>
-          </div>
-        </div>
-        <AreaChart
+        <RevenueForecastChart
           data={revenueChartData}
-          height={280}
-          showGrid={true}
-          showAxes={true}
-          animate={true}
+          period={timeframe}
+          onPeriodChange={setTimeframe}
+          totalSent={chartTotals.totalSent}
+          totalReceived={chartTotals.totalReceived}
+          sentChange={chartTotals.sentChange}
+          receivedChange={chartTotals.receivedChange}
+          sentChangePercent={chartTotals.sentChangePercent}
+          receivedChangePercent={chartTotals.receivedChangePercent}
+          maskAmount={maskAmount}
         />
       </motion.div>
 

@@ -25,6 +25,7 @@ import AppShowcase from '../components/AppShowcase';
 import AnimatedGradient from '../components/ui/AnimatedGradient';
 import FloatingCard from '../components/ui/FloatingCard';
 import AnimatedNumber from '../components/ui/AnimatedNumber';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const valueProps = [
   {
@@ -855,6 +856,7 @@ const Homepage: React.FC = () => {
           </motion.div>
         </div>
       </section>
+      <ScrollToTopButton />
     </PublicLayout>
   );
 };

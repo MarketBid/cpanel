@@ -323,9 +323,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-56 xl:lg:pl-64">
+      <div className="lg:pl-56 xl:lg:pl-64 pt-14 sm:pt-16">
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm">
+        <div className="fixed top-0 left-0 right-0 lg:left-56 xl:lg:left-64 z-50 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm">
           <button
             type="button"
             className="p-2 text-[var(--text-primary)] lg:hidden hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"

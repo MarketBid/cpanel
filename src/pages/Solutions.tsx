@@ -20,6 +20,7 @@ import Button from '../components/ui/Button';
 import AppShowcase from '../components/AppShowcase';
 import AnimatedGradient from '../components/ui/AnimatedGradient';
 import FloatingCard from '../components/ui/FloatingCard';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const solutionBlocks = [
   {
@@ -431,6 +432,7 @@ const Solutions: React.FC = () => {
           </motion.div>
         </div>
       </section>
+      <ScrollToTopButton />
     </PublicLayout>
   );
 };
