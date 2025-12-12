@@ -110,7 +110,7 @@ const InitiatePayment: React.FC = () => {
         </button>
 
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-secondary-dark)] rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 text-white">
+        <div className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-secondary-dark)] dark:from-[var(--color-primary)] dark:to-[var(--color-primary-dark)] rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-4 sm:mb-6">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">

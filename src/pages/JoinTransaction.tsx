@@ -55,7 +55,7 @@ const JoinTransaction: React.FC = () => {
     <div className="min-h-screen bg-[var(--bg-secondary)] py-12 px-4">
       <div className="max-w-3xl mx-auto">
         {/* Hero Section */}
-        <div className="bg-[var(--color-secondary)] rounded-2xl shadow-xl p-8 mb-8 text-[var(--text-inverse)]">
+        <div className="bg-[var(--color-secondary)] dark:bg-[var(--color-primary)] rounded-2xl shadow-xl p-8 mb-8 text-[var(--text-inverse)]">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-[var(--text-inverse)]/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
               <svg className="h-8 w-8 text-[var(--text-inverse)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

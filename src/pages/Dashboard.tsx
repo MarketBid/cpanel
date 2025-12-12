@@ -326,7 +326,7 @@ const Dashboard: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
           >
             <Plus className="h-4 w-4" />
-            New Transaction
+            Create Transaction
           </button>
         </div>
       </motion.div>
