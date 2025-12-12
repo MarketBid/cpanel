@@ -91,7 +91,7 @@ const Solutions: React.FC = () => {
   return (
     <PublicLayout>
       {/* Hero Section with Animated Background - Enhanced for light mode */}
-      <section className="relative overflow-hidden min-h-[60vh] flex items-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <section className="relative overflow-hidden min-h-[60vh] flex items-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 -mt-28 pt-28">
         <AnimatedGradient className="absolute inset-0 -z-10" />
         
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">

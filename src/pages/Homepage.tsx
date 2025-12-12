@@ -109,7 +109,7 @@ const Homepage: React.FC = () => {
   return (
     <PublicLayout backgroundClassName="bg-[var(--bg-secondary)]">
       {/* Enhanced Hero with Interactive Elements */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 -mt-28 pt-28">
         <AnimatedGradient className="absolute inset-0 -z-10" />
         
         {/* Floating elements that follow mouse - Original sizes, more particles */}
