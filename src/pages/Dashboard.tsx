@@ -125,6 +125,33 @@ const Dashboard: React.FC = () => {
     return data;
   }, [transactions, timeframe, user?.id]);
 
+  // Calculate totals for the chart - MUST be before any early returns
+  const chartTotals = useMemo(() => {
+    if (revenueChartData.length === 0) {
+      return {
+        totalSent: 0,
+        totalReceived: 0,
+        sentChange: 0,
+        receivedChange: 0,
+        sentChangePercent: 0,
+        receivedChangePercent: 0,
+      };
+    }
+
+    // Sum all periods
+    const totalSent = revenueChartData.reduce((sum, period) => sum + period.sentThisPeriod, 0);
+    const totalReceived = revenueChartData.reduce((sum, period) => sum + period.receivedThisPeriod, 0);
+
+    return {
+      totalSent,
+      totalReceived,
+      sentChange: 0,
+      receivedChange: 0,
+      sentChangePercent: 0,
+      receivedChangePercent: 0,
+    };
+  }, [revenueChartData]);
+
   const calculateAnalytics = () => {
     const now = new Date();
     const currentWeekStart = new Date(now);
@@ -256,33 +283,6 @@ const Dashboard: React.FC = () => {
   const { received, sent } = getRevenueData();
   const totalTransactions = transactions.length;
   const recentActivity = getRecentActivity();
-
-  // Calculate totals for the chart
-  const chartTotals = useMemo(() => {
-    if (revenueChartData.length === 0) {
-      return {
-        totalSent: 0,
-        totalReceived: 0,
-        sentChange: 0,
-        receivedChange: 0,
-        sentChangePercent: 0,
-        receivedChangePercent: 0,
-      };
-    }
-
-    // Sum all periods
-    const totalSent = revenueChartData.reduce((sum, period) => sum + period.sentThisPeriod, 0);
-    const totalReceived = revenueChartData.reduce((sum, period) => sum + period.receivedThisPeriod, 0);
-
-    return {
-      totalSent,
-      totalReceived,
-      sentChange: 0,
-      receivedChange: 0,
-      sentChangePercent: 0,
-      receivedChangePercent: 0,
-    };
-  }, [revenueChartData]);
 
   if (transactions.length === 0) {
     return (

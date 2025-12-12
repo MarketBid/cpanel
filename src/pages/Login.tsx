@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, Zap, CreditCard } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.tsx';
@@ -22,8 +22,15 @@ const Login: React.FC = () => {
     ? `${(location.state as any).from.pathname}${(location.state as any).from.search}`
     : '/dashboard';
 
+  // Handle navigation when authenticated - must be in useEffect, not during render
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Early return after all hooks are called
   if (isAuthenticated) {
-    navigate('/dashboard', { replace: true });
     return null;
   }
 
