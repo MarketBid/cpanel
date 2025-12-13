@@ -40,6 +40,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const isKeyboardNavigationRef = useRef(false);
+  const keyboardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mouseHoveredIndexRef = useRef<number | null>(null);
   const navigate = useNavigate();
 
   const commands: CommandItem[] = [
@@ -142,23 +147,82 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
+      isKeyboardNavigationRef.current = false;
+      mouseHoveredIndexRef.current = null;
+      if (keyboardTimeoutRef.current) {
+        clearTimeout(keyboardTimeoutRef.current);
+        keyboardTimeoutRef.current = null;
+      }
     }
   }, [isOpen]);
 
   useEffect(() => {
     setSelectedIndex(0);
+    // Clear refs when search changes
+    itemRefs.current.clear();
+    isKeyboardNavigationRef.current = false;
+    mouseHoveredIndexRef.current = null;
+    if (keyboardTimeoutRef.current) {
+      clearTimeout(keyboardTimeoutRef.current);
+      keyboardTimeoutRef.current = null;
+    }
   }, [search]);
+
+  // Scroll selected item into view when navigating with arrow keys
+  useEffect(() => {
+    // Only auto-scroll if we're using keyboard navigation
+    if (!isKeyboardNavigationRef.current) return;
+    if (selectedIndex < 0 || selectedIndex >= filteredCommands.length) return;
+    
+    // Clear any pending scroll operations
+    const rafId = requestAnimationFrame(() => {
+      // Double-check flag is still true after RAF
+      if (!isKeyboardNavigationRef.current) return;
+      
+      const selectedElement = itemRefs.current.get(selectedIndex);
+      if (!selectedElement || !scrollContainerRef.current) return;
+      
+      // Use scrollIntoView with nearest block and auto behavior for immediate scroll
+      selectedElement.scrollIntoView({
+        block: 'nearest',
+        behavior: 'auto',
+        inline: 'nearest'
+      });
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, [selectedIndex, filteredCommands.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
 
-      if (e.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
-        setSelectedIndex(prev => Math.min(prev + 1, filteredCommands.length - 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex(prev => Math.max(prev - 1, 0));
+        
+        // Clear any existing timeout
+        if (keyboardTimeoutRef.current) {
+          clearTimeout(keyboardTimeoutRef.current);
+        }
+        
+        // Set keyboard navigation flag and clear mouse hover
+        isKeyboardNavigationRef.current = true;
+        mouseHoveredIndexRef.current = null; // Clear mouse hover when keyboard is used
+        
+        // Update selected index using functional update
+        setSelectedIndex(prev => {
+          const newIndex = e.key === 'ArrowDown' 
+            ? Math.min(prev + 1, filteredCommands.length - 1)
+            : Math.max(prev - 1, 0);
+          return newIndex;
+        });
+        
+        // Reset flag after user stops pressing arrow keys for a moment
+        // Longer timeout to prevent mouse hover from interfering immediately
+        keyboardTimeoutRef.current = setTimeout(() => {
+          isKeyboardNavigationRef.current = false;
+          keyboardTimeoutRef.current = null;
+        }, 600);
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (filteredCommands[selectedIndex]) {
@@ -168,7 +232,12 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      if (keyboardTimeoutRef.current) {
+        clearTimeout(keyboardTimeoutRef.current);
+      }
+    };
   }, [isOpen, selectedIndex, filteredCommands]);
 
   if (!isOpen) return null;
@@ -216,7 +285,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           </div>
 
           {/* Results */}
-          <div className="max-h-96 overflow-y-auto">
+          <div ref={scrollContainerRef} className="max-h-96 overflow-y-auto">
             {filteredCommands.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
                 <div className="p-3 rounded-full bg-[var(--bg-tertiary)] mb-3">
@@ -240,17 +309,48 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                       return (
                         <button
                           key={cmd.id}
+                          ref={(el) => {
+                            if (el) {
+                              itemRefs.current.set(globalIndex, el);
+                            } else {
+                              itemRefs.current.delete(globalIndex);
+                            }
+                          }}
                           onClick={cmd.action}
-                          onMouseEnter={() => setSelectedIndex(globalIndex)}
-                          className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
-                            isSelected
+                          onMouseEnter={() => {
+                            // Ignore mouse hover if keyboard navigation is currently active
+                            if (isKeyboardNavigationRef.current) {
+                              return;
+                            }
+                            // Clear any previous mouse hover and set new one
+                            mouseHoveredIndexRef.current = globalIndex;
+                            setSelectedIndex(globalIndex);
+                          }}
+                          onMouseLeave={() => {
+                            // Clear mouse hover index when mouse leaves
+                            if (mouseHoveredIndexRef.current === globalIndex) {
+                              mouseHoveredIndexRef.current = null;
+                            }
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 ease-in-out ${
+                            // Show primary highlight only for selected item when using keyboard
+                            isSelected && isKeyboardNavigationRef.current
                               ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                              : 'hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]'
+                              // Show primary highlight for selected item when using mouse
+                              : isSelected && !isKeyboardNavigationRef.current
+                              ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                              // Show hover background only when mouse is hovering and keyboard is not active
+                              : mouseHoveredIndexRef.current === globalIndex && !isKeyboardNavigationRef.current
+                              ? 'bg-[var(--bg-tertiary)] text-[var(--text-primary)]'
+                              // Default state - no background
+                              : 'bg-transparent text-[var(--text-primary)]'
                           }`}
                         >
-                          <div className={`p-2 rounded-lg ${
+                          <div className={`p-2 rounded-lg transition-all duration-200 ease-in-out ${
+                            // Show primary icon background for selected item
                             isSelected
                               ? 'bg-[var(--color-primary)] text-white'
+                              // Default icon background
                               : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
                           }`}>
                             {cmd.icon}
