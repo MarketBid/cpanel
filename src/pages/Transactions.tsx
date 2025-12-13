@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -476,7 +476,7 @@ const Transactions: React.FC = () => {
             <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
               <tr>
                 <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Code</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Join Link</th>
                 <th className="px-5 py-3 text-left">
                   <button
                     onClick={() => handleColumnSort('amount')}
@@ -567,10 +567,20 @@ const Transactions: React.FC = () => {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs sm:text-sm font-mono text-[var(--text-primary)]">{transaction.transaction_id}</span>
+                          <Link
+                            to={`/transactions/join/${transaction.transaction_id}`}
+                            className="text-xs sm:text-sm font-mono text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors"
+                          >
+                            {transaction.transaction_id}
+                          </Link>
                           <button
-                            onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const joinUrl = `${window.location.origin}/transactions/join/${transaction.transaction_id}`;
+                              copyToClipboard(joinUrl, e);
+                            }}
                             className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
+                            title="Copy join link"
                           >
                             <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
                           </button>
