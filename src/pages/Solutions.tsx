@@ -119,7 +119,7 @@ const Solutions: React.FC = () => {
             </h1>
             
             <p className="text-lg text-slate-600 dark:text-white/80 leading-relaxed">
-              Move money with confidence: programmable rules, identity checks, and evidence capture built in—without marketplace or freelance clutter.
+              Move money with confidence: programmable rules, identity checks, and evidence capture built in.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 pt-4">

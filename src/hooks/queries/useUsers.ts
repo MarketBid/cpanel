@@ -8,7 +8,7 @@ export const userListKeys = {
   lists: () => [...userListKeys.all, 'list'] as const,
 };
 
-// Fetch all users (for marketplace/search)
+// Fetch all users
 export const useUsers = () => {
   return useQuery({
     queryKey: userListKeys.lists(),

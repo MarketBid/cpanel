@@ -438,7 +438,7 @@ const Homepage: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-lg text-slate-600 dark:text-white/75 mt-4 max-w-2xl"
               >
-                Remove trust gaps with programmable logic, real-time tracking, and compliance by default—no marketplace or freelance clutter.
+                Remove trust gaps with programmable logic, real-time tracking, and compliance by default.
               </motion.p>
             </div>
             <motion.div

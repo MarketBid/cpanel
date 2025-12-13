@@ -13,7 +13,6 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Marketplace from './pages/Marketplace';
 import Transactions from './pages/Transactions';
 import CreateTransaction from './pages/CreateTransaction';
 import EditTransaction from './pages/EditTransaction';
@@ -24,8 +23,6 @@ import Accounts from './pages/Accounts';
 import Profile from './pages/Profile';
 import Users from './pages/Users';
 import PaymentCallback from './pages/PaymentCallback';
-import BuildSite from './pages/BuildSite';
-import LinkSite from './pages/LinkSite';
 import JoinTransaction from './pages/JoinTransaction';
 
 function ScrollToTop() {
@@ -63,17 +60,6 @@ function App() {
               <Route
                 path="/contact"
                 element={<Contact />}
-              />
-
-              <Route
-                path="/marketplace"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Marketplace />
-                    </Layout>
-                  </ProtectedRoute>
-                }
               />
 
               <Route
@@ -212,19 +198,6 @@ function App() {
                 path="/payment-callback"
                 element={<PaymentCallback />}
               />
-
-              <Route
-                path="/build-site"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <BuildSite />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route path="/linksite/:uniqueName" element={<LinkSite />} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

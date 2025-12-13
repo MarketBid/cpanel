@@ -12,7 +12,6 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
-  Briefcase,
   MessageSquare,
   Search,
   Command,
@@ -136,11 +135,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
-    // { name: 'Marketplace', href: '/marketplace', icon: Briefcase },
-    // { name: 'Chats', href: '/chats', icon: MessageSquare },
     { name: 'Transactions', href: '/transactions', icon: Package },
     { name: 'Join Transaction', href: '/transactions/join', icon: Users },
-    // { name: 'Build Site', href: '/build-site', icon: LayoutGrid },
     { name: 'Payments', href: '/accounts', icon: CreditCard },
     { name: 'Users', href: '/users', icon: Users },
   ];
