@@ -5,6 +5,7 @@ import { useAccounts, useAddAccount, useUpdateAccount, useDeleteAccount } from '
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 
 interface AddAccountForm {
   name: string;
@@ -31,6 +32,25 @@ const Accounts: React.FC = () => {
   const addAccountMutation = useAddAccount();
   const updateAccountMutation = useUpdateAccount();
   const deleteAccountMutation = useDeleteAccount();
+  const { isVisible } = useSensitiveInfo();
+
+  // Function to mask account/mobile numbers
+  const maskAccountNumber = (number: string): string => {
+    if (!number) return '•••• •••• •••• ••••';
+    
+    if (isVisible) {
+      // Show the number with formatting, including plus sign if present
+      return number.replace(/(\d{4})(?=\d)/g, '$1 ');
+    } else {
+      // Hide the number and the plus sign
+      // Remove plus sign and format with dots
+      const digitsOnly = number.replace(/[^\d]/g, '');
+      const maskedLength = Math.min(digitsOnly.length, 16);
+      const dots = '•'.repeat(maskedLength);
+      // Format with spaces every 4 characters
+      return dots.replace(/(.{4})(?=.)/g, '$1 ');
+    }
+  };
 
   const handleAddAccount = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,7 +178,7 @@ const Accounts: React.FC = () => {
             return (
               <div key={account.id} className="relative group">
                 {/* Card Container with 3D effect */}
-                <div className="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 aspect-[1.7/1] sm:aspect-[1.586/1]">
+                <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 aspect-[1.7/1] sm:aspect-[1.586/1]">
                   {/* Background Gradient based on type */}
                   {isBank ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black"></div>
@@ -231,7 +251,7 @@ const Accounts: React.FC = () => {
                         {isBank ? 'Account Number' : 'Mobile Number'}
                       </div>
                       <div className="text-xl font-mono tracking-widest">
-                        {account.number.replace(/(\d{4})(?=\d)/g, '$1 ')}
+                        {maskAccountNumber(account.number)}
                       </div>
                     </div>
 
@@ -804,7 +824,7 @@ const Accounts: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{deletingAccount.name}</p>
                     <p className="text-xs text-[var(--text-secondary)] font-mono">
-                      {deletingAccount.number.replace(/(\d{4})(?=\d)/g, '$1 ')}
+                      {maskAccountNumber(deletingAccount.number)}
                     </p>
                   </div>
                 </div>

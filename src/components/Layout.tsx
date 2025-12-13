@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
-import JoinTransaction from '../pages/JoinTransaction';
 import ScrollToTopButton from './ScrollToTopButton';
 import ThemeToggle from './ThemeToggle';
 import NotificationCenter, { Notification } from './NotificationCenter';
@@ -191,9 +190,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 const Icon = item.icon;
                 let isActive = false;
                 if (item.href === '/transactions') {
-                  isActive = location.pathname === '/transactions' || (location.pathname.startsWith('/transactions/') && location.pathname !== '/transactions/join');
+                  isActive = location.pathname === '/transactions' || (location.pathname.startsWith('/transactions/') && !location.pathname.startsWith('/transactions/join'));
                 } else if (item.href === '/transactions/join') {
-                  isActive = location.pathname === '/transactions/join';
+                  isActive = location.pathname === '/transactions/join' || location.pathname.startsWith('/transactions/join/');
                 } else if (item.href === '/accounts' && location.pathname.startsWith('/payment/initiate-payment')) {
                   isActive = true;
                 } else {
@@ -397,7 +396,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         <main className="py-4 sm:py-6 lg:py-8">
           <div className="px-3 sm:px-4 lg:px-8 max-w-[1400px] mx-auto">
-            {location.pathname === '/transactions/join' ? <JoinTransaction /> : children}
+            {children}
           </div>
         </main>
         <ScrollToTopButton />

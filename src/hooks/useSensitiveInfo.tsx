@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface SensitiveInfoContextType {
   isVisible: boolean;
@@ -9,7 +9,20 @@ interface SensitiveInfoContextType {
 const SensitiveInfoContext = createContext<SensitiveInfoContextType | undefined>(undefined);
 
 export const SensitiveInfoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState<boolean>(() => {
+    // Check localStorage first
+    const savedVisibility = localStorage.getItem('sensitiveInfoVisible');
+    if (savedVisibility !== null) {
+      return savedVisibility === 'true';
+    }
+    // Default to true if not found
+    return true;
+  });
+
+  // Persist to localStorage whenever visibility changes
+  useEffect(() => {
+    localStorage.setItem('sensitiveInfoVisible', String(isVisible));
+  }, [isVisible]);
 
   const toggleVisibility = () => {
     setIsVisible(prev => !prev);

@@ -26,6 +26,7 @@ import Users from './pages/Users';
 import PaymentCallback from './pages/PaymentCallback';
 import BuildSite from './pages/BuildSite';
 import LinkSite from './pages/LinkSite';
+import JoinTransaction from './pages/JoinTransaction';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -114,6 +115,28 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <EditTransaction />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/transactions/join"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <JoinTransaction />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/transactions/join/:transactionId"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <JoinTransaction />
                     </Layout>
                   </ProtectedRoute>
                 }

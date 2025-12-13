@@ -1,29 +1,65 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Copy, FileText } from 'lucide-react';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { apiClient } from '../utils/api';
 import { generateContractPDF } from '../utils/pdfGenerator';
+import Toast from '../components/ui/Toast';
 
 const JoinTransaction: React.FC = () => {
-  const [transactionId, setTransactionId] = useState('');
+  const { transactionId: urlTransactionId } = useParams<{ transactionId?: string }>();
+  const [transactionId, setTransactionId] = useState(urlTransactionId || '');
   const [transaction, setTransaction] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [joining, setJoining] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const errorTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const { maskAmount } = useSensitiveInfo();
   const navigate = useNavigate();
 
-  const handleConfirm = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Sync transactionId state with URL parameter
+  useEffect(() => {
+    if (urlTransactionId) {
+      setTransactionId(urlTransactionId);
+      fetchTransaction(urlTransactionId);
+    } else {
+      setTransactionId('');
+      setTransaction(null);
+    }
+  }, [urlTransactionId]);
+
+  // Auto-dismiss error messages after 8 seconds
+  useEffect(() => {
+    if (error) {
+      // Clear any existing timeout
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+      
+      // Set new timeout to clear error
+      errorTimeoutRef.current = setTimeout(() => {
+        setError(null);
+      }, 8000);
+    }
+    
+    // Cleanup timeout on unmount or when error changes
+    return () => {
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, [error]);
+
+  const fetchTransaction = async (id: string) => {
     setLoading(true);
     setError(null);
     setTransaction(null);
     setMessage(null);
     try {
-      const response = await apiClient.get(`/transactions/${transactionId}`);
+      const response = await apiClient.get(`/transactions/${id}`);
       setTransaction(response.data);
     } catch (err: any) {
       setError('Transaction not found. Please check the link or code and try again.');
@@ -32,22 +68,90 @@ const JoinTransaction: React.FC = () => {
     }
   };
 
+  const handleConfirm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!transactionId) return;
+    // Navigate to the review page with transaction ID in URL
+    navigate(`/transactions/join/${transactionId}`);
+  };
+
+  const getErrorMessage = (error: any): string => {
+    const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || '';
+    const statusCode = error?.response?.status;
+
+    // Check for specific error messages
+    if (errorMessage.toLowerCase().includes('already joined') || errorMessage.toLowerCase().includes('already a participant')) {
+      return 'You have already joined this transaction.';
+    }
+    
+    if (errorMessage.toLowerCase().includes('not found') || statusCode === 404) {
+      return 'Transaction not found. Please check the transaction ID and try again.';
+    }
+    
+    if (errorMessage.toLowerCase().includes('full') || errorMessage.toLowerCase().includes('maximum participants') || errorMessage.toLowerCase().includes('all participants')) {
+      return 'This transaction already has all required participants. You cannot join at this time.';
+    }
+    
+    if (errorMessage.toLowerCase().includes('missing') && errorMessage.toLowerCase().includes('participant')) {
+      return 'This transaction is missing required participants. Please ensure all parties are ready before joining.';
+    }
+    
+    if (errorMessage.toLowerCase().includes('cancelled') || errorMessage.toLowerCase().includes('completed')) {
+      return 'This transaction is no longer available for joining. It may have been cancelled or completed.';
+    }
+    
+    if (errorMessage.toLowerCase().includes('unauthorized') || statusCode === 401) {
+      return 'You are not authorized to join this transaction. Please log in and try again.';
+    }
+    
+    if (errorMessage.toLowerCase().includes('forbidden') || statusCode === 403) {
+      return 'You do not have permission to join this transaction.';
+    }
+    
+    if (statusCode === 400) {
+      return errorMessage || 'Invalid request. Please check the transaction details and try again.';
+    }
+    
+    if (statusCode === 500 || statusCode >= 500) {
+      return 'Server error occurred. Please try again later.';
+    }
+    
+    // Return the error message if available, otherwise a generic one
+    return errorMessage || 'Failed to join transaction. Please try again.';
+  };
+
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) return;
+    const idToUse = urlTransactionId || transactionId;
+    if (!idToUse) return;
+    
     setJoining(true);
     setMessage(null);
     setError(null);
     try {
-      await apiClient.post('/transactions/join', { transaction_id: transactionId });
+      await apiClient.post('/transactions/join', { transaction_id: idToUse });
       setMessage('You have joined the transaction successfully!');
       setTimeout(() => {
-        navigate(`/transactions/${transactionId}`);
+        navigate(`/transactions/${idToUse}`);
       }, 1500);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to join transaction. Please try again.');
+      const meaningfulError = getErrorMessage(err);
+      setError(meaningfulError);
     } finally {
       setJoining(false);
+    }
+  };
+
+  const copyToClipboard = async (text: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(text);
+      setShowToast(true);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+      setError('Failed to copy transaction ID. Please try again.');
     }
   };
 
@@ -69,7 +173,7 @@ const JoinTransaction: React.FC = () => {
           </div>
         </div>
 
-        {!transaction && (
+        {!transaction && !loading && (
           <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-8">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
@@ -103,7 +207,7 @@ const JoinTransaction: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || !transactionId}
-                className="w-full py-3 text-base font-semibold rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100"
+                className="w-full py-3 text-base font-semibold rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -119,7 +223,16 @@ const JoinTransaction: React.FC = () => {
                     <svg className="h-5 w-5 text-[var(--alert-error-text)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p className="text-[var(--alert-error-text)] text-sm">{error}</p>
+                    <p className="text-[var(--alert-error-text)] text-sm flex-1">{error}</p>
+                    <button
+                      onClick={() => setError(null)}
+                      className="flex-shrink-0 p-1 hover:bg-[var(--alert-error-border)] rounded transition-colors"
+                      aria-label="Dismiss error"
+                    >
+                      <svg className="h-4 w-4 text-[var(--alert-error-text)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               )}
@@ -127,14 +240,30 @@ const JoinTransaction: React.FC = () => {
           </div>
         )}
 
-        {transaction && (
+        {loading && (
+          <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-8">
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+              <span className="ml-3 text-[var(--text-primary)]">Loading transaction...</span>
+            </div>
+          </div>
+        )}
+
+        {transaction && !loading && (
           <form onSubmit={handleJoin} className="space-y-6">
             {/* Transaction Preview Card */}
             <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-8">
               <div className="flex items-center gap-3 mb-6">
                 <button
                   type="button"
-                  onClick={() => { setTransaction(null); setError(null); setMessage(null); setAgreed(false); setTransactionId(''); }}
+                  onClick={() => { 
+                    navigate('/transactions/join');
+                    setTransaction(null); 
+                    setError(null); 
+                    setMessage(null); 
+                    setAgreed(false); 
+                    setTransactionId(''); 
+                  }}
                   className="p-2 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors"
                   aria-label="Back"
                 >
@@ -154,7 +283,7 @@ const JoinTransaction: React.FC = () => {
                         <div className="text-[var(--text-primary)] font-mono text-sm break-all bg-[var(--bg-card)] px-3 py-2 rounded-lg border border-[var(--border-default)]">{transaction.transaction_id}</div>
                         <button
                           type="button"
-                          onClick={() => navigator.clipboard.writeText(transaction.transaction_id)}
+                          onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
                           className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors flex-shrink-0"
                           title="Copy Transaction ID"
                         >
@@ -223,7 +352,7 @@ const JoinTransaction: React.FC = () => {
               <button
                 type="submit"
                 disabled={joining || !agreed}
-                className="w-full py-4 text-base font-bold rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100 shadow-lg"
+                className="w-full py-4 text-base font-bold rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
                 {joining ? (
                   <span className="flex items-center justify-center gap-2">
@@ -250,7 +379,16 @@ const JoinTransaction: React.FC = () => {
                     <svg className="h-5 w-5 text-[var(--alert-error-text)] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p className="text-[var(--alert-error-text)] text-sm">{error}</p>
+                    <p className="text-[var(--alert-error-text)] text-sm flex-1">{error}</p>
+                    <button
+                      onClick={() => setError(null)}
+                      className="flex-shrink-0 p-1 hover:bg-[var(--alert-error-border)] rounded transition-colors"
+                      aria-label="Dismiss error"
+                    >
+                      <svg className="h-4 w-4 text-[var(--alert-error-text)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               )}
@@ -258,6 +396,14 @@ const JoinTransaction: React.FC = () => {
           </form>
         )}
       </div>
+      {showToast && (
+        <Toast
+          message="Copied to clipboard!"
+          onClose={() => {
+            setShowToast(false);
+          }}
+        />
+      )}
     </div>
   );
 };

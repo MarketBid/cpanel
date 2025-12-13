@@ -339,7 +339,7 @@ const Dashboard: React.FC = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {/* Revenue Received */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -355,7 +355,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Amount Sent */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -368,7 +368,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Total Transactions */}
-        <div className={`relative overflow-hidden rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow ${
+        <div className={`relative overflow-hidden rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow ${
           analytics.transactionCountChange >= 0
             ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
             : 'bg-gradient-to-br from-orange-500 to-red-600'
@@ -394,7 +394,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Active Transactions */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -436,7 +436,7 @@ const Dashboard: React.FC = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-6 shadow-sm"
+          className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">Status Overview</h2>
@@ -479,7 +479,7 @@ const Dashboard: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-6 shadow-sm"
+          className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">Recent Activity</h2>
