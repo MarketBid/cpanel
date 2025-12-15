@@ -14,18 +14,21 @@ export const transactionKeys = {
 };
 
 // Fetch all transactions
-export const useTransactions = () => {
+export const useTransactions = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: transactionKeys.lists(),
     queryFn: async () => {
       const response = await apiClient.get<Transaction[]>('/transactions');
       return response.data;
     },
+    enabled: options?.enabled,
   });
 };
 
 // Fetch single transaction by ID
 export const useTransaction = (transactionId: string | undefined, enabled: boolean = true) => {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: transactionKeys.detail(transactionId!),
     queryFn: async () => {
@@ -34,6 +37,14 @@ export const useTransaction = (transactionId: string | undefined, enabled: boole
       return response.data;
     },
     enabled: !!transactionId && enabled,
+    initialData: () => {
+      if (!transactionId) return undefined;
+      const transactions = queryClient.getQueryData<Transaction[]>(transactionKeys.lists());
+      return transactions?.find((t) => t.transaction_id === transactionId);
+    },
+    initialDataUpdatedAt: () => {
+      return queryClient.getQueryState(transactionKeys.lists())?.dataUpdatedAt;
+    },
   });
 };
 

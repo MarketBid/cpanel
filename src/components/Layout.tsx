@@ -12,7 +12,6 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
-  MessageSquare,
   Search,
   Command,
 } from 'lucide-react';
@@ -61,7 +60,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isVisible, toggleVisibility } = useSensitiveInfo();
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: transactions = [] } = useTransactions();
+  const { data: transactions = [] } = useTransactions({ enabled: showCommandPalette });
 
   // Lock body scroll when sidebar is open on mobile (Safari-compatible)
   React.useEffect(() => {
@@ -116,7 +115,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Notification handlers
   const handleMarkAsRead = (id: string) => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     );
   };
@@ -153,12 +152,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <svg width="56" height="56" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 sm:w-14 sm:h-14">
             <g transform="translate(100, 100)">
               <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
-                    fill="currentColor"
-                    stroke="currentColor"
-                    className="text-[var(--text-primary)]"
-                    strokeWidth="4"/>
-              <circle cx="0" cy="0" r="32" fill="currentColor" stroke="var(--bg-sidebar)" strokeWidth="4" className="text-[var(--text-primary)]"/>
-              <rect x="0" y="-38" width="38" height="76" fill="currentColor" className="text-[var(--text-primary)]"/>
+                fill="currentColor"
+                stroke="currentColor"
+                className="text-[var(--text-primary)]"
+                strokeWidth="4" />
+              <circle cx="0" cy="0" r="32" fill="currentColor" stroke="var(--bg-sidebar)" strokeWidth="4" className="text-[var(--text-primary)]" />
+              <rect x="0" y="-38" width="38" height="76" fill="currentColor" className="text-[var(--text-primary)]" />
               <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
               <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
               <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
@@ -200,11 +199,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <Link
                       to={item.href}
                       onClick={() => setSidebarOpen(false)}
-                      className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 ${
-                        isActive
-                          ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
-                      }`}
+                      className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 ${isActive
+                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
+                        }`}
                     >
                       <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${isActive ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
                       {item.name}
@@ -220,11 +218,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Link
               to="/profile"
               onClick={() => setSidebarOpen(false)}
-              className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${
-                location.pathname === '/profile'
-                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
-              }`}
+              className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${location.pathname === '/profile'
+                ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
+                }`}
             >
               <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/profile' ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
               Settings
@@ -260,9 +257,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-[var(--bg-secondary)]">
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 z-50 lg:hidden ${
-          sidebarOpen ? '' : 'pointer-events-none'
-        }`}
+        className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'
+          }`}
         style={{
           WebkitTransform: 'translateZ(0)',
           transform: 'translateZ(0)'
@@ -270,9 +266,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-[var(--text-inverse)]/60 transition-opacity duration-300 ease-in-out ${
-            sidebarOpen ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`fixed inset-0 bg-[var(--text-inverse)]/60 transition-opacity duration-300 ease-in-out ${sidebarOpen ? 'opacity-100' : 'opacity-0'
+            }`}
           style={{
             WebkitBackdropFilter: 'blur(4px)',
             backdropFilter: 'blur(4px)',
@@ -285,9 +280,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Sidebar panel */}
         <div
-          className={`fixed inset-y-0 left-0 w-64 max-w-[80vw] bg-[var(--bg-sidebar)]/95 backdrop-blur-md border-r border-[var(--border-default)] shadow-2xl transition-transform duration-300 ease-in-out ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`fixed inset-y-0 left-0 w-64 max-w-[80vw] bg-[var(--bg-sidebar)]/95 backdrop-blur-md border-r border-[var(--border-default)] shadow-2xl transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
           style={{
             WebkitTransform: sidebarOpen ? 'translate3d(0, 0, 0)' : 'translate3d(-100%, 0, 0)',
             transform: sidebarOpen ? 'translate3d(0, 0, 0)' : 'translate3d(-100%, 0, 0)',

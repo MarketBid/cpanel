@@ -3,14 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Copy, FileText } from 'lucide-react';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { apiClient } from '../utils/api';
+import { useTransaction } from '../hooks/queries/useTransactions';
 import { generateContractPDF } from '../utils/pdfGenerator';
 import Toast from '../components/ui/Toast';
 
 const JoinTransaction: React.FC = () => {
   const { transactionId: urlTransactionId } = useParams<{ transactionId?: string }>();
   const [transactionId, setTransactionId] = useState(urlTransactionId || '');
-  const [transaction, setTransaction] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const [joining, setJoining] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -20,14 +19,18 @@ const JoinTransaction: React.FC = () => {
   const { maskAmount } = useSensitiveInfo();
   const navigate = useNavigate();
 
+  const {
+    data: transaction,
+    isLoading: loading,
+    error: queryError
+  } = useTransaction(urlTransactionId, !!urlTransactionId);
+
   // Sync transactionId state with URL parameter
   useEffect(() => {
     if (urlTransactionId) {
       setTransactionId(urlTransactionId);
-      fetchTransaction(urlTransactionId);
     } else {
       setTransactionId('');
-      setTransaction(null);
     }
   }, [urlTransactionId]);
 
@@ -38,13 +41,13 @@ const JoinTransaction: React.FC = () => {
       if (errorTimeoutRef.current) {
         clearTimeout(errorTimeoutRef.current);
       }
-      
+
       // Set new timeout to clear error
       errorTimeoutRef.current = setTimeout(() => {
         setError(null);
       }, 8000);
     }
-    
+
     // Cleanup timeout on unmount or when error changes
     return () => {
       if (errorTimeoutRef.current) {
@@ -52,21 +55,6 @@ const JoinTransaction: React.FC = () => {
       }
     };
   }, [error]);
-
-  const fetchTransaction = async (id: string) => {
-    setLoading(true);
-    setError(null);
-    setTransaction(null);
-    setMessage(null);
-    try {
-      const response = await apiClient.get(`/transactions/${id}`);
-      setTransaction(response.data);
-    } catch (err: any) {
-      setError('Transaction not found. Please check the link or code and try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,49 +71,56 @@ const JoinTransaction: React.FC = () => {
     if (errorMessage.toLowerCase().includes('already joined') || errorMessage.toLowerCase().includes('already a participant')) {
       return 'You have already joined this transaction.';
     }
-    
+
     if (errorMessage.toLowerCase().includes('not found') || statusCode === 404) {
       return 'Transaction not found. Please check the transaction ID and try again.';
     }
-    
+
     if (errorMessage.toLowerCase().includes('full') || errorMessage.toLowerCase().includes('maximum participants') || errorMessage.toLowerCase().includes('all participants')) {
       return 'This transaction already has all required participants. You cannot join at this time.';
     }
-    
+
     if (errorMessage.toLowerCase().includes('missing') && errorMessage.toLowerCase().includes('participant')) {
       return 'This transaction is missing required participants. Please ensure all parties are ready before joining.';
     }
-    
+
     if (errorMessage.toLowerCase().includes('cancelled') || errorMessage.toLowerCase().includes('completed')) {
       return 'This transaction is no longer available for joining. It may have been cancelled or completed.';
     }
-    
+
     if (errorMessage.toLowerCase().includes('unauthorized') || statusCode === 401) {
       return 'You are not authorized to join this transaction. Please log in and try again.';
     }
-    
+
     if (errorMessage.toLowerCase().includes('forbidden') || statusCode === 403) {
       return 'You do not have permission to join this transaction.';
     }
-    
+
     if (statusCode === 400) {
       return errorMessage || 'Invalid request. Please check the transaction details and try again.';
     }
-    
+
     if (statusCode === 500 || statusCode >= 500) {
       return 'Server error occurred. Please try again later.';
     }
-    
+
     // Return the error message if available, otherwise a generic one
     return errorMessage || 'Failed to join transaction. Please try again.';
   };
+
+  // Handle query error
+  useEffect(() => {
+    if (queryError) {
+      setError(getErrorMessage(queryError));
+    }
+  }, [queryError]);
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) return;
     const idToUse = urlTransactionId || transactionId;
     if (!idToUse) return;
-    
+
     setJoining(true);
     setMessage(null);
     setError(null);
@@ -256,13 +251,12 @@ const JoinTransaction: React.FC = () => {
               <div className="flex items-center gap-3 mb-6">
                 <button
                   type="button"
-                  onClick={() => { 
+                  onClick={() => {
                     navigate('/transactions/join');
-                    setTransaction(null); 
-                    setError(null); 
-                    setMessage(null); 
-                    setAgreed(false); 
-                    setTransactionId(''); 
+                    setError(null);
+                    setMessage(null);
+                    setAgreed(false);
+                    setTransactionId('');
                   }}
                   className="p-2 rounded-xl hover:bg-[var(--bg-tertiary)] transition-colors"
                   aria-label="Back"
