@@ -45,8 +45,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
         {/* Mobile: Full-width header */}
         <div className="md:hidden w-full border-b border-[var(--border-default)] bg-[var(--bg-primary)]/95 backdrop-blur-md shadow-sm">
           <div className="px-4 h-14 flex items-center justify-between">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="flex items-center gap-2 text-[var(--text-primary)] font-bold text-base hover:opacity-80 transition-opacity"
               onClick={() => setOpen(false)}
             >
@@ -69,21 +69,20 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
 
         {/* Desktop: Centered header */}
         <div className="hidden md:block">
-          <div className="top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl mx-auto relative">
-            <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-primary)]/80 backdrop-blur-md dark:bg-[var(--bg-primary)]/90 shadow-lg px-6 sm:px-8 h-16 flex items-center justify-between">
+          <div className="top-6 w-[95%] max-w-6xl mx-auto relative">
+            <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-primary)]/80 backdrop-blur-md dark:bg-[var(--bg-primary)]/90 shadow-lg px-6 sm:px-8 h-16 flex items-center justify-between relative">
               <Link to="/" className="flex items-center gap-2 text-[var(--text-primary)] font-bold text-lg hover:opacity-80 transition-opacity">
                 <span className="h-9 w-9 rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] flex items-center justify-center font-extrabold tracking-tight">C</span>
                 <span>Clarsix</span>
               </Link>
 
-              <nav className="flex items-center gap-8 sm:gap-12 text-sm font-semibold text-[var(--text-secondary)]">
+              <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8 sm:gap-12 text-sm font-semibold text-[var(--text-secondary)]">
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
                     to={item.href}
-                    className={`hover:text-[var(--text-primary)] transition-colors ${
-                      location.pathname === item.href ? 'text-[var(--text-primary)] underline underline-offset-8 decoration-[var(--color-primary)]/70' : ''
-                    }`}
+                    className={`hover:text-[var(--text-primary)] transition-colors ${location.pathname === item.href ? 'text-[var(--text-primary)] underline underline-offset-8 decoration-[var(--color-primary)]/70' : ''
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -118,16 +117,15 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
       {open && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="md:hidden fixed inset-0 bg-[var(--text-inverse)]/60 backdrop-blur-sm z-40 transition-opacity"
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
-          
+
           {/* Slide-in Menu */}
-          <div className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[var(--bg-primary)] shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
-            open ? 'translate-x-0' : 'translate-x-full'
-          }`}>
+          <div className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[var(--bg-primary)] shadow-2xl z-50 transform transition-transform duration-300 ease-out ${open ? 'translate-x-0' : 'translate-x-full'
+            }`}>
             <div className="flex flex-col h-full">
               {/* Menu Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-default)]">
@@ -149,11 +147,10 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
                       key={item.href}
                       to={item.href}
                       onClick={() => setOpen(false)}
-                      className={`block px-4 py-3 rounded-lg text-base font-semibold transition-colors touch-manipulation ${
-                        location.pathname === item.href
+                      className={`block px-4 py-3 rounded-lg text-base font-semibold transition-colors touch-manipulation ${location.pathname === item.href
                           ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
                           : 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </Link>
