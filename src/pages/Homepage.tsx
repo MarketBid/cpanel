@@ -14,6 +14,11 @@ import {
   Users,
   Sparkles,
   Globe,
+  Calendar,
+  Target,
+  DollarSign,
+  FileText,
+  Link2,
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
@@ -30,18 +35,18 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 const valueProps = [
   {
     icon: Shield,
-    title: 'Escrow-grade trust',
-    desc: 'Segregated accounts, layered approvals, and transparent audit trails built for financial-grade reliability.',
+    title: 'Secure escrow protection',
+    desc: 'Funds are held in segregated escrow accounts until delivery is confirmed. Both payment senders and receivers are protected with customizable refund policies and cancellation terms.',
   },
   {
     icon: Fingerprint,
-    title: 'Identity + compliance',
-    desc: 'KYC/AML screening, sanctions checks, and proof-of-delivery evidence so every release is defensible.',
+    title: 'Quick setup & flexible transactions',
+    desc: 'Get onboarded and start transacting in minutes. Create transactions as sender or receiver. Add participants during creation or send secure links for them to join. Choose from time-based or milestone-based contract types.',
   },
   {
     icon: FileCheck2,
-    title: 'Programmable releases',
-    desc: 'Milestones, inspections, and rules trigger funds automatically—no more manual chasing or ambiguity.',
+    title: 'Smart contract types',
+    desc: 'Time-based completion with auto-release buffers, or milestone-based with percentage payouts. Automatic fund release when conditions are met, with dispute resolution built-in.',
   },
 ];
 
@@ -54,10 +59,10 @@ const solutionTracks = [
     accent: 'from-[#04805B] to-[#025037]',
   },
   {
-    title: 'Platform payouts & APIs',
+    title: 'Comprehensive protection',
     description:
-      'Embed escrow into your product with clean APIs, event streams, and sandbox credentials for rapid rollout.',
-    points: ['Events & webhooks', 'SDK starter kits', 'Risk scoring'],
+      'Multiple refund policies, transparent fees, and cancellation protection ensure both senders and receivers are fully protected.',
+    points: ['Flexible refund policies', 'Transparent fee structure', 'Cancellation protection'],
     accent: 'from-[#04805B] to-[#0B7A5A]',
   },
   {
@@ -70,9 +75,9 @@ const solutionTracks = [
 ];
 
 const howItWorks = [
-  { title: 'Scope the deal', desc: 'Capture parties, milestones, and acceptance rules in minutes.', icon: Activity },
-  { title: 'Secure the funds', desc: 'Money sits in safeguarded accounts until programmed conditions are met.', icon: Lock },
-  { title: 'Verify & release', desc: 'Evidence, approvals, and timers unlock payouts automatically.', icon: CheckCircle2 },
+  { title: 'Create transaction', desc: 'Anyone can create a transaction. Choose to be the payment sender or receiver, add the other participant during creation, or create and send a link for them to join.', icon: Activity },
+  { title: 'Secure the funds', desc: 'Payment sender deposits funds into our secure escrow account. Money is held safely until delivery is confirmed or contract conditions are met.', icon: Lock },
+  { title: 'Verify & release', desc: 'Choose time-based or milestone-based completion. Funds are automatically released when conditions are met, or manually upon approval.', icon: CheckCircle2 },
 ];
 
 const analyticsCards = [
@@ -111,7 +116,7 @@ const Homepage: React.FC = () => {
       {/* Enhanced Hero with Interactive Elements */}
       <section className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 -mt-28 pt-28">
         <AnimatedGradient className="absolute inset-0 -z-10" />
-        
+
         {/* Floating elements that follow mouse - Original sizes, more particles */}
         <motion.div
           animate={{
@@ -207,9 +212,9 @@ const Homepage: React.FC = () => {
                 transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
                 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] text-balance text-slate-900 dark:text-white"
               >
-                Secure funds, automate releases,{' '}
+                Secure escrow payments between{' '}
                 <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">
-                  prove delivery
+                  senders and receivers
                 </span>
               </motion.h1>
 
@@ -219,7 +224,7 @@ const Homepage: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-lg sm:text-xl text-slate-600 dark:text-white/80 max-w-3xl mx-auto leading-relaxed"
               >
-                Escrow-grade protection with programmable releases, compliance checks, and real-time visibility—built for modern finance teams.
+                Get started in minutes with quick onboarding and setup. Create secure transactions instantly—add participants during creation or send a link for them to join. Funds are held safely in escrow until delivery is confirmed—protecting both payment senders and receivers.
               </motion.p>
 
               <motion.div
@@ -343,7 +348,7 @@ const Homepage: React.FC = () => {
                   >
                     {/* Gradient overlay on hover */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
+
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -351,7 +356,7 @@ const Homepage: React.FC = () => {
                     >
                       <Icon className="h-7 w-7" />
                     </motion.div>
-                    
+
                     <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3 relative">{card.title}</h3>
                     <p className="text-sm text-[var(--text-secondary)] leading-relaxed relative">{card.desc}</p>
 
@@ -540,15 +545,15 @@ const Homepage: React.FC = () => {
             >
               How it works
             </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
-            >
-              From agreement to release with zero guesswork.
-            </motion.h2>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
+              >
+                Simple escrow process: create, secure, and release.
+              </motion.h2>
           </motion.div>
           <motion.div
             initial="hidden"
@@ -604,6 +609,225 @@ const Homepage: React.FC = () => {
         </div>
       </section>
 
+      {/* Contract Types & Protection */}
+      <section className="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 dark:from-[#0A1F16] dark:text-white py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(16,185,129,0.15),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(6,182,212,0.12),transparent_35%)] dark:bg-[radial-gradient(circle_at_20%_30%,rgba(4,128,91,0.22),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(2,80,55,0.2),transparent_35%)]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+            className="max-w-3xl mx-auto text-center mb-12"
+          >
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-sm font-bold uppercase tracking-[0.12em] text-emerald-700 dark:text-white/70"
+            >
+              Contract Types & Protection
+            </motion.p>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mt-3"
+            >
+              Flexible contracts with comprehensive protection
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-slate-600 dark:text-white/75 mt-4"
+            >
+              Choose the contract type that fits your transaction, with customizable refund policies and transparent fee structures.
+            </motion.p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {/* Contract Types */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
+            >
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Contract Types</h3>
+              
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Time-Based Completion</h4>
+                    <p className="text-sm text-slate-600 dark:text-white/75">Set a completion date and time</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Automatic release after completion date</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Configurable auto-completion buffer (default 24 hours)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Funds released if no dispute within buffer period</span>
+                  </li>
+                </ul>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                    <Target className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Milestone-Based Completion</h4>
+                    <p className="text-sm text-slate-600 dark:text-white/75">Break work into multiple milestones</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Define multiple milestones with percentage payouts</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Set due dates and completion conditions for each</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Release funds incrementally as milestones are completed</span>
+                  </li>
+                </ul>
+              </motion.div>
+            </motion.div>
+
+            {/* Protection Policies */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
+            >
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Protection & Policies</h3>
+              
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                    <Shield className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Refund Policies</h4>
+                    <p className="text-sm text-slate-600 dark:text-white/75">Choose the protection level</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span><strong>Full Refund:</strong> 100% refundable if conditions aren't met</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span><strong>Conditional Refund:</strong> Refund based on specific conditions</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span><strong>Partial Fixed:</strong> Set a fixed refund percentage</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span><strong>Custom Terms:</strong> Define your own refund terms</span>
+                  </li>
+                </ul>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Fee Structure</h4>
+                    <p className="text-sm text-slate-600 dark:text-white/75">Transparent and fair pricing</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span><strong>Refund Processing Fee:</strong> 5% of payment amount</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span>Fee payer: Sender, Receiver, or Split (50/50)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                    <span><strong>Cancellation Fee:</strong> 10% if sender cancels after work begins</span>
+                  </li>
+                </ul>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Transaction Creation Process */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-8"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                <Link2 className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Flexible Participant Setup</h3>
+                <p className="text-sm text-slate-600 dark:text-white/75">Add participants your way</p>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="font-semibold text-slate-900 dark:text-white">During Creation</h4>
+                <p className="text-sm text-slate-600 dark:text-white/75">
+                  Add the other participant (sender or receiver) directly when creating the transaction. Simply enter their user ID or select from your contacts.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <h4 className="font-semibold text-slate-900 dark:text-white">Via Secure Link</h4>
+                <p className="text-sm text-slate-600 dark:text-white/75">
+                  Create the transaction first, then send a secure link to the other participant. They can join the transaction by clicking the link and completing their part.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Analytics preview */}
       <section className="bg-[var(--bg-secondary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -655,7 +879,7 @@ const Homepage: React.FC = () => {
                 }}
                 className="flex flex-wrap gap-3"
               >
-                {['Audit-ready', 'Real-time alerts', 'Exports & APIs'].map((badge, index) => (
+                {['Audit-ready', 'Real-time alerts', 'Transaction exports'].map((badge, index) => (
                   <motion.span
                     key={badge}
                     variants={{
@@ -806,7 +1030,7 @@ const Homepage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight text-balance"
           >
-            Launch escrow-grade protection in days, not quarters.
+            Start transacting in minutes, not days.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -815,7 +1039,7 @@ const Homepage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg text-white/85 max-w-3xl mx-auto"
           >
-            Guided onboarding, sandbox credentials, and human support to tailor Clarsix to your project, platform payouts, or high-value asset sales.
+            Quick onboarding and setup help you start creating secure escrow transactions in just a few minutes. Get started with guided assistance and start protecting your payments today.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

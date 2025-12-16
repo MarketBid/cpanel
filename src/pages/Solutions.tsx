@@ -12,6 +12,14 @@ import {
   Zap,
   CheckCircle2,
   TrendingUp,
+  Calendar,
+  Target,
+  DollarSign,
+  FileText,
+  User,
+  UserCheck,
+  Link2,
+  Clock,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
@@ -24,34 +32,34 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const solutionBlocks = [
   {
-    title: 'Transactions & milestones',
-    description: 'Escrow wallets for every deliverable with multi-signer approvals and time-boxed inspections.',
-    icon: Layers,
-    bullets: ['Milestone wallets', 'Acceptance SLAs', 'Neutral mediation'],
+    title: 'Time-Based Contracts',
+    description: 'Set completion dates with automatic fund release. Perfect for fixed-term projects and services with clear deadlines.',
+    icon: Calendar,
+    bullets: ['Completion date & time', 'Auto-release buffer (24h default)', 'Automatic fund release'],
     tone: 'from-emerald-500 to-teal-600',
     stats: { value: '10K+', label: 'Transactions' },
   },
   {
-    title: 'Platform payouts & APIs',
-    description: 'Embed escrow into your product with events, webhooks, and SDKs for faster launches.',
-    icon: Globe2,
-    bullets: ['Events & webhooks', 'SDK starter kits', 'Risk scoring'],
+    title: 'Milestone-Based Contracts',
+    description: 'Break work into multiple milestones with percentage-based payouts. Ideal for long-term projects and phased deliveries.',
+    icon: Target,
+    bullets: ['Multiple milestones', 'Percentage payouts', 'Due dates & conditions'],
     tone: 'from-blue-500 to-indigo-600',
-    stats: { value: '99.9%', label: 'Uptime' },
+    stats: { value: '99.9%', label: 'Success Rate' },
   },
   {
-    title: 'High-value assets',
-    description: 'Protect vehicles, equipment, and property deals with identity verification and proof-of-delivery.',
-    icon: Shield,
-    bullets: ['Chain-of-custody', 'ID verification', 'Release evidence'],
+    title: 'Flexible Participant Setup',
+    description: 'Create transactions as sender or receiver. Add participants during creation or send secure links for them to join.',
+    icon: Link2,
+    bullets: ['Add during creation', 'Send secure links', 'Role-based access'],
     tone: 'from-purple-500 to-pink-600',
-    stats: { value: '$50M+', label: 'Protected' },
+    stats: { value: '50+', label: 'Countries' },
   },
   {
-    title: 'Enterprise & partners',
-    description: 'Custom risk rules, compliance reviews, and dedicated rollout support for scaled programs.',
-    icon: Building2,
-    bullets: ['Custom risk rules', 'SLAs & support', 'White-glove rollout'],
+    title: 'Protection & Refund Policies',
+    description: 'Comprehensive protection with customizable refund policies, cancellation terms, and transparent fee structures.',
+    icon: Shield,
+    bullets: ['Multiple refund options', 'Cancellation protection', 'Transparent fees'],
     tone: 'from-orange-500 to-red-600',
     stats: { value: '24/7', label: 'Support' },
   },
@@ -59,30 +67,30 @@ const solutionBlocks = [
 
 const proofPoints = [
   {
-    title: 'Compliance ready',
-    desc: 'KYC/AML screening, sanctions checks, and audit logs for finance and legal.',
-    icon: Fingerprint,
+    title: 'Secure escrow protection',
+    desc: 'Funds held in segregated accounts until delivery confirmation. Both senders and receivers protected with customizable policies.',
+    icon: Shield,
     color: 'from-emerald-500 to-teal-600',
   },
   {
-    title: 'Programmable control',
-    desc: 'Rules, milestones, and inspections trigger releases automatically—no manual chasing.',
+    title: 'Flexible contract types',
+    desc: 'Time-based with auto-release or milestone-based with percentage payouts. Choose what works best for your transaction.',
     icon: Workflow,
     color: 'from-blue-500 to-indigo-600',
   },
   {
-    title: 'Speed to launch',
-    desc: 'Sandbox credentials, prebuilt flows, and human onboarding help you ship in days.',
-    icon: AlarmCheck,
+    title: 'Easy participant setup',
+    desc: 'Add participants during creation or send secure links. Anyone can create transactions as sender or receiver.',
+    icon: UserCheck,
     color: 'from-purple-500 to-pink-600',
   },
 ];
 
 const comparison = [
-  { label: 'Release automation', clarsix: 'Yes • milestones, timers, approvals', legacy: 'Manual approvals and emails', icon: Zap },
-  { label: 'Identity + AML', clarsix: 'Built-in with audit trail', legacy: 'Requires external tooling', icon: Fingerprint },
-  { label: 'Visibility', clarsix: 'Shared timeline, exports, alerts', legacy: 'Static statements', icon: TrendingUp },
-  { label: 'Integration', clarsix: 'APIs, webhooks, SDKs', legacy: 'Custom builds required', icon: Globe2 },
+  { label: 'Contract types', clarsix: 'Time-based & milestone-based with auto-release', legacy: 'Single contract type only', icon: FileText },
+  { label: 'Participant setup', clarsix: 'Add during creation or send secure links', legacy: 'Manual coordination required', icon: Link2 },
+  { label: 'Refund protection', clarsix: 'Multiple policies: full, conditional, partial, custom', legacy: 'Limited refund options', icon: Shield },
+  { label: 'Fee transparency', clarsix: 'Clear fee structure: 5% refund, 10% cancellation', legacy: 'Hidden fees and unclear terms', icon: DollarSign },
 ];
 
 const Solutions: React.FC = () => {
@@ -112,14 +120,14 @@ const Solutions: React.FC = () => {
             </motion.div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] text-balance text-slate-900 dark:text-white">
-              Escrow built for every business, platform payouts, and{' '}
+              Secure escrow payments for{' '}
               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">
-                high-value assets
+                payment senders and receivers
               </span>
             </h1>
             
             <p className="text-lg text-slate-600 dark:text-white/80 leading-relaxed">
-              Move money with confidence: programmable rules, identity checks, and evidence capture built in.
+              Get onboarded and start transacting in minutes. Create secure transactions instantly—choose your role as sender or receiver, add participants during creation or send secure links. Funds are protected with customizable contract types, refund policies, and transparent fee structures.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
@@ -159,10 +167,10 @@ const Solutions: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
-              Solutions for every use case
+              Escrow solutions for every transaction type
             </h2>
             <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-              From simple transactions to complex multi-party workflows
+              From simple one-time payments to complex multi-milestone projects, protect both senders and receivers with flexible contract types
             </p>
           </motion.div>
 
@@ -247,12 +255,12 @@ const Solutions: React.FC = () => {
               className="space-y-6"
             >
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Proof</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Why Clarsix</p>
                 <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
-                  Compliance, automation, and human-grade clarity.
+                  Secure escrow with flexible contracts and comprehensive protection.
                 </h2>
                 <p className="text-lg text-[var(--text-secondary)] leading-relaxed">
-                  Designed for finance and legal: defensible audit trails, programmable releases, and real-time visibility for every stakeholder.
+                  Built for payment senders and receivers: choose your contract type, set protection policies, and add participants your way. All with transparent fees and automatic fund release.
                 </p>
               </div>
 
@@ -335,6 +343,265 @@ const Solutions: React.FC = () => {
         </div>
       </section>
 
+      {/* Detailed Contract Types & Protection */}
+      <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Contract Types</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
+              Choose the right contract type for your transaction
+            </h2>
+            <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
+              Whether you need a simple time-based completion or complex milestone-based payments, we've got you covered
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Time-Based Contract Details */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-8 space-y-6"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <Calendar className="h-7 w-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">Time-Based Completion</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">Perfect for fixed-term projects</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-[var(--text-primary)] mb-2">How it works:</h4>
+                  <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Set a completion date and time for the service or delivery</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Configure auto-completion buffer (default: 24 hours)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Funds are automatically released if no dispute within the buffer period</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Payment sender can dispute before auto-release</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="pt-4 border-t border-[var(--border-default)]">
+                  <h4 className="font-semibold text-[var(--text-primary)] mb-2">Best for:</h4>
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    One-time services, fixed-term projects, deliveries with clear deadlines, simple transactions
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Milestone-Based Contract Details */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-8 space-y-6"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <Target className="h-7 w-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">Milestone-Based Completion</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">Ideal for phased projects</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-[var(--text-primary)] mb-2">How it works:</h4>
+                  <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Break work into multiple milestones with percentage-based payouts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Set due dates and completion conditions for each milestone</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Funds are released incrementally as milestones are completed</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                      <span>Total milestone percentages must equal 100%</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="pt-4 border-t border-[var(--border-default)]">
+                  <h4 className="font-semibold text-[var(--text-primary)] mb-2">Best for:</h4>
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    Long-term projects, software development, construction, multi-phase deliveries, complex services
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Protection Policies Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-8 space-y-6"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                <Shield className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)]">Refund & Protection Policies</h3>
+                <p className="text-sm text-[var(--text-secondary)]">Comprehensive protection for both parties</p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h4 className="font-semibold text-[var(--text-primary)]">Refund Policy Options:</h4>
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
+                    <h5 className="font-semibold text-[var(--text-primary)] mb-1">Full Refund Protection</h5>
+                    <p className="text-sm text-[var(--text-secondary)]">100% refundable if service conditions aren't met</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
+                    <h5 className="font-semibold text-[var(--text-primary)] mb-1">Conditional Refund</h5>
+                    <p className="text-sm text-[var(--text-secondary)]">Refund based on specific conditions (service not started, quality issues, delays, etc.)</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
+                    <h5 className="font-semibold text-[var(--text-primary)] mb-1">Partial Fixed Refund</h5>
+                    <p className="text-sm text-[var(--text-secondary)]">Set a fixed refund percentage (e.g., 50% refund)</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
+                    <h5 className="font-semibold text-[var(--text-primary)] mb-1">Custom Terms</h5>
+                    <p className="text-sm text-[var(--text-secondary)]">Define your own refund terms and conditions</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-semibold text-[var(--text-primary)]">Fee Structure:</h4>
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-semibold text-[var(--text-primary)]">Refund Processing Fee</h5>
+                      <span className="text-lg font-bold text-[var(--color-primary)]">5%</span>
+                    </div>
+                    <p className="text-sm text-[var(--text-secondary)]">Of payment amount. Choose who pays: Sender, Receiver, or Split (50/50)</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-semibold text-[var(--text-primary)]">Cancellation Fee</h5>
+                      <span className="text-lg font-bold text-[var(--color-primary)]">10%</span>
+                    </div>
+                    <p className="text-sm text-[var(--text-secondary)]">Retained if payment sender cancels after work has begun</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border border-emerald-500/20">
+                    <h5 className="font-semibold text-[var(--text-primary)] mb-1">No Hidden Fees</h5>
+                    <p className="text-sm text-[var(--text-secondary)]">Transparent pricing with all fees clearly displayed during transaction creation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Participant Setup Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-12 rounded-2xl border border-[var(--border-default)] bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-tertiary)] p-8"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                <UserCheck className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)]">Flexible Participant Setup</h3>
+                <p className="text-sm text-[var(--text-secondary)]">Add participants your way</p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-lg bg-[var(--color-primary-light)] flex items-center justify-center">
+                    <User className="h-5 w-5 text-[var(--color-primary)]" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">During Transaction Creation</h4>
+                </div>
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                  When creating a transaction, you can immediately add the other participant (sender or receiver) by entering their user ID or selecting from your contacts. This is perfect when you already know who you're transacting with.
+                </p>
+                <ul className="space-y-2 text-sm text-[var(--text-secondary)] mt-4">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                    <span>Enter user ID directly</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                    <span>Select from your contacts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                    <span>Transaction is ready immediately</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-lg bg-[var(--color-primary-light)] flex items-center justify-center">
+                    <Link2 className="h-5 w-5 text-[var(--color-primary)]" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-[var(--text-primary)]">Via Secure Link</h4>
+                </div>
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                  Create the transaction first without adding the other participant. Then send them a secure link to join. They can click the link, review the transaction details, and complete their part. Ideal when you want to set up the transaction before the other party is ready.
+                </p>
+                <ul className="space-y-2 text-sm text-[var(--text-secondary)] mt-4">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                    <span>Create transaction first</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                    <span>Generate secure invitation link</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
+                    <span>Other party joins via link</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* App Showcase */}
       <AppShowcase variant="solutions" />
 
@@ -347,9 +614,9 @@ const Solutions: React.FC = () => {
             viewport={{ once: true }}
             className="max-w-3xl text-center mx-auto"
           >
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Why teams switch</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">Clarsix vs legacy escrow.</h2>
-            <p className="text-lg text-[var(--text-secondary)]">Modern controls, API-first, and transparent collaboration for finance, legal, buyers, and sellers.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Why choose Clarsix</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">Clarsix vs traditional escrow services.</h2>
+            <p className="text-lg text-[var(--text-secondary)]">Flexible contract types, easy participant setup, comprehensive protection policies, and transparent fees—all designed for modern payment senders and receivers.</p>
           </motion.div>
 
           <motion.div
