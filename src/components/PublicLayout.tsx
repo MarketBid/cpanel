@@ -5,6 +5,8 @@ import Button from './ui/Button';
 import { useAuth } from '../hooks/useAuth';
 import ThemeToggle from './ThemeToggle';
 
+import Logo from './Logo';
+
 interface PublicLayoutProps {
   children: React.ReactNode;
   backgroundClassName?: string;
@@ -50,7 +52,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
               className="flex items-center gap-2 text-[var(--text-primary)] font-bold text-base hover:opacity-80 transition-opacity"
               onClick={() => setOpen(false)}
             >
-              <span className="h-8 w-8 rounded-lg bg-[var(--color-primary)] text-[var(--color-primary-text)] flex items-center justify-center font-extrabold text-sm">C</span>
+              <Logo size={40} />
               <span>Clarsix</span>
             </Link>
 
@@ -72,7 +74,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
           <div className="top-6 w-[95%] max-w-6xl mx-auto relative">
             <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-primary)]/80 backdrop-blur-md dark:bg-[var(--bg-primary)]/90 shadow-lg px-6 sm:px-8 h-16 flex items-center justify-between relative">
               <Link to="/" className="flex items-center gap-2 text-[var(--text-primary)] font-bold text-lg hover:opacity-80 transition-opacity">
-                <span className="h-9 w-9 rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] flex items-center justify-center font-extrabold tracking-tight">C</span>
+                <Logo size={44} />
                 <span>Clarsix</span>
               </Link>
 
@@ -148,8 +150,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
                       to={item.href}
                       onClick={() => setOpen(false)}
                       className={`block px-4 py-3 rounded-lg text-base font-semibold transition-colors touch-manipulation ${location.pathname === item.href
-                          ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                          : 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
+                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                        : 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
                         }`}
                     >
                       {item.label}

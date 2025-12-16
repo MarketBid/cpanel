@@ -8,6 +8,8 @@ import Input from '../components/ui/Input';
 import { Card, CardContent } from '../components/ui/Card';
 import ThemeToggle from '../components/ThemeToggle';
 
+import Logo from '../components/Logo';
+
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -126,22 +128,7 @@ const Register: React.FC = () => {
             <CardContent className="p-8 sm:p-10">
               <div className="text-center mb-8">
                 <Link to="/" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
-                  <svg width="72" height="72" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-18 h-18">
-                    <g transform="translate(100, 100)">
-                      <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
-                            fill="var(--text-primary)"
-                            stroke="var(--text-primary)"
-                            strokeWidth="4"/>
-                      <circle cx="0" cy="0" r="32" fill="var(--text-primary)" stroke="white" strokeWidth="4"/>
-                      <rect x="0" y="-38" width="38" height="76" fill="var(--text-primary)"/>
-                      <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-                      <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-                      <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-                      <text x="-15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-                      <text x="-26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-                      <text x="-15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="white">*</text>
-                    </g>
-                  </svg>
+                  <Logo size={80} />
                   <span className="text-2xl font-bold text-[var(--text-primary)]">Clarsix</span>
                 </Link>
                 <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Create Account</h2>

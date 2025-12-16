@@ -23,6 +23,8 @@ import NotificationCenter, { Notification } from './NotificationCenter';
 import CommandPalette from './CommandPalette';
 import { useTransactions } from '../hooks/queries/useTransactions';
 
+import Logo from './Logo';
+
 interface LayoutProps {
   children: ReactNode;
 }
@@ -149,23 +151,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <>
       <div className="flex h-14 sm:h-16 shrink-0 items-center justify-between px-4 sm:px-6 border-b border-[var(--border-default)] bg-[var(--bg-sidebar)]/80 backdrop-blur-sm dark:bg-[var(--bg-sidebar)]/90">
         <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
-          <svg width="56" height="56" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 sm:w-14 sm:h-14">
-            <g transform="translate(100, 100)">
-              <path d="M 0,-50 L 43.3,-25 L 43.3,25 L 0,50 L -43.3,25 L -43.3,-25 Z"
-                fill="currentColor"
-                stroke="currentColor"
-                className="text-[var(--text-primary)]"
-                strokeWidth="4" />
-              <circle cx="0" cy="0" r="32" fill="currentColor" stroke="var(--bg-sidebar)" strokeWidth="4" className="text-[var(--text-primary)]" />
-              <rect x="0" y="-38" width="38" height="76" fill="currentColor" className="text-[var(--text-primary)]" />
-              <text x="15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
-              <text x="26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
-              <text x="15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
-              <text x="-15" y="15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
-              <text x="-26" y="0" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
-              <text x="-15" y="-15" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" textAnchor="middle" dominantBaseline="central" fill="var(--bg-sidebar)">*</text>
-            </g>
-          </svg>
+          <Logo size={56} />
           <h1 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">Clarsix</h1>
         </Link>
         <button

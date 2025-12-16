@@ -1,0 +1,23 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .icon-stroke { stroke: black; }
+    .icon-fill { fill: black; }
+    @media (prefers-color-scheme: dark) {
+      .icon-stroke { stroke: white; }
+      .icon-fill { fill: white; }
+    }
+  </style>
+  <path
+    d="M62 38H50C43.3726 38 38 43.3726 38 50C38 56.6274 43.3726 62 50 62H62"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="icon-stroke"
+  />
+  <circle
+    cx="62"
+    cy="50"
+    r="4"
+    class="icon-fill"
+  />
+</svg>
