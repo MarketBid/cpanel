@@ -39,8 +39,8 @@ const InitiatePayment: React.FC = () => {
     setProcessing(true);
     setError('');
     try {
-      const response = await apiClient.get(`/payment/initiate-payment/${transaction.transaction_id}`);
-      
+      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`);
+
       if (response.status === 'success' && response.data.message === 'Payment already completed') {
         setError('Payment has already been completed for this transaction.');
         setTimeout(() => {
@@ -49,10 +49,10 @@ const InitiatePayment: React.FC = () => {
         }, 1500);
         return;
       }
-      
+
       // Update cache with new transaction details
       queryClient.invalidateQueries({ queryKey: ['transaction', transactionId] });
-      
+
       window.location.href = response.data;
     } catch (error) {
       setError('Failed to initiate payment. Please try again.');

@@ -389,7 +389,7 @@ const TransactionDetails: React.FC = () => {
         key: 'delivered',
         label: 'Transaction Delivered',
         icon: Truck,
-        description: 'Transaction delivered to the provided address.',
+        description: 'Client Transaction Delivered',
         isComplete: [
           TransactionStatus.DELIVERED,
           TransactionStatus.COMPLETED

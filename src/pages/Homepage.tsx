@@ -696,147 +696,167 @@ const Homepage: React.FC = () => {
             </motion.p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            {/* Contract Types */}
-            <motion.div
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            {/* Header 1: Contract Types */}
+            <motion.h3
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="space-y-6"
+              className="text-2xl font-bold text-slate-900 dark:text-white md:col-start-1 md:row-start-1"
             >
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Contract Types</h3>
+              Contract Types
+            </motion.h3>
 
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Time-Based Completion</h4>
-                    <p className="text-sm text-slate-600 dark:text-white/75">Set a completion date and time</p>
-                  </div>
+            {/* Card 1: Time-Based */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4 md:col-start-1 md:row-start-2 h-full"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-white" />
                 </div>
-                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Automatic release after completion date</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Configurable auto-completion buffer (default 24 hours)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Funds released if no dispute within buffer period</span>
-                  </li>
-                </ul>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                    <Target className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Milestone-Based Completion</h4>
-                    <p className="text-sm text-slate-600 dark:text-white/75">Break work into multiple milestones</p>
-                  </div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">Time-Based Completion</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/75">Set a completion date and time</p>
                 </div>
-                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Define multiple milestones with percentage payouts</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Set due dates and completion conditions for each</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Release funds incrementally as milestones are completed</span>
-                  </li>
-                </ul>
-              </motion.div>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Automatic release after completion date</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Configurable auto-completion buffer (default 24 hours)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Funds released if no dispute within buffer period</span>
+                </li>
+              </ul>
             </motion.div>
 
-            {/* Protection Policies */}
+            {/* Card 2: Milestone-Based */}
             <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4 md:col-start-1 md:row-start-3 h-full"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <Target className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">Milestone-Based Completion</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/75">Break work into multiple milestones</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Define multiple milestones with percentage payouts</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Set due dates and completion conditions for each</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Release funds incrementally as milestones are completed</span>
+                </li>
+              </ul>
+            </motion.div>
+
+            {/* Header 2: Protection & Policies */}
+            <motion.h3
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="space-y-6"
+              className="text-2xl font-bold text-slate-900 dark:text-white md:col-start-2 md:row-start-1"
             >
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Protection & Policies</h3>
+              Protection & Policies
+            </motion.h3>
 
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                    <Shield className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Refund Policies</h4>
-                    <p className="text-sm text-slate-600 dark:text-white/75">Choose the protection level</p>
-                  </div>
+            {/* Card 3: Refund Policies */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4 md:col-start-2 md:row-start-2 h-full"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-white" />
                 </div>
-                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span><strong>Full Refund:</strong> 100% refundable if conditions aren't met</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span><strong>Conditional Refund:</strong> Refund based on specific conditions</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span><strong>Partial Fixed:</strong> Set a fixed refund percentage</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span><strong>Custom Terms:</strong> Define your own refund terms</span>
-                  </li>
-                </ul>
-              </motion.div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">Refund Policies</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/75">Choose the protection level</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span><strong>Full Refund:</strong> 100% refundable if conditions aren't met</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span><strong>Conditional Refund:</strong> Refund based on specific conditions</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span><strong>Partial Fixed:</strong> Set a fixed refund percentage</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span><strong>Custom Terms:</strong> Define your own refund terms</span>
+                </li>
+              </ul>
+            </motion.div>
 
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-                    <DollarSign className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Fee Structure</h4>
-                    <p className="text-sm text-slate-600 dark:text-white/75">Transparent and fair pricing</p>
-                  </div>
+            {/* Card 4: Fee Structure */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4 md:col-start-2 md:row-start-3 h-full"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-white" />
                 </div>
-                <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span><strong>Refund Processing Fee:</strong> 5% of payment amount</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span>Fee payer: Sender, Receiver, or Split (50/50)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                    <span><strong>Cancellation Fee:</strong> 10% if sender cancels after work begins</span>
-                  </li>
-                </ul>
-              </motion.div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">Fee Structure</h4>
+                  <p className="text-sm text-slate-600 dark:text-white/75">Transparent and fair pricing</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span><strong>Refund Processing Fee:</strong> 5% of payment amount</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span>Fee payer: Sender, Receiver, or Split (50/50)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
+                  <span><strong>Cancellation Fee:</strong> 10% if sender cancels after work begins</span>
+                </li>
+              </ul>
             </motion.div>
           </div>
 

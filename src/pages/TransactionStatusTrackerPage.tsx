@@ -27,7 +27,7 @@ const getStageDetails = (transaction: Transaction, stepKey: string) => {
 		case 'in_transit':
 			return `Transaction is now in transit.`;
 		case 'delivered':
-			return `Transaction delivered to the provided address.`;
+			return `Client Transaction Delivered`;
 		case 'completed':
 			return `Transaction has been completed successfully.`;
 		case 'disputed':
