@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, Eye, EyeOff, Building, ShieldCheck, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, Phone, Eye, EyeOff, Building, ShieldCheck, Sparkles, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { BUSINESS_CATEGORIES } from '../types';
 import Button from '../components/ui/Button';
@@ -79,7 +79,18 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+      <div className="absolute top-4 left-4">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors font-medium text-sm"
+        >
+          <div className="p-2 rounded-full bg-[var(--bg-card)] border border-[var(--border-default)] shadow-sm hover:shadow-md transition-all">
+            <ArrowLeft className="h-4 w-4" />
+          </div>
+          <span className="hidden sm:inline">Back to Home</span>
+        </Link>
+      </div>
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
