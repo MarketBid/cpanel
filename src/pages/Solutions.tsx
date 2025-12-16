@@ -95,56 +95,121 @@ const comparison = [
 
 const Solutions: React.FC = () => {
   const navigate = useNavigate();
-  
+
   return (
     <PublicLayout>
       {/* Hero Section with Animated Background - Enhanced for light mode */}
       <section className="relative overflow-hidden min-h-[60vh] flex items-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 -mt-28 pt-28">
         <AnimatedGradient className="absolute inset-0 -z-10" />
-        
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-3xl space-y-6"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-white/10 backdrop-blur-md rounded-full border border-emerald-200 dark:border-white/20"
             >
               <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
               <span className="text-sm font-medium text-emerald-900 dark:text-white">Solutions</span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] text-balance text-slate-900 dark:text-white">
-              Secure escrow payments for{' '}
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">
-                payment senders and receivers
-              </span>
-            </h1>
-            
-            <p className="text-lg text-slate-600 dark:text-white/80 leading-relaxed">
+            <motion.h1
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1,
+                    delayChildren: 0.2,
+                  },
+                },
+              }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] text-balance text-slate-900 dark:text-white"
+            >
+              {/* Masked Text Reveal Effect */}
+              <div className="overflow-hidden inline-block align-bottom">
+                <motion.span
+                  variants={{
+                    hidden: { y: "100%" },
+                    visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                  }}
+                  className="inline-block"
+                >
+                  Secure escrow payments
+                </motion.span>
+              </div>
+              <br className="hidden sm:block" />
+              <div className="overflow-hidden inline-block align-bottom">
+                <motion.span
+                  variants={{
+                    hidden: { y: "100%" },
+                    visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                  }}
+                  className="inline-block mr-[0.2em]"
+                >
+                  for
+                </motion.span>
+              </div>
+              {' '}
+              <div className="overflow-hidden inline-block align-bottom">
+                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent inline-block">
+                  <motion.span
+                    variants={{
+                      hidden: { y: "100%" },
+                      visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                    }}
+                    className="inline-block"
+                  >
+                    payment senders and receivers
+                  </motion.span>
+                </span>
+              </div>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="text-lg text-slate-600 dark:text-white/80 leading-relaxed"
+            >
               Get onboarded and start transacting in minutes. Create secure transactions instantly—choose your role as sender or receiver, add participants during creation or send secure links. Funds are protected with customizable contract types, refund policies, and transparent fee structures.
-            </p>
-            
+            </motion.p>
+
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  variant="primary" 
-                  size="lg" 
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_20px_50px_rgba(16,185,129,0.35)] border-0" 
-                  rightIcon={<ArrowRight className="h-4 w-4" />} 
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_20px_50px_rgba(16,185,129,0.35)] border-0"
+                  rightIcon={<ArrowRight className="h-4 w-4" />}
                   onClick={() => navigate('/contact')}
                 >
                   Talk with us
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  variant="outline" 
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  variant="outline"
                   size="lg"
                   className="bg-slate-100 dark:bg-white/10 backdrop-blur-md !text-slate-900 dark:!text-white border-slate-300 dark:border-white/30 hover:bg-slate-200 dark:hover:bg-white/20"
                   onClick={() => navigate('/register')}
@@ -161,9 +226,10 @@ const Solutions: React.FC = () => {
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
@@ -180,12 +246,17 @@ const Solutions: React.FC = () => {
               return (
                 <FloatingCard key={solution.title} delay={index * 0.1}>
                   <motion.div
-                    whileHover={{ boxShadow: '0 25px 50px rgba(0,0,0,0.15)' }}
-                    className="h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-8 space-y-6 group relative overflow-hidden"
+                    whileHover={{
+                      y: -5,
+                      boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
+                      borderColor: 'var(--color-primary)'
+                    }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-8 space-y-6 group relative overflow-hidden transition-colors"
                   >
                     {/* Gradient overlay */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${solution.tone} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                    
+
                     {/* Icon and Stats */}
                     <div className="flex items-start justify-between relative">
                       <motion.div
@@ -195,7 +266,7 @@ const Solutions: React.FC = () => {
                       >
                         <Icon className="h-7 w-7" />
                       </motion.div>
-                      
+
                       <div className="text-right">
                         <div className="text-2xl font-black text-[var(--text-primary)]">{solution.stats.value}</div>
                         <div className="text-xs text-[var(--text-tertiary)] font-medium">{solution.stats.label}</div>
@@ -209,14 +280,23 @@ const Solutions: React.FC = () => {
                     </div>
 
                     {/* Features */}
-                    <div className="space-y-2 relative">
-                      {solution.bullets.map((item, idx) => (
+                    <motion.div
+                      className="space-y-2 relative"
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      variants={{
+                        visible: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+                      }}
+                    >
+                      {solution.bullets.map((item) => (
                         <motion.div
                           key={item}
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: index * 0.1 + idx * 0.1 }}
+                          variants={{
+                            hidden: { opacity: 0, x: -20 },
+                            visible: { opacity: 1, x: 0 }
+                          }}
+                          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                           className="flex items-center gap-3 text-sm text-[var(--text-primary)]"
                         >
                           <div className={`h-6 w-6 rounded-lg bg-gradient-to-br ${solution.tone} flex items-center justify-center flex-shrink-0`}>
@@ -225,12 +305,13 @@ const Solutions: React.FC = () => {
                           <span className="font-medium">{item}</span>
                         </motion.div>
                       ))}
-                    </div>
+                    </motion.div>
 
                     {/* Hover arrow */}
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
                       whileHover={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                       className="absolute bottom-8 right-8 text-[var(--text-tertiary)] group-hover:text-[var(--color-primary)]"
                     >
                       <ArrowRight className="h-6 w-6" />
@@ -378,7 +459,7 @@ const Solutions: React.FC = () => {
                   <p className="text-sm text-[var(--text-secondary)]">Perfect for fixed-term projects</p>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <h4 className="font-semibold text-[var(--text-primary)] mb-2">How it works:</h4>
@@ -401,7 +482,7 @@ const Solutions: React.FC = () => {
                     </li>
                   </ul>
                 </div>
-                
+
                 <div className="pt-4 border-t border-[var(--border-default)]">
                   <h4 className="font-semibold text-[var(--text-primary)] mb-2">Best for:</h4>
                   <p className="text-sm text-[var(--text-secondary)]">
@@ -427,7 +508,7 @@ const Solutions: React.FC = () => {
                   <p className="text-sm text-[var(--text-secondary)]">Ideal for phased projects</p>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <h4 className="font-semibold text-[var(--text-primary)] mb-2">How it works:</h4>
@@ -450,7 +531,7 @@ const Solutions: React.FC = () => {
                     </li>
                   </ul>
                 </div>
-                
+
                 <div className="pt-4 border-t border-[var(--border-default)]">
                   <h4 className="font-semibold text-[var(--text-primary)] mb-2">Best for:</h4>
                   <p className="text-sm text-[var(--text-secondary)]">
@@ -677,7 +758,7 @@ const Solutions: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button 
+                <Button
                   size="lg"
                   className="bg-white text-emerald-600 hover:bg-white/90 border-0 shadow-xl"
                   onClick={() => navigate('/register')}
@@ -687,7 +768,7 @@ const Solutions: React.FC = () => {
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button 
+                <Button
                   size="lg"
                   className="bg-white/20 dark:bg-white/10 backdrop-blur-md !text-white border-white/40 dark:border-white/30 hover:bg-white/30 dark:hover:bg-white/20"
                   onClick={() => navigate('/contact')}

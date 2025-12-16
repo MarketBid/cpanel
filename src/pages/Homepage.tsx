@@ -199,7 +199,7 @@ const Homepage: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-white/10 backdrop-blur-md rounded-full border border-emerald-200 dark:border-white/20 mb-4"
               >
                 <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
@@ -207,21 +207,64 @@ const Homepage: React.FC = () => {
               </motion.div>
 
               <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: {
+                    opacity: 1,
+                    transition: {
+                      staggerChildren: 0.1,
+                      delayChildren: 0.1,
+                    },
+                  },
+                }}
                 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.05] text-balance text-slate-900 dark:text-white"
               >
-                Secure escrow payments between{' '}
-                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">
-                  senders and receivers
-                </span>
+                {/* Masked Text Reveal Effect */}
+                <div className="overflow-hidden inline-block align-bottom">
+                  <motion.span
+                    variants={{
+                      hidden: { y: "100%" },
+                      visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                    }}
+                    className="inline-block"
+                  >
+                    Secure escrow payments
+                  </motion.span>
+                </div>
+                <br className="hidden sm:block" />
+                <div className="overflow-hidden inline-block align-bottom">
+                  <motion.span
+                    variants={{
+                      hidden: { y: "100%" },
+                      visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                    }}
+                    className="inline-block mr-[0.2em]"
+                  >
+                    between
+                  </motion.span>
+                </div>
+                {' '}
+                <div className="overflow-hidden inline-block align-bottom">
+                  <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent inline-block">
+                    <motion.span
+                      variants={{
+                        hidden: { y: "100%" },
+                        visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                      }}
+                      className="inline-block"
+                    >
+                      senders and receivers
+                    </motion.span>
+                  </span>
+                </div>
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="text-lg sm:text-xl text-slate-600 dark:text-white/80 max-w-3xl mx-auto leading-relaxed"
               >
                 Get started in minutes with quick onboarding and setup. Create secure transactions instantly—add participants during creation or send a link for them to join. Funds are held safely in escrow until delivery is confirmed—protecting both payment senders and receivers.
@@ -230,7 +273,7 @@ const Homepage: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col sm:flex-row gap-4 justify-center"
               >
                 <motion.div
@@ -268,7 +311,7 @@ const Homepage: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
+                transition={{ duration: 1, delay: 1 }}
                 className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 pt-8 text-sm text-slate-600 dark:text-white/60"
               >
                 <div className="flex items-center gap-2">
@@ -292,12 +335,12 @@ const Homepage: React.FC = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="w-6 h-10 border-2 border-slate-300 dark:border-white/30 rounded-full flex items-start justify-center p-2"
           >
             <motion.div className="w-1 h-2 bg-slate-400 dark:bg-white/50 rounded-full" />
@@ -309,17 +352,17 @@ const Homepage: React.FC = () => {
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-3xl mx-auto text-center"
           >
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
             >
               Why Clarsix
@@ -328,7 +371,7 @@ const Homepage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3 text-balance"
             >
               Escrow-grade assurance with automation, compliance, and clarity.
@@ -342,12 +385,15 @@ const Homepage: React.FC = () => {
                 <FloatingCard key={card.title} delay={index * 0.15}>
                   <motion.div
                     whileHover={{
-                      boxShadow: '0 20px 40px rgba(15, 157, 126, 0.15)',
+                      y: -8,
+                      boxShadow: '0 25px 50px -12px rgba(16, 185, 129, 0.25)',
+                      borderColor: 'rgba(16, 185, 129, 0.4)',
                     }}
-                    className="h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-6 hover:border-[var(--color-primary)]/30 transition-all duration-300 relative overflow-hidden group"
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-6 transition-colors duration-300 relative overflow-hidden group"
                   >
                     {/* Gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -364,6 +410,7 @@ const Homepage: React.FC = () => {
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
                       whileHover={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                       className="absolute bottom-6 right-6 text-[var(--color-primary)]"
                     >
                       <ArrowRight className="h-5 w-5" />
@@ -376,10 +423,10 @@ const Homepage: React.FC = () => {
 
           {/* Stats Row */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 p-8 rounded-2xl bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--bg-card)] border border-[var(--border-default)]"
           >
             {[
@@ -390,10 +437,10 @@ const Homepage: React.FC = () => {
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 + 0.5 }}
+                transition={{ delay: index * 0.1 + 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="text-center"
               >
                 <div className="text-3xl sm:text-4xl font-black text-[var(--color-primary)] mb-2">
@@ -411,10 +458,10 @@ const Homepage: React.FC = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(16,185,129,0.15),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(6,182,212,0.12),transparent_35%)] dark:bg-[radial-gradient(circle_at_20%_30%,rgba(4,128,91,0.22),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(2,80,55,0.2),transparent_35%)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col lg:flex-row lg:items-end gap-6 lg:gap-10"
           >
             <div className="flex-1">
@@ -422,7 +469,7 @@ const Homepage: React.FC = () => {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-sm font-bold uppercase tracking-[0.12em] text-emerald-700 dark:text-white/70"
               >
                 Solutions
@@ -431,7 +478,7 @@ const Homepage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mt-3 text-slate-900 dark:text-white"
               >
                 Built for every project, platforms, and high-value assets.
@@ -440,7 +487,7 @@ const Homepage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="text-lg text-slate-600 dark:text-white/75 mt-4 max-w-2xl"
               >
                 Remove trust gaps with programmable logic, real-time tracking, and compliance by default.
@@ -450,7 +497,7 @@ const Homepage: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex-none"
@@ -483,11 +530,11 @@ const Homepage: React.FC = () => {
               <motion.div
                 key={item.title}
                 variants={{
-                  hidden: { opacity: 0, y: 30 },
+                  hidden: { opacity: 0, y: 40 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -8, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
                 className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4 hover:shadow-xl dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-shadow duration-300"
               >
                 <motion.div
@@ -509,7 +556,7 @@ const Homepage: React.FC = () => {
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 + pointIndex * 0.1 + 0.5 }}
+                      transition={{ delay: index * 0.1 + pointIndex * 0.1 + 0.5, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                       className="flex items-center gap-2 text-sm text-slate-700 dark:text-white/80"
                     >
                       <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
@@ -545,15 +592,15 @@ const Homepage: React.FC = () => {
             >
               How it works
             </motion.p>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
-              >
-                Simple escrow process: create, secure, and release.
-              </motion.h2>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
+            >
+              Simple escrow process: create, secure, and release.
+            </motion.h2>
           </motion.div>
           <motion.div
             initial="hidden"
@@ -659,7 +706,7 @@ const Homepage: React.FC = () => {
               className="space-y-6"
             >
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Contract Types</h3>
-              
+
               <motion.div
                 whileHover={{ y: -4 }}
                 className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
@@ -728,7 +775,7 @@ const Homepage: React.FC = () => {
               className="space-y-6"
             >
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Protection & Policies</h3>
-              
+
               <motion.div
                 whileHover={{ y: -4 }}
                 className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4"
