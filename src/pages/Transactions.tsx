@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -424,7 +424,7 @@ const Transactions: React.FC = () => {
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 onClick={() => setShowExportModal(true)}
                 className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg hover:bg-[var(--bg-tertiary)] hover:border-[var(--color-primary)] transition-colors flex-1"
               >
@@ -476,7 +476,7 @@ const Transactions: React.FC = () => {
             <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
               <tr>
                 <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Join Link</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Payment Link</th>
                 <th className="px-5 py-3 text-left">
                   <button
                     onClick={() => handleColumnSort('amount')}
@@ -567,23 +567,32 @@ const Transactions: React.FC = () => {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <Link
-                            to={`/transactions/join/${transaction.transaction_id}`}
-                            className="text-xs sm:text-sm font-mono text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors"
-                          >
-                            {transaction.transaction_id}
-                          </Link>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const joinUrl = `${window.location.origin}/transactions/join/${transaction.transaction_id}`;
-                              copyToClipboard(joinUrl, e);
-                            }}
-                            className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
-                            title="Copy join link"
-                          >
-                            <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
-                          </button>
+                          {transaction.payment_link ? (
+                            <a
+                              href={transaction.payment_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs sm:text-sm font-mono text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors"
+                            >
+                              {transaction.transaction_id}
+                            </a>
+                          ) : (
+                            <span className="text-xs sm:text-sm font-mono text-[var(--text-secondary)]">
+                              {transaction.transaction_id || 'N/A'}
+                            </span>
+                          )}
+                          {transaction.payment_link && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(transaction.payment_link!, e);
+                              }}
+                              className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
+                              title="Copy payment link"
+                            >
+                              <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="px-5 py-4">

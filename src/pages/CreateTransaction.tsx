@@ -261,25 +261,25 @@ const CreateTransaction: React.FC = () => {
 
             {role === 'receiver' && (
               <Input
-                label={`${role === 'receiver' ? 'Sender' : 'Receiver'} ID (Optional)`}
+                label={`${role === 'receiver' ? 'Sender' : 'Receiver'} Email/Contact (Optional)`}
                 name="manual_sender_id"
                 type="text"
                 value={manualSenderId}
                 onChange={e => setManualSenderId(e.target.value)}
-                placeholder="Enter sender ID"
-                helperText="You can leave this empty if you don't know the sender ID."
+                placeholder="Enter sender Email/Contact"
+                helperText="You can leave this empty if you don't know the sender email/contact."
               />
             )}
 
             {role === 'sender' && (
               <Input
-                label="Receiver ID (Optional)"
+                label="Receiver Email/Contact (Optional)"
                 name="manual_receiver_id"
                 type="text"
                 value={manualReceiverId}
                 onChange={e => setManualReceiverId(e.target.value)}
-                placeholder="Enter receiver ID"
-                helperText="You can leave this empty if you don't know the receiver ID."
+                placeholder="Enter receiver Email/Contact"
+                helperText="You can leave this empty if you don't know the receiver email/contact."
               />
             )}
           </CardContent>

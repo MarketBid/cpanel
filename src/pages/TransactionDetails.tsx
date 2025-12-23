@@ -234,6 +234,36 @@ const TransactionDetails: React.FC = () => {
 
 
 
+  const handlePayment = async () => {
+    if (!transaction) return;
+    setUpdating(true);
+    setError('');
+    try {
+      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`);
+
+      // Cast data to any to access potential message property safely
+      const responseData = response.data as any;
+
+      if (response.status === 'success' && responseData?.message === 'Payment already completed') {
+        setToastMessage('Payment has already been completed for this transaction.');
+        setShowToast(true);
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: transactionKeys.detail(transaction.transaction_id) });
+        }, 1500);
+        return;
+      }
+
+      // Redirect to payment page - expecting data to be the URL string
+      window.location.href = responseData as string;
+    } catch (error) {
+      console.error('Payment initiation error:', error);
+      setError('Failed to initiate payment. Please try again.');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
       case TransactionStatus.PENDING:
@@ -656,11 +686,39 @@ const TransactionDetails: React.FC = () => {
                 <h3 className="text-lg font-bold mb-2">Ready to Pay?</h3>
                 <p className="text-sm text-white/80 mb-4">Secure your transaction with Clarsix escrow protection</p>
                 <button
-                  onClick={() => navigate(`/payment/initiate-payment/${transaction.transaction_id}`)}
-                  className="w-full py-3 px-4 rounded-xl bg-white text-emerald-600 font-bold hover:bg-white/90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
+                  onClick={handlePayment}
+                  disabled={updating}
+                  className="w-full py-3 px-4 rounded-xl bg-white text-emerald-600 font-bold hover:bg-white/90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 disabled:hover:scale-100 disabled:cursor-not-allowed"
                 >
-                  <DollarSign className="h-5 w-5" />
-                  Proceed to Payment
+                  {updating ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+                      Processing...
+                    </span>
+                  ) : (
+                    <>
+                      <DollarSign className="h-5 w-5" />
+                      Proceed to Payment
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Payment Link Card for Receivers */}
+            {isReceiver && transaction.payment_link && (
+              <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl shadow-lg p-6 text-white">
+                <h3 className="text-lg font-bold mb-2">Share Payment Link</h3>
+                <p className="text-sm text-white/80 mb-4">Copy and share this payment link with the sender</p>
+                <button
+                  onClick={() => {
+                    copyToClipboard(transaction.payment_link!);
+                    setToastMessage('Payment link copied to clipboard!');
+                  }}
+                  className="w-full py-3 px-4 rounded-xl bg-white text-green-600 font-bold hover:bg-white/90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
+                >
+                  <CreditCard className="h-5 w-5" />
+                  Copy Payment Link
                 </button>
               </div>
             )}

@@ -8,11 +8,12 @@ import {
   Clock,
   CheckCircle,
   CreditCard,
-  ArrowLeft,
   Shield,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  FileText
 } from 'lucide-react';
+import { generateContractPDF } from '../utils/pdfGenerator';
 import { Transaction, TransactionStatus } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
@@ -101,15 +102,15 @@ const InitiatePayment: React.FC = () => {
     <div className="min-h-screen">
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-fade-in">
         {/* Header */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
-        >
-          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-medium">Back to Transaction</span>
-        </button>
-
-        {/* Hero Section */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => generateContractPDF(transaction)}
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition-colors border border-[var(--border-default)]"
+          >
+            <FileText className="h-4 w-4" />
+            View Contract
+          </button>
+        </div>        {/* Hero Section */}
         <div className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-secondary-dark)] dark:from-[var(--color-primary)] dark:to-[var(--color-primary-dark)] rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-4 sm:mb-6">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -240,23 +241,7 @@ const InitiatePayment: React.FC = () => {
                   Proceed to Payment
                 </Button>
 
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-[var(--text-primary)]">Accepted Payment Methods</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 border-2 border-[var(--border-default)] rounded-xl text-center hover:border-[var(--color-primary)] transition-colors">
-                      <div className="w-8 h-8 bg-[var(--bg-tertiary)] rounded-lg mx-auto mb-2 flex items-center justify-center">
-                        <DollarSign className="h-5 w-5 text-[var(--text-primary)]" />
-                      </div>
-                      <p className="text-xs font-medium text-[var(--text-secondary)]">Mobile Money</p>
-                    </div>
-                    <div className="p-4 border-2 border-[var(--border-default)] rounded-xl text-center hover:border-[var(--color-primary)] transition-colors">
-                      <div className="w-8 h-8 bg-[var(--bg-tertiary)] rounded-lg mx-auto mb-2 flex items-center justify-center">
-                        <CreditCard className="h-5 w-5 text-[var(--text-primary)]" />
-                      </div>
-                      <p className="text-xs font-medium text-[var(--text-secondary)]">Bank Transfer</p>
-                    </div>
-                  </div>
-                </div>
+
               </>
             )}
 

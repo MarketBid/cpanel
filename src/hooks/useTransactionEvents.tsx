@@ -72,16 +72,11 @@ export const useTransactionEvents = (options: UseTransactionEventsOptions = {}) 
     }
 
     // Create new EventSource connection
-    // In a real app, this would point to your SSE endpoint
-    // For now, we'll simulate events or use a polling fallback if SSE isn't ready
-    const url = transactionId
-      ? `${API_BASE_URL}/events/transactions/${transactionId}`
-      : `${API_BASE_URL}/events/transactions`;
+    const url = `${API_BASE_URL}/events/transactions`;
 
     try {
       // Note: Standard EventSource doesn't support custom headers (like Authorization)
-      // You might need a library like 'event-source-polyfill' or use a token in the URL query param
-      const urlWithToken = token ? `${url}?token=${encodeURIComponent(token)}` : url;
+      const urlWithToken = `${url}?token=${encodeURIComponent(token)}`;
 
       const eventSource = new EventSource(urlWithToken);
       eventSourceRef.current = eventSource;
