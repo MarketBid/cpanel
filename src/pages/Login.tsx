@@ -20,16 +20,21 @@ const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as any)?.from
-    ? `${(location.state as any).from.pathname}${(location.state as any).from.search}`
-    : '/dashboard';
+
+  // Check for redirect in query params or location state
+  const searchParams = new URLSearchParams(location.search);
+  const redirectParam = searchParams.get('redirect');
+  const from = redirectParam ||
+    ((location.state as any)?.from
+      ? `${(location.state as any).from.pathname}${(location.state as any).from.search}`
+      : '/dashboard');
 
   // Handle navigation when authenticated - must be in useEffect, not during render
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, from]);
 
   // Early return after all hooks are called
   if (isAuthenticated) {

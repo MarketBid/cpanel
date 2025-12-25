@@ -21,12 +21,13 @@ import { apiClient } from '../utils/api';
 import { useTransaction } from '../hooks/queries/useTransactions';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { Card, CardContent } from '../components/ui';
+import { Card, CardContent, Input } from '../components/ui';
 
 const InitiatePayment: React.FC = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
+  const [guestContact, setGuestContact] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
@@ -37,10 +38,29 @@ const InitiatePayment: React.FC = () => {
 
   const processPayment = async () => {
     if (!transaction) return;
+
+    // Validate guest contact if user is not logged in
+    if (!user && !guestContact) {
+      setError('Please enter your email or contact number to proceed.');
+      return;
+    }
+
     setProcessing(true);
     setError('');
     try {
-      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`);
+      const payload: any = {};
+
+      if (!user && guestContact) {
+        // Determine if input is email or contact
+        const isEmail = guestContact.includes('@');
+        if (isEmail) {
+          payload.email = guestContact;
+        } else {
+          payload.contact = guestContact;
+        }
+      }
+
+      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`, payload);
 
       if (response.status === 'success' && response.data.message === 'Payment already completed') {
         setError('Payment has already been completed for this transaction.');
@@ -56,6 +76,7 @@ const InitiatePayment: React.FC = () => {
 
       window.location.href = response.data;
     } catch (error) {
+      console.error('Payment initiation error:', error);
       setError('Failed to initiate payment. Please try again.');
     } finally {
       setProcessing(false);
@@ -102,7 +123,24 @@ const InitiatePayment: React.FC = () => {
     <div className="min-h-screen">
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <div className="flex gap-2">
+            {!user ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate(`/login?redirect=/payment/initiate-payment/${transactionId}`)}
+              >
+                Login
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/dashboard')}
+              >
+                Dashboard
+              </Button>
+            )}
+          </div>
           <button
             onClick={() => generateContractPDF(transaction)}
             className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition-colors border border-[var(--border-default)]"
@@ -228,6 +266,24 @@ const InitiatePayment: React.FC = () => {
                     Your payment will be held securely in escrow until you confirm delivery of the item.
                   </p>
                 </div>
+
+                {!user && (
+                  <div className="mb-4 sm:mb-6">
+                    <label htmlFor="guest-contact" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
+                      Email or Contact Number <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      id="guest-contact"
+                      placeholder="Enter your email or phone number"
+                      value={guestContact}
+                      onChange={(e) => setGuestContact(e.target.value)}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-[var(--text-secondary)] mt-1.5">
+                      We'll use this to create an account for you to track this transaction.
+                    </p>
+                  </div>
+                )}
 
                 <Button
                   variant="primary"
