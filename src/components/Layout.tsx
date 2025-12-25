@@ -343,25 +343,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               onClearAll={handleClearAllNotifications}
             />
             <ThemeToggle />
-            <div className="relative group">
-              <button
-                onClick={toggleVisibility}
-                className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
-                aria-label={isVisible ? 'Hide sensitive information' : 'Show sensitive information'}
-              >
-                {isVisible ? (
-                  <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
-                ) : (
-                  <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
-                )}
-              </button>
-              {/* Tooltip */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 text-xs font-medium text-white bg-slate-900 dark:bg-slate-700 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50">
-                {isVisible ? 'Hide sensitive info (⌘U)' : 'Show sensitive info (⌘U)'}
-                {/* Tooltip arrow */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 border-4 border-transparent border-b-slate-900 dark:border-b-slate-700" />
-              </div>
-            </div>
+            <button
+              onClick={toggleVisibility}
+              className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
+              aria-label={isVisible ? 'Hide sensitive information' : 'Show sensitive information'}
+            >
+              {isVisible ? (
+                <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+              ) : (
+                <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
+            </button>
             <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-secondary-light)] transition-colors">
               <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
                 {user?.name?.charAt(0).toUpperCase()}
