@@ -384,6 +384,30 @@ const TransactionDetails: React.FC = () => {
     // Normalize status for consistent comparison
     const normalizedStatus = normalizeStatus(transaction.status);
 
+    // When disputed, we need to determine which stage was reached before dispute
+    // We'll check the transaction history or make reasonable assumptions based on data
+    const isDisputed = normalizedStatus === TransactionStatus.DISPUTED;
+
+    // Helper function to determine if a stage was completed before dispute
+    const wasCompletedBeforeDispute = (requiredStatuses: TransactionStatus[]) => {
+      if (!isDisputed) {
+        return requiredStatuses.includes(normalizedStatus);
+      }
+
+      // If disputed, check if the transaction had progressed to these stages
+      // We assume if certain fields are set, those stages were completed
+      // For paid: check if payment was made (you can add a payment_date field check if available)
+      if (requiredStatuses.includes(TransactionStatus.PAID)) {
+        // If we're disputed and have payment data, paid stage was completed
+        return true; // Assuming dispute can only happen after payment
+      }
+
+      // For in_transit and delivered: we'd need additional fields to track this
+      // For now, we'll assume these were completed if we have certain data
+      // You may want to add a `previous_status` or `status_history` field to track this properly
+      return false;
+    };
+
     const steps = [
       {
         key: 'joined',
@@ -401,7 +425,8 @@ const TransactionDetails: React.FC = () => {
           TransactionStatus.PAID,
           TransactionStatus.IN_TRANSIT,
           TransactionStatus.DELIVERED,
-          TransactionStatus.COMPLETED
+          TransactionStatus.COMPLETED,
+          TransactionStatus.DISPUTED // Include DISPUTED so paid stage stays complete
         ].includes(normalizedStatus),
       },
       {
@@ -412,7 +437,8 @@ const TransactionDetails: React.FC = () => {
         isComplete: [
           TransactionStatus.IN_TRANSIT,
           TransactionStatus.DELIVERED,
-          TransactionStatus.COMPLETED
+          TransactionStatus.COMPLETED,
+          TransactionStatus.DISPUTED // Include DISPUTED - assumes dispute can happen during/after transit
         ].includes(normalizedStatus),
       },
       {
@@ -422,7 +448,8 @@ const TransactionDetails: React.FC = () => {
         description: 'Client Transaction Delivered',
         isComplete: [
           TransactionStatus.DELIVERED,
-          TransactionStatus.COMPLETED
+          TransactionStatus.COMPLETED,
+          TransactionStatus.DISPUTED // Include DISPUTED - assumes delivery happened before dispute
         ].includes(normalizedStatus),
       },
       {
@@ -761,25 +788,42 @@ const TransactionDetails: React.FC = () => {
                 {activityTimeline.map((step, index) => {
                   const Icon = step.icon;
                   const isComplete = step.isComplete;
+                  const isDisputed = step.key === 'disputed';
+                  const isCancelled = step.key === 'cancelled';
+                  const isError = isDisputed || isCancelled;
 
                   return (
                     <div key={step.key} className="flex gap-4">
                       <div className="flex flex-col items-center">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isComplete
-                          ? 'bg-[var(--status-completed-text)] shadow-lg'
-                          : 'bg-[var(--bg-tertiary)]'
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isError
+                          ? 'bg-[var(--status-disputed-text)] shadow-lg'
+                          : isComplete
+                            ? 'bg-[var(--status-completed-text)] shadow-lg'
+                            : 'bg-[var(--bg-tertiary)]'
                           }`}>
-                          <Icon className={`h-5 w-5 ${isComplete ? 'text-[var(--status-completed-bg)]' : 'text-[var(--text-tertiary)]'
+                          <Icon className={`h-5 w-5 ${isError
+                            ? 'text-[var(--status-disputed-bg)]'
+                            : isComplete
+                              ? 'text-[var(--status-completed-bg)]'
+                              : 'text-[var(--text-tertiary)]'
                             }`} />
                         </div>
                         {index < activityTimeline.length - 1 && (
-                          <div className={`w-0.5 h-full mt-2 ${isComplete ? 'bg-[var(--status-completed-text)]' : 'bg-[var(--border-default)]'
+                          <div className={`w-0.5 h-full mt-2 ${isError
+                            ? 'bg-[var(--status-disputed-text)]'
+                            : isComplete
+                              ? 'bg-[var(--status-completed-text)]'
+                              : 'bg-[var(--border-default)]'
                             }`}></div>
                         )}
                       </div>
 
                       <div className="flex-1 pb-8">
-                        <h3 className={`font-semibold mb-1 ${isComplete ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'
+                        <h3 className={`font-semibold mb-1 ${isError
+                          ? 'text-[var(--status-disputed-text)]'
+                          : isComplete
+                            ? 'text-[var(--text-primary)]'
+                            : 'text-[var(--text-tertiary)]'
                           }`}>
                           {step.label}
                         </h3>
