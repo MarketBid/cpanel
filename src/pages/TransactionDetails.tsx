@@ -778,7 +778,12 @@ const TransactionDetails: React.FC = () => {
             )}
 
             {/* Timeline Card */}
-            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6">
+            <div className={`rounded-2xl shadow-sm border p-6 ${normalizeStatus(transaction.status) === TransactionStatus.COMPLETED
+                ? 'bg-[var(--status-completed-bg)] border-[var(--status-completed-border)]'
+                : normalizeStatus(transaction.status) === TransactionStatus.DISPUTED
+                  ? 'bg-[var(--status-disputed-bg)] border-[var(--status-disputed-border)]'
+                  : 'bg-[var(--bg-card)] border-[var(--border-default)]'
+              }`}>
               <h2 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
                 <Clock className="h-5 w-5 text-[var(--text-primary)]" />
                 Activity Timeline

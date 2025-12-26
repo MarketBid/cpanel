@@ -27,7 +27,7 @@ const InitiatePayment: React.FC = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
-  const [guestContact, setGuestContact] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
@@ -39,9 +39,9 @@ const InitiatePayment: React.FC = () => {
   const processPayment = async () => {
     if (!transaction) return;
 
-    // Validate guest contact if user is not logged in
-    if (!user && !guestContact) {
-      setError('Please enter your email or contact number to proceed.');
+    // Validate guest email if user is not logged in
+    if (!user && !guestEmail) {
+      setError('Please enter your email address to proceed.');
       return;
     }
 
@@ -50,13 +50,10 @@ const InitiatePayment: React.FC = () => {
     try {
       const payload: any = {};
 
-      if (!user && guestContact) {
-        // Determine if input is email or contact
-        const isEmail = guestContact.includes('@');
+      if (!user && guestEmail) {
+        const isEmail = guestEmail.includes('@');
         if (isEmail) {
-          payload.email = guestContact;
-        } else {
-          payload.contact = guestContact;
+          payload.email = guestEmail;
         }
       }
 
@@ -269,14 +266,14 @@ const InitiatePayment: React.FC = () => {
 
                 {!user && (
                   <div className="mb-4 sm:mb-6">
-                    <label htmlFor="guest-contact" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                      Email or Contact Number <span className="text-red-500">*</span>
+                    <label htmlFor="guest-email" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
+                      Email Address <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      id="guest-contact"
-                      placeholder="Enter your email or phone number"
-                      value={guestContact}
-                      onChange={(e) => setGuestContact(e.target.value)}
+                      id="guest-email"
+                      placeholder="Enter your email address"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
                       className="w-full"
                     />
                     <p className="text-xs text-[var(--text-secondary)] mt-1.5">
