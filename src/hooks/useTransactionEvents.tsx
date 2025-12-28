@@ -24,17 +24,142 @@ interface UseTransactionEventsOptions {
   onError?: (error: Event) => void;
 }
 
+// Global WebSocket instance and callbacks
+let globalWs: WebSocket | null = null;
+let globalOnStatusChangeCallbacks: Set<(event: TransactionEvent) => void> = new Set();
+let globalOnErrorCallbacks: Set<(error: Event) => void> = new Set();
+let reconnectTimeoutRef: NodeJS.Timeout | null = null;
+let reconnectAttemptsRef = 0;
+const maxReconnectAttempts = 5;
+const baseReconnectDelay = 1000;
+let isManualCloseRef = false;
+
+const getAuthToken = () => {
+  const tokens = localStorage.getItem('auth_tokens');
+  if (tokens) {
+    try {
+      const parsedTokens = JSON.parse(tokens);
+      return parsedTokens.access_token;
+    } catch (error) {
+      console.error('Error parsing auth tokens:', error);
+      return null;
+    }
+  }
+  return null;
+};
+
+const getWebSocketUrl = () => {
+  const httpUrl = API_BASE_URL;
+  if (httpUrl.startsWith('https://')) {
+    return httpUrl.replace('https://', 'wss://');
+  } else if (httpUrl.startsWith('http://')) {
+    return httpUrl.replace('http://', 'ws://');
+  }
+  return `ws://${httpUrl}`;
+};
+
+const connectGlobalWebSocket = () => {
+  const token = getAuthToken();
+  if (!token) {
+    console.log('No authentication token found, skipping WebSocket connection');
+    return;
+  }
+
+  // Close existing connection
+  if (globalWs) {
+    isManualCloseRef = false;
+    globalWs.close();
+  }
+
+  try {
+    const wsBaseUrl = getWebSocketUrl();
+    const wsUrl = `${wsBaseUrl}/events/transactions?token=${encodeURIComponent(token)}`;
+
+    const ws = new WebSocket(wsUrl);
+    globalWs = ws;
+
+    ws.onopen = () => {
+      console.log('WebSocket connection opened');
+      reconnectAttemptsRef = 0;
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as TransactionEvent;
+
+        // Broadcast to all registered callbacks
+        globalOnStatusChangeCallbacks.forEach(callback => {
+          try {
+            callback(data);
+          } catch (error) {
+            console.error('Error in status change callback:', error);
+          }
+        });
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket connection error:', error);
+      globalOnErrorCallbacks.forEach(callback => {
+        try {
+          callback(error as Event);
+        } catch (err) {
+          console.error('Error in error callback:', err);
+        }
+      });
+    };
+
+    ws.onclose = (event) => {
+      console.log('WebSocket connection closed', event.code, event.reason);
+
+      // Attempt to reconnect if not manual close
+      if (!isManualCloseRef && reconnectAttemptsRef < maxReconnectAttempts) {
+        reconnectAttemptsRef++;
+        const delay = baseReconnectDelay * Math.pow(2, reconnectAttemptsRef - 1);
+
+        console.log(`Attempting to reconnect in ${delay}ms (attempt ${reconnectAttemptsRef}/${maxReconnectAttempts})`);
+
+        reconnectTimeoutRef = setTimeout(() => {
+          connectGlobalWebSocket();
+        }, delay);
+      } else if (!isManualCloseRef) {
+        console.error('Max reconnection attempts reached');
+      }
+    };
+  } catch (error) {
+    console.error('Error creating WebSocket connection:', error);
+  }
+};
+
+const disconnectGlobalWebSocket = () => {
+  if (reconnectTimeoutRef) {
+    clearTimeout(reconnectTimeoutRef);
+    reconnectTimeoutRef = null;
+  }
+
+  isManualCloseRef = true;
+
+  if (globalWs) {
+    globalWs.close();
+    globalWs = null;
+  }
+};
+
+// Public API for connection management
+export const WebSocketManager = {
+  connect: connectGlobalWebSocket,
+  disconnect: disconnectGlobalWebSocket,
+  isConnected: () => globalWs?.readyState === WebSocket.OPEN,
+};
+
 export const useTransactionEvents = (options: UseTransactionEventsOptions = {}) => {
-  const { transactionId, enabled = true, onStatusChange, onError } = options;
+  const { onStatusChange, onError } = options;
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const reconnectAttemptsRef = useRef(0);
   const onStatusChangeRef = useRef(onStatusChange);
   const onErrorRef = useRef(onError);
-  const maxReconnectAttempts = 5;
-  const baseReconnectDelay = 1000; // 1 second
   const queryClient = useQueryClient();
 
   // Update refs when callbacks change
@@ -43,180 +168,56 @@ export const useTransactionEvents = (options: UseTransactionEventsOptions = {}) 
     onErrorRef.current = onError;
   }, [onStatusChange, onError]);
 
-  const getAuthToken = useCallback(() => {
-    const tokens = localStorage.getItem('auth_tokens');
-    if (tokens) {
-      try {
-        const parsedTokens = JSON.parse(tokens);
-        return parsedTokens.access_token;
-      } catch (error) {
-        console.error('Error parsing auth tokens:', error);
-        return null;
+  // Register callbacks with global WebSocket
+  useEffect(() => {
+    const statusChangeCallback = (event: TransactionEvent) => {
+      // Update React Query cache automatically
+      if (event.transactionId) {
+        queryClient.invalidateQueries({ queryKey: transactionKeys.detail(event.transactionId) });
+        queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
+
+        if (event.payload && event.type === 'transaction_updated') {
+          queryClient.setQueryData(transactionKeys.detail(event.transactionId), event.payload);
+        }
       }
-    }
-    return null;
-  }, []);
 
-  const connect = useCallback(() => {
-    if (!enabled) return;
+      // Call registered callback
+      if (onStatusChangeRef.current) {
+        onStatusChangeRef.current(event);
+      }
+    };
 
-    const token = getAuthToken();
-    if (!token) {
-      setConnectionError('No authentication token found');
-      return;
-    }
-
-    // Close existing connection if any
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
-
-    // Create new EventSource connection
-    const url = `${API_BASE_URL}/events/transactions`;
-
-    try {
-      // Note: Standard EventSource doesn't support custom headers (like Authorization)
-      const urlWithToken = `${url}?token=${encodeURIComponent(token)}`;
-
-      const eventSource = new EventSource(urlWithToken);
-      eventSourceRef.current = eventSource;
-
-      eventSource.onopen = () => {
-        console.log('SSE Connection opened');
-        setIsConnected(true);
-        setConnectionError(null);
-        reconnectAttemptsRef.current = 0; // Reset on successful connection
-      };
-
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data) as TransactionEvent;
-
-          // Update React Query cache automatically
-          if (data.transactionId) {
-            // Invalidate the specific transaction
-            queryClient.invalidateQueries({ queryKey: transactionKeys.detail(data.transactionId) });
-
-            // Invalidate the list
-            queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
-
-            // If we have a payload with the full transaction, we can update the cache directly
-            if (data.payload && data.type === 'transaction_updated') {
-              queryClient.setQueryData(transactionKeys.detail(data.transactionId), data.payload);
-            }
-          }
-
-          // Handle subscribed event
-          if (data.type === 'subscribed') {
-            console.log('Successfully subscribed to transaction events:', data.message);
-            return;
-          }
-
-          // Handle status changes
-          if (data.type === 'status_changed' || data.type === 'transaction_updated') {
-            console.log('Transaction status changed:', data);
-            if (onStatusChangeRef.current) {
-              onStatusChangeRef.current(data);
-            }
-          }
-
-          // Handle other event types
-          if (data.type === 'receiver_assigned' || data.type === 'sender_assigned') {
-            console.log('Transaction participant assigned:', data);
-            if (onStatusChangeRef.current) {
-              onStatusChangeRef.current(data);
-            }
-          }
-        } catch (error) {
-          console.error('Error parsing SSE event:', error);
-        }
-      };
-
-      eventSource.onerror = (error) => {
-        console.error('SSE connection error:', error);
-        setIsConnected(false);
-
-        // Check if connection is closed
-        if (eventSource.readyState === EventSource.CLOSED) {
-          setConnectionError('Connection closed');
-
-          // Attempt to reconnect if we haven't exceeded max attempts
-          if (reconnectAttemptsRef.current < maxReconnectAttempts) {
-            reconnectAttemptsRef.current++;
-            const delay = baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current - 1); // Exponential backoff
-
-            console.log(`Attempting to reconnect in ${delay}ms (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`);
-
-            reconnectTimeoutRef.current = setTimeout(() => {
-              connect();
-            }, delay);
-          } else {
-            setConnectionError('Max reconnection attempts reached. Please refresh the page.');
-            if (onErrorRef.current) {
-              onErrorRef.current(error);
-            }
-          }
-        } else if (onErrorRef.current) {
-          onErrorRef.current(error);
-        }
-      };
-    } catch (error) {
-      console.error('Error creating SSE connection:', error);
-      setConnectionError('Failed to create SSE connection');
+    const errorCallback = (error: Event) => {
       if (onErrorRef.current) {
-        onErrorRef.current(error as Event);
-      }
-    }
-  }, [enabled, getAuthToken, transactionId, queryClient]);
-
-  const disconnect = useCallback(() => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-      setIsConnected(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (enabled) {
-      connect();
-    }
-
-    return () => {
-      disconnect();
-    };
-  }, [enabled, connect, disconnect]);
-
-  // Handle page visibility changes
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page is hidden, pause connection (optional)
-        // For now, we'll keep it connected
-      } else {
-        // Page is visible, ensure connection is active
-        if (enabled && !isConnected && !eventSourceRef.current) {
-          connect();
-        }
+        onErrorRef.current(error);
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    // Register callbacks
+    globalOnStatusChangeCallbacks.add(statusChangeCallback);
+    globalOnErrorCallbacks.add(errorCallback);
+
+    // Update connection status
+    const checkConnection = () => {
+      const connected = globalWs?.readyState === WebSocket.OPEN;
+      setIsConnected(connected);
+      setConnectionError(connected ? null : 'WebSocket disconnected');
     };
-  }, [enabled, isConnected, connect]);
+
+    checkConnection();
+    const interval = setInterval(checkConnection, 1000);
+
+    return () => {
+      // Unregister callbacks
+      globalOnStatusChangeCallbacks.delete(statusChangeCallback);
+      globalOnErrorCallbacks.delete(errorCallback);
+      clearInterval(interval);
+    };
+  }, [queryClient]);
 
   return {
     isConnected,
     connectionError,
-    reconnect: connect,
-    disconnect,
   };
 };
 

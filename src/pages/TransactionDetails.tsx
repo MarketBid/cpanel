@@ -118,6 +118,8 @@ const TransactionDetails: React.FC = () => {
     onStatusChange: handleStatusChange,
   });
 
+  // Remove the manual connect/disconnect logic - it's now handled globally
+
   // If transaction is passed from location state, set it in cache
   useEffect(() => {
     if (location.state?.transaction && transactionId) {
@@ -779,10 +781,10 @@ const TransactionDetails: React.FC = () => {
 
             {/* Timeline Card */}
             <div className={`rounded-2xl shadow-sm border p-6 ${normalizeStatus(transaction.status) === TransactionStatus.COMPLETED
-                ? 'bg-[var(--status-completed-bg)] border-[var(--status-completed-border)]'
-                : normalizeStatus(transaction.status) === TransactionStatus.DISPUTED
-                  ? 'bg-[var(--status-disputed-bg)] border-[var(--status-disputed-border)]'
-                  : 'bg-[var(--bg-card)] border-[var(--border-default)]'
+              ? 'bg-[var(--status-completed-bg)] border-[var(--status-completed-border)]'
+              : normalizeStatus(transaction.status) === TransactionStatus.DISPUTED
+                ? 'bg-[var(--status-disputed-bg)] border-[var(--status-disputed-border)]'
+                : 'bg-[var(--bg-card)] border-[var(--border-default)]'
               }`}>
               <h2 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
                 <Clock className="h-5 w-5 text-[var(--text-primary)]" />

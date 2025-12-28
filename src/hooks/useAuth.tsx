@@ -1,8 +1,9 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { User } from '../types';
 import { authService } from '../utils/auth';
 import { useCurrentUser, userKeys } from './queries/useUser';
+import { WebSocketManager } from './useTransactionEvents';
 
 interface AuthContextType {
   user: User | null;
@@ -32,23 +33,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Use React Query to fetch and cache user data. Enabled only when isAuthenticated is true.
   const { data: user = null, isLoading: loading } = useCurrentUser(isAuthenticated);
 
-  const login = async (email: string, password: string) => {
-    await authService.login({ username: email, password });
-    // Mark authenticated so the useCurrentUser query becomes enabled
-    setIsAuthenticated(true);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      await authService.login({ username: email, password });
+      // Mark authenticated so the useCurrentUser query becomes enabled
+      setIsAuthenticated(true);
 
-    // Force fetch current user and populate cache immediately so UI updates right away
-    try {
-      const freshUser = await queryClient.fetchQuery({
-        queryKey: userKeys.current(),
-        queryFn: () => authService.getCurrentUser(),
-      });
-      queryClient.setQueryData(userKeys.current(), freshUser);
-    } catch (err) {
-      // If fetching user fails, invalidate so other parts react and let them handle errors
-      await queryClient.invalidateQueries({ queryKey: userKeys.current() });
-    }
-  };
+      // Force fetch current user and populate cache immediately so UI updates right away
+      try {
+        const freshUser = await queryClient.fetchQuery({
+          queryKey: userKeys.current(),
+          queryFn: () => authService.getCurrentUser(),
+        });
+        queryClient.setQueryData(userKeys.current(), freshUser);
+      } catch (err) {
+        // If fetching user fails, invalidate so other parts react and let them handle errors
+        await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+      }
+
+      // Connect WebSocket after successful login
+      WebSocketManager.connect();
+    },
+    [queryClient]
+  );
 
   const register = async (userData: any) => {
     await authService.register(userData);
@@ -56,7 +63,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await queryClient.invalidateQueries({ queryKey: userKeys.current() });
   };
 
-  const logout = () => {
+  const logout = useCallback(async () => {
+    // Disconnect WebSocket before logout
+    WebSocketManager.disconnect();
+
     authService.logout();
     // Mark unauthenticated so useCurrentUser will be disabled
     setIsAuthenticated(false);
@@ -65,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     queryClient.setQueryData(userKeys.current(), null);
     // Clear other user-related cached queries
     queryClient.invalidateQueries({ queryKey: userKeys.all });
-  };
+  }, [queryClient]);
 
   const updateUser = async (userData: Partial<User>) => {
     // This will be handled by the useUpdateUser mutation hook
@@ -73,6 +83,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const updatedUser = await authService.updateUser(userData);
     queryClient.setQueryData(userKeys.current(), updatedUser);
   };
+
+  // Auto-connect on mount if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !WebSocketManager.isConnected()) {
+      WebSocketManager.connect();
+    }
+
+    return () => {
+      // Optional: disconnect on unmount if needed
+      // WebSocketManager.disconnect();
+    };
+  }, [isAuthenticated]);
 
   const value = {
     user,

@@ -29,18 +29,21 @@ export const useTransactions = (options?: { enabled?: boolean }) => {
 export const useTransaction = (transactionId: string | undefined, enabled: boolean = true) => {
   const queryClient = useQueryClient();
 
+  // Ensure transactionId is a string and not undefined or an object
+  const validTransactionId = typeof transactionId === 'string' ? transactionId : undefined;
+
   return useQuery({
-    queryKey: transactionKeys.detail(transactionId!),
+    queryKey: transactionKeys.detail(validTransactionId!),
     queryFn: async () => {
-      if (!transactionId) throw new Error('Transaction ID is required');
-      const response = await apiClient.get<Transaction>(`/transactions/${transactionId}`);
+      if (!validTransactionId) throw new Error('Transaction ID is required');
+      const response = await apiClient.get<Transaction>(`/transactions/${validTransactionId}`);
       return response.data;
     },
-    enabled: !!transactionId && enabled,
+    enabled: !!validTransactionId && enabled,
     initialData: () => {
-      if (!transactionId) return undefined;
+      if (!validTransactionId) return undefined;
       const transactions = queryClient.getQueryData<Transaction[]>(transactionKeys.lists());
-      return transactions?.find((t) => t.transaction_id === transactionId);
+      return transactions?.find((t) => t.transaction_id === validTransactionId);
     },
     initialDataUpdatedAt: () => {
       return queryClient.getQueryState(transactionKeys.lists())?.dataUpdatedAt;

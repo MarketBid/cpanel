@@ -14,11 +14,11 @@ import {
   FileText
 } from 'lucide-react';
 import { generateContractPDF } from '../utils/pdfGenerator';
-import { Transaction, TransactionStatus } from '../types';
+import { TransactionStatus } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { apiClient } from '../utils/api';
-import { useTransaction } from '../hooks/queries/useTransactions';
+import { useTransaction, transactionKeys } from '../hooks/queries/useTransactions';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { Card, CardContent, Input } from '../components/ui';
@@ -34,7 +34,7 @@ const InitiatePayment: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Use React Query to fetch transaction with caching
-  const { data: transaction, isLoading, error: transactionError, refetch } = useTransaction(transactionId);
+  const { data: transaction, isLoading, refetch } = useTransaction(transactionId);
 
   const processPayment = async () => {
     if (!transaction) return;
@@ -57,21 +57,29 @@ const InitiatePayment: React.FC = () => {
         }
       }
 
-      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`, payload);
+      const response = await apiClient.post<{ message?: string } | string>(`/payment/initiate-payment/${transaction.transaction_id}`, payload);
 
-      if (response.status === 'success' && response.data.message === 'Payment already completed') {
-        setError('Payment has already been completed for this transaction.');
-        setTimeout(() => {
-          refetch();
-          navigate(`/transactions/${transaction.transaction_id}`);
-        }, 1500);
-        return;
+      // Check if response is an object with a message property (error case)
+      if (typeof response.data === 'object' && response.data !== null && 'message' in response.data) {
+        if (response.data.message === 'Payment already completed') {
+          setError('Payment has already been completed for this transaction.');
+          setTimeout(() => {
+            refetch();
+            navigate(`/transactions/${transaction.transaction_id}`);
+          }, 1500);
+          return;
+        }
       }
 
       // Update cache with new transaction details
-      queryClient.invalidateQueries({ queryKey: ['transaction', transactionId] });
+      queryClient.invalidateQueries({ queryKey: transactionKeys.detail(transaction.transaction_id) });
 
-      window.location.href = response.data;
+      // response.data should be a string (payment URL) at this point
+      if (typeof response.data === 'string') {
+        window.location.href = response.data;
+      } else {
+        setError('Invalid response from payment server. Please try again.');
+      }
     } catch (error) {
       console.error('Payment initiation error:', error);
       setError('Failed to initiate payment. Please try again.');

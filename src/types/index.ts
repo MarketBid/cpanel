@@ -12,6 +12,7 @@ export interface User {
   total_ratings: number;
   date_of_birth?: string;
   location?: string;
+  is_guest?: boolean;
   is_business: boolean;
   social_media_links?: {
     instagram?: string;
