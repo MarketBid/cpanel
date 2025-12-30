@@ -12,7 +12,7 @@ class ApiClient {
     this.loadTokenFromStorage();
   }
 
-  private loadTokenFromStorage() {
+  public loadTokenFromStorage() {
     const tokens = localStorage.getItem('auth_tokens');
     if (tokens) {
       const parsedTokens: AuthTokens = JSON.parse(tokens);

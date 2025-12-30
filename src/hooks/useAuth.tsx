@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '../utils/api';
 import { User } from '../types';
 import { authService } from '../utils/auth';
 import { useCurrentUser, userKeys } from './queries/useUser';
@@ -95,6 +96,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // WebSocketManager.disconnect();
     };
   }, [isAuthenticated]);
+
+  // Sync auth state across tabs
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'auth_tokens') {
+        if (event.newValue === null) {
+          // Logged out in another tab
+          logout();
+        } else {
+          // Logged in in another tab
+
+          // Sync the api client with the new token from storage
+          apiClient.loadTokenFromStorage();
+
+          setIsAuthenticated(true);
+          // We need to fetch the user data since we are now authenticated
+          queryClient.invalidateQueries({ queryKey: userKeys.current() });
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [logout, queryClient]);
 
   const value = {
     user,
