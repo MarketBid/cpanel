@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Auto-connect on mount if already authenticated
   useEffect(() => {
-    if (isAuthenticated && !WebSocketManager.isConnected()) {
+    if (isAuthenticated && !WebSocketManager.isConnected() && !WebSocketManager.isConnecting()) {
       WebSocketManager.connect();
     }
 

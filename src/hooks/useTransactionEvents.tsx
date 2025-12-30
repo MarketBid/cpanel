@@ -85,12 +85,29 @@ const connectGlobalWebSocket = () => {
 
     ws.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data) as TransactionEvent;
+        const data = JSON.parse(event.data);
+
+        // Handle ping/pong messages
+        if (data.type === 'ping') {
+          // Server sent a ping, respond with pong
+          const pongMessage = {
+            type: 'pong',
+            timestamp: new Date().toISOString()
+          };
+          ws.send(JSON.stringify(pongMessage));
+          console.log('Received ping from server, sent pong');
+          return;
+        }
+
+
+
+        // Handle transaction events
+        const transactionEvent = data as TransactionEvent;
 
         // Broadcast to all registered callbacks
         globalOnStatusChangeCallbacks.forEach(callback => {
           try {
-            callback(data);
+            callback(transactionEvent);
           } catch (error) {
             console.error('Error in status change callback:', error);
           }
@@ -113,6 +130,12 @@ const connectGlobalWebSocket = () => {
 
     ws.onclose = (event) => {
       console.log('WebSocket connection closed', event.code, event.reason);
+
+      // If this socket is not the current global socket, it means it was replaced.
+      // We should not attempt to reconnect.
+      if (globalWs !== ws) {
+        return;
+      }
 
       // Attempt to reconnect if not manual close
       if (!isManualCloseRef && reconnectAttemptsRef < maxReconnectAttempts) {
@@ -152,6 +175,7 @@ export const WebSocketManager = {
   connect: connectGlobalWebSocket,
   disconnect: disconnectGlobalWebSocket,
   isConnected: () => globalWs?.readyState === WebSocket.OPEN,
+  isConnecting: () => globalWs?.readyState === WebSocket.CONNECTING,
 };
 
 export const useTransactionEvents = (options: UseTransactionEventsOptions = {}) => {
