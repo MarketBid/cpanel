@@ -388,27 +388,9 @@ const TransactionDetails: React.FC = () => {
 
     // When disputed, we need to determine which stage was reached before dispute
     // We'll check the transaction history or make reasonable assumptions based on data
-    const isDisputed = normalizedStatus === TransactionStatus.DISPUTED;
 
-    // Helper function to determine if a stage was completed before dispute
-    const wasCompletedBeforeDispute = (requiredStatuses: TransactionStatus[]) => {
-      if (!isDisputed) {
-        return requiredStatuses.includes(normalizedStatus);
-      }
 
-      // If disputed, check if the transaction had progressed to these stages
-      // We assume if certain fields are set, those stages were completed
-      // For paid: check if payment was made (you can add a payment_date field check if available)
-      if (requiredStatuses.includes(TransactionStatus.PAID)) {
-        // If we're disputed and have payment data, paid stage was completed
-        return true; // Assuming dispute can only happen after payment
-      }
 
-      // For in_transit and delivered: we'd need additional fields to track this
-      // For now, we'll assume these were completed if we have certain data
-      // You may want to add a `previous_status` or `status_history` field to track this properly
-      return false;
-    };
 
     const steps = [
       {
