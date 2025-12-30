@@ -241,7 +241,7 @@ const TransactionDetails: React.FC = () => {
     setUpdating(true);
     setError('');
     try {
-      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`);
+      const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`, {});
 
       // Cast data to any to access potential message property safely
       const responseData = response.data as any;
