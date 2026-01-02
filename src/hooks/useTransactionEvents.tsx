@@ -5,7 +5,7 @@ import { transactionKeys } from './queries/useTransactions';
 import { useQueryClient } from '@tanstack/react-query';
 
 export interface TransactionEvent {
-  type: 'subscribed' | 'status_changed' | 'transaction_updated' | 'receiver_assigned' | 'sender_assigned';
+  type: 'ping' | 'subscribed' | 'status_changed' | 'transaction_updated' | 'receiver_assigned' | 'sender_assigned';
   transactionId?: string;
   status?: TransactionStatus | string;
   previousStatus?: TransactionStatus | string;

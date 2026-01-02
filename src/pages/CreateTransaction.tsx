@@ -15,7 +15,6 @@ interface CreateTransactionForm {
   title: string;
   description: string;
   amount: number;
-  sender_id?: number;
   contract_type: ContractType;
   time_based_config?: {
     completion_date: string;
@@ -33,7 +32,6 @@ const CreateTransaction: React.FC = () => {
     title: '',
     description: '',
     amount: 0,
-    sender_id: undefined,
     contract_type: ContractType.TIME_BASED,
     time_based_config: {
       completion_date: '',
@@ -53,8 +51,8 @@ const CreateTransaction: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [manualSenderId, setManualSenderId] = useState('');
-  const [manualReceiverId, setManualReceiverId] = useState('');
+  const [manualSenderEmail, setManualSenderEmail] = useState('');
+  const [manualReceiverEmail, setManualReceiverEmail] = useState('');
   const [role, setRole] = useState<'sender' | 'receiver'>('receiver');
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const { maskAmount } = useSensitiveInfo();
@@ -67,15 +65,23 @@ const CreateTransaction: React.FC = () => {
     const senderId = searchParams.get('sender');
     const receiverId = searchParams.get('receiver');
 
-    if (senderId) {
-      setFormData(prev => ({ ...prev, sender_id: parseInt(senderId) }));
+    if (senderId && users.length > 0) {
+      const sender = users.find(u => u.id === parseInt(senderId));
+      if (sender) {
+        setManualSenderEmail(sender.email);
+      }
     }
 
     if (receiverId) {
       setRole('sender');
-      setManualReceiverId(receiverId);
+      if (users.length > 0) {
+        const receiver = users.find(u => u.id === parseInt(receiverId));
+        if (receiver) {
+          setManualReceiverEmail(receiver.email);
+        }
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, users]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,8 +114,9 @@ const CreateTransaction: React.FC = () => {
     try {
       const transactionData = {
         ...formData,
-        sender_id: role === 'sender' ? user?.id : (manualSenderId ? parseInt(manualSenderId) : undefined),
-        receiver_id: role === 'receiver' ? user?.id : (manualReceiverId ? parseInt(manualReceiverId) : undefined),
+        sender_email: role === 'sender' ? user?.email : manualSenderEmail,
+        receiver_email: role === 'receiver' ? user?.email : manualReceiverEmail,
+        owner: role,
 
         time_based_config: formData.contract_type === ContractType.TIME_BASED
           ? formData.time_based_config
@@ -261,25 +268,25 @@ const CreateTransaction: React.FC = () => {
 
             {role === 'receiver' && (
               <Input
-                label={`${role === 'receiver' ? 'Sender' : 'Receiver'} Email/Contact (Optional)`}
-                name="manual_sender_id"
-                type="text"
-                value={manualSenderId}
-                onChange={e => setManualSenderId(e.target.value)}
-                placeholder="Enter sender Email/Contact"
-                helperText="You can leave this empty if you don't know the sender email/contact."
+                label={`${role === 'receiver' ? 'Sender' : 'Receiver'} Email (Optional)`}
+                name="manual_sender_email"
+                type="email"
+                value={manualSenderEmail}
+                onChange={e => setManualSenderEmail(e.target.value)}
+                placeholder="Enter sender Email"
+                helperText="You can leave this empty if you don't know the sender email."
               />
             )}
 
             {role === 'sender' && (
               <Input
-                label="Receiver Email/Contact (Optional)"
-                name="manual_receiver_id"
-                type="text"
-                value={manualReceiverId}
-                onChange={e => setManualReceiverId(e.target.value)}
-                placeholder="Enter receiver Email/Contact"
-                helperText="You can leave this empty if you don't know the receiver email/contact."
+                label="Receiver Email (Optional)"
+                name="manual_receiver_email"
+                type="email"
+                value={manualReceiverEmail}
+                onChange={e => setManualReceiverEmail(e.target.value)}
+                placeholder="Enter receiver Email"
+                helperText="You can leave this empty if you don't know the receiver email."
               />
             )}
           </CardContent>
@@ -715,8 +722,8 @@ const CreateTransaction: React.FC = () => {
                   <span className="font-medium text-[var(--text-primary)]">
                     {role === 'sender'
                       ? `${user?.name} (You)`
-                      : (manualSenderId
-                        ? users.find(u => u.id === parseInt(manualSenderId))?.name || `User ID: ${manualSenderId}`
+                      : (manualSenderEmail
+                        ? users.find(u => u.email === manualSenderEmail)?.name || manualSenderEmail
                         : 'To be assigned')}
                   </span>
                 </div>
@@ -725,8 +732,8 @@ const CreateTransaction: React.FC = () => {
                   <span className="font-medium text-[var(--text-primary)]">
                     {role === 'receiver'
                       ? `${user?.name} (You)`
-                      : (manualReceiverId
-                        ? users.find(u => u.id === parseInt(manualReceiverId))?.name || `User ID: ${manualReceiverId}`
+                      : (manualReceiverEmail
+                        ? users.find(u => u.email === manualReceiverEmail)?.name || manualReceiverEmail
                         : 'To be assigned')}
                   </span>
                 </div>
