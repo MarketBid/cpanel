@@ -51,7 +51,10 @@ const VerifyEmail: React.FC = () => {
         try {
             await verifyUser(email, otp);
             localStorage.removeItem('pending_verification_email');
-            navigate('/dashboard');
+            setSuccessMessage('Email verified successfully! Redirecting...');
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 2000);
         } catch (err: any) {
             const message = err.response?.data?.detail || err.message || 'Verification failed';
 

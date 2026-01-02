@@ -65,7 +65,7 @@ class ApiClient {
         }
 
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Request failed');
+        throw new Error(errorData.detail || errorData.message || 'Request failed');
       }
 
       const data = await response.json();

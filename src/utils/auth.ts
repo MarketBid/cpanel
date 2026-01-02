@@ -41,6 +41,16 @@ export const authService = {
     await apiClient.post(`/auth/rate-user/${userId}`, { rating });
   },
 
+  async forgotPasswordCheck(email: string): Promise<{ message: string }> {
+    const response = await apiClient.get<{ message: string }>(`/auth/forgot-password-check?email=${encodeURIComponent(email)}`);
+    return response.data;
+  },
+
+  async resetPassword(email: string, password: string): Promise<{ message: string }> {
+    const response = await apiClient.put<{ message: string }>('/auth/reset-password', { email, password });
+    return response.data;
+  },
+
   logout() {
     apiClient.clearTokens();
   },

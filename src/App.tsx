@@ -25,6 +25,8 @@ import Profile from './pages/Profile';
 import Users from './pages/Users';
 import PaymentCallback from './pages/PaymentCallback';
 import JoinTransaction from './pages/JoinTransaction';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -48,6 +50,8 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route
                   path="/"

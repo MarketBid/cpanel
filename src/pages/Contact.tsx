@@ -18,14 +18,14 @@ const contactChannels = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'r.quaicoe@clarsix.com',
+    value: 'support@clarsix.com',
     desc: 'We reply in one business day',
     color: 'from-blue-500 to-indigo-600',
   },
   {
     icon: MapPin,
     label: 'Office',
-    value: 'Remote-first · Accra · San Francisco',
+    value: 'Remote-first · Accra',
     desc: 'Available for on-site diligence',
     color: 'from-purple-500 to-pink-600',
   },

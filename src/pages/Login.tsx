@@ -173,7 +173,7 @@ const Login: React.FC = () => {
                   }
                 />
                 <div className="mt-2 text-right">
-                  <Link to="#" className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
+                  <Link to="/forgot-password" className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
                     Forgot password?
                   </Link>
                 </div>
