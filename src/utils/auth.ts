@@ -17,6 +17,16 @@ export const authService = {
     return response.data;
   },
 
+  async verifyUser(email: string, otp: string): Promise<AuthTokens> {
+    const response = await apiClient.post<AuthTokens>('/auth/verify-user', { email, otp });
+    apiClient.setTokens(response.data);
+    return response.data;
+  },
+
+  async resendOtp(email: string): Promise<void> {
+    await apiClient.post('/auth/resend-otp', { email });
+  },
+
   async getCurrentUser(): Promise<User> {
     const response = await apiClient.get<User>('/auth/users/me');
     return response.data;

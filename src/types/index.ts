@@ -14,6 +14,7 @@ export interface User {
   location?: string;
   is_guest?: boolean;
   is_business: boolean;
+  verified?: boolean;
   social_media_links?: {
     instagram?: string;
     facebook?: string;

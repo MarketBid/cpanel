@@ -11,6 +11,8 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: any) => Promise<void>;
+  verifyUser: (email: string, otp: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
   isAuthenticated: boolean;
@@ -62,6 +64,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await authService.register(userData);
     // Invalidate and refetch user data
     await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+    await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+  };
+
+  const verifyUser = async (email: string, otp: string) => {
+    await authService.verifyUser(email, otp);
+    setIsAuthenticated(true);
+    await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+    // Connect WebSocket after successful verification
+    WebSocketManager.connect();
+  };
+
+  const resendOtp = async (email: string) => {
+    await authService.resendOtp(email);
   };
 
   const logout = useCallback(async () => {
@@ -128,6 +143,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading,
     login,
     register,
+    verifyUser,
+    resendOtp,
     logout,
     updateUser,
     isAuthenticated,

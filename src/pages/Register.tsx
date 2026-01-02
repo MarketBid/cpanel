@@ -44,7 +44,8 @@ const Register: React.FC = () => {
       };
 
       await register(registerData);
-      navigate('/dashboard');
+      localStorage.setItem('pending_verification_email', formData.email);
+      navigate('/verify-email');
     } catch (err: any) {
       setError(err.message || 'Registration failed');
     } finally {
