@@ -11,6 +11,8 @@ interface EmptyStateProps {
     label: string;
     onClick: () => void;
     icon?: React.ReactNode;
+    disabled?: boolean;
+    tooltip?: string;
   };
   secondaryAction?: {
     label: string;
@@ -81,13 +83,23 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           className="flex flex-col sm:flex-row gap-3"
         >
           {action && (
-            <Button
-              variant="primary"
-              onClick={action.onClick}
-              rightIcon={action.icon}
-            >
-              {action.label}
-            </Button>
+            <div className="relative group">
+              <Button
+                variant="primary"
+                onClick={action.onClick}
+                leftIcon={action.icon}
+                disabled={action.disabled}
+                className={action.disabled ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-700' : ''}
+              >
+                {action.label}
+              </Button>
+              {action.disabled && action.tooltip && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                  {action.tooltip}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+                </div>
+              )}
+            </div>
           )}
           {secondaryAction && (
             <Button

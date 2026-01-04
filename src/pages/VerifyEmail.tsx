@@ -17,7 +17,7 @@ const VerifyEmail: React.FC = () => {
     const [canResend, setCanResend] = useState(false);
     const [isMaxAttempts, setIsMaxAttempts] = useState(false);
 
-    const { verifyUser, resendOtp } = useAuth();
+    const { verifyUser, resendOtp, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
 
@@ -107,13 +107,13 @@ const VerifyEmail: React.FC = () => {
         <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
             <div className="absolute top-4 left-4">
                 <Link
-                    to="/"
+                    to={isAuthenticated ? "/dashboard" : "/login"}
                     className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors font-medium text-sm"
                 >
                     <div className="p-2 rounded-full bg-[var(--bg-card)] border border-[var(--border-default)] shadow-sm hover:shadow-md transition-all">
                         <ArrowLeft className="h-4 w-4" />
                     </div>
-                    <span className="hidden sm:inline">Back to Home</span>
+                    <span className="hidden sm:inline">{isAuthenticated ? "Back to Dashboard" : "Back to Login"}</span>
                 </Link>
             </div>
             <div className="absolute top-4 right-4">

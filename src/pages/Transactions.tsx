@@ -283,13 +283,25 @@ const Transactions: React.FC = () => {
           </div>
 
         </div>
-        <button
-          onClick={() => navigate('/transactions/create')}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-xs sm:text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors w-full sm:w-auto"
-        >
-          <Plus className="h-4 w-4" />
-          Create Transaction
-        </button>
+        <div className="relative group w-full sm:w-auto">
+          <button
+            onClick={() => user?.verified ? navigate('/transactions/create') : null}
+            disabled={!user?.verified}
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-colors w-full sm:w-auto ${user?.verified
+              ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
+              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+              }`}
+          >
+            <Plus className="h-4 w-4" />
+            Create Transaction
+          </button>
+          {!user?.verified && (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+              Please verify your account in Settings to create transactions
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)]">
@@ -463,13 +475,25 @@ const Transactions: React.FC = () => {
                   : 'Get started by creating your first transaction'}
               </p>
               {!searchTerm && statusFilters.length === 0 && !hasActiveDateFilter && (
-                <button
-                  onClick={() => navigate('/transactions/create')}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create Transaction
-                </button>
+                <div className="relative group inline-block">
+                  <button
+                    onClick={() => user?.verified ? navigate('/transactions/create') : null}
+                    disabled={!user?.verified}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${user?.verified
+                      ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
+                      : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                      }`}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create Transaction
+                  </button>
+                  {!user?.verified && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                      Please verify your account in Settings to create transactions
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -657,13 +681,25 @@ const Transactions: React.FC = () => {
                           : 'Get started by creating your first transaction'}
                       </p>
                       {!searchTerm && statusFilters.length === 0 && !hasActiveDateFilter && (
-                        <button
-                          onClick={() => navigate('/transactions/create')}
-                          className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-sm font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
-                        >
-                          <Plus className="h-4 w-4" />
-                          Create Transaction
-                        </button>
+                        <div className="relative group inline-block">
+                          <button
+                            onClick={() => user?.verified ? navigate('/transactions/create') : null}
+                            disabled={!user?.verified}
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${user?.verified
+                              ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
+                              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                              }`}
+                          >
+                            <Plus className="h-4 w-4" />
+                            Create Transaction
+                          </button>
+                          {!user?.verified && (
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                              Please verify your account in Settings to create transactions
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </td>

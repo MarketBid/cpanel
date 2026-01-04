@@ -202,14 +202,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           <li className="mt-auto">
             <Link
-              to="/profile"
+              to="/settings"
               onClick={() => setSidebarOpen(false)}
-              className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${location.pathname === '/profile'
+              className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${location.pathname === '/settings'
                 ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
                 }`}
             >
-              <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/profile' ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
+              <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/settings' ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
               Settings
             </Link>
 

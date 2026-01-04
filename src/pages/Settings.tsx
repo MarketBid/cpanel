@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Building, Star, CreditCard as Edit, Save, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Building, Star, CreditCard as Edit, Save, X, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.tsx';
 import { BUSINESS_CATEGORIES } from '../types';
 import { apiClient } from '../utils/api';
@@ -24,7 +24,7 @@ const SOCIAL_MEDIA_OPTIONS = [
   'other'
 ];
 
-const Profile: React.FC = () => {
+const Settings: React.FC = () => {
   const { user, updateUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -164,9 +164,27 @@ const Profile: React.FC = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-primary)] truncate">{user.name}</h1>
-                <p className="text-sm sm:text-base text-[var(--text-secondary)] mt-0.5 sm:mt-1">
-                  {user.is_business ? 'Business Account' : 'Personal Account'}
-                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-0.5 sm:mt-1">
+                  <p className="text-sm sm:text-base text-[var(--text-secondary)]">
+                    {user.is_business ? 'Business Account' : 'Personal Account'}
+                  </p>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${user.verified
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                      : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                    }`}>
+                    {user.verified ? (
+                      <>
+                        <ShieldCheck className="h-3 w-3" />
+                        Verified
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="h-3 w-3" />
+                        Not Verified
+                      </>
+                    )}
+                  </span>
+                </div>
                 {user.rating > 0 && (
                   <div className="flex items-center mt-1.5 sm:mt-2">
                     <StarRating
@@ -206,6 +224,20 @@ const Profile: React.FC = () => {
                 </>
               ) : (
                 <>
+                  {!user.verified && (
+                    <Button
+                      variant="primary"
+                      leftIcon={<ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                      onClick={() => {
+                        localStorage.setItem('pending_verification_email', user.email);
+                        window.location.href = '/verify-email';
+                      }}
+                      className="text-xs sm:text-sm w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
+                    >
+                      Verify Account
+                    </Button>
+                  )}
+
                   {!user.is_business && (
                     <Button
                       variant="primary"
@@ -516,4 +548,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile;
+export default Settings;

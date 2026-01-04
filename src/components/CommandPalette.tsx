@@ -89,7 +89,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
       label: 'Settings',
       description: 'Account settings',
       icon: <Settings className="h-4 w-4" />,
-      action: () => { navigate('/profile'); onClose(); },
+      action: () => { navigate('/settings'); onClose(); },
       category: 'navigation',
       keywords: ['profile', 'preferences'],
     },

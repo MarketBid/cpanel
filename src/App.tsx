@@ -21,7 +21,7 @@ import TransactionDetails from './pages/TransactionDetails';
 import PaymentCode from './pages/PaymentCode';
 import InitiatePayment from './pages/InitiatePayment';
 import Accounts from './pages/Accounts';
-import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import Users from './pages/Users';
 import PaymentCallback from './pages/PaymentCallback';
 import JoinTransaction from './pages/JoinTransaction';
@@ -173,11 +173,11 @@ function App() {
                 />
 
                 <Route
-                  path="/profile"
+                  path="/settings"
                   element={
                     <ProtectedRoute>
                       <Layout>
-                        <Profile />
+                        <Settings />
                       </Layout>
                     </ProtectedRoute>
                   }
