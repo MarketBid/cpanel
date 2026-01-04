@@ -550,12 +550,12 @@ const Settings: React.FC = () => {
                   className={`
                     w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                     ${isActive
-                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 shadow-sm'
+                      ? 'bg-[rgba(11,138,110,0.1)] dark:bg-[rgba(11,138,110,0.2)] text-[rgb(11,138,110)] dark:text-[rgb(16,185,129)] shadow-sm'
                       : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
                     }
                   `}
                 >
-                  <Icon className={`h-5 w-5 ${isActive ? 'text-green-700 dark:text-green-400' : 'text-[var(--text-tertiary)]'}`} />
+                  <Icon className={`h-5 w-5 ${isActive ? 'text-[rgb(11,138,110)] dark:text-[rgb(16,185,129)]' : 'text-[var(--text-tertiary)]'}`} />
                   {tab.label}
                 </button>
               );

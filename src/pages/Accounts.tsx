@@ -37,7 +37,7 @@ const Accounts: React.FC = () => {
   // Function to mask account/mobile numbers
   const maskAccountNumber = (number: string): string => {
     if (!number) return '•••• •••• •••• ••••';
-    
+
     if (isVisible) {
       // Show the number with formatting, including plus sign if present
       return number.replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -79,7 +79,7 @@ const Accounts: React.FC = () => {
   const handleEditAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingAccount) return;
-    
+
     try {
       await updateAccountMutation.mutateAsync({
         accountId: editingAccount.id,
@@ -128,7 +128,7 @@ const Accounts: React.FC = () => {
       console.error('Error deleting account:', error);
     }
   };
-  
+
   const submitting = addAccountMutation.isPending || updateAccountMutation.isPending || deleteAccountMutation.isPending;
 
   const resetEditForm = () => {
@@ -211,16 +211,16 @@ const Accounts: React.FC = () => {
                                 <stop offset="100%" style={{ stopColor: '#C5A028', stopOpacity: 1 }} />
                               </linearGradient>
                             </defs>
-                            <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradient)"/>
-                            <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                            <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                            <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                            <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                            <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                            <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                            <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5"/>
-                            <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5"/>
-                            <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5"/>
+                            <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradient)" />
+                            <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                            <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                            <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                            <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                            <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                            <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                            <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5" />
+                            <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5" />
+                            <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5" />
                           </svg>
                         </div>
                         {/* Provider Name */}
@@ -338,8 +338,8 @@ const Accounts: React.FC = () => {
             <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
               Add your first bank or mobile money account to start accepting payments securely.
             </p>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               leftIcon={<Plus className="h-4 w-4" />}
               onClick={() => setShowAddModal(true)}
             >
@@ -353,7 +353,7 @@ const Accounts: React.FC = () => {
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
           {/* Backdrop */}
-          <div 
+          <div
             onClick={resetForm}
             className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
           />
@@ -403,16 +403,16 @@ const Accounts: React.FC = () => {
                               <stop offset="100%" style={{ stopColor: '#C5A028', stopOpacity: 1 }} />
                             </linearGradient>
                           </defs>
-                          <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradientAdd)"/>
-                          <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5"/>
-                          <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5"/>
-                          <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5"/>
+                          <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradientAdd)" />
+                          <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5" />
+                          <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5" />
+                          <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5" />
                         </svg>
                       </div>
                       <div className="text-xs font-semibold uppercase tracking-wide">
@@ -481,85 +481,85 @@ const Accounts: React.FC = () => {
 
               {/* Form Fields */}
               <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Account Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                  placeholder="e.g., Main Savings Account"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Account Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    placeholder="e.g., Main Savings Account"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Account Type
-                </label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                >
-                  <option value={AccountType.BANK}>Bank Account</option>
-                  <option value={AccountType.MOMO}>Mobile Money</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Account Type
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                  >
+                    <option value={AccountType.BANK}>Bank Account</option>
+                    <option value={AccountType.MOMO}>Mobile Money</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Account Number
-                </label>
-                <input
-                  type="text"
-                  name="number"
-                  value={formData.number}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                  placeholder={formData.type === AccountType.BANK ? "Account number" : "Mobile number"}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Account Number
+                  </label>
+                  <input
+                    type="text"
+                    name="number"
+                    value={formData.number}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    placeholder={formData.type === AccountType.BANK ? "Account number" : "Mobile number"}
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Service Provider
-                </label>
-                <input
-                  type="text"
-                  name="service_provider"
-                  value={formData.service_provider}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                  placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Service Provider
+                  </label>
+                  <input
+                    type="text"
+                    name="service_provider"
+                    value={formData.service_provider}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
+                  />
+                </div>
 
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetForm}
-                  className="flex-1"
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="flex-1"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Adding...' : 'Add Account'}
-                </Button>
-              </div>
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetForm}
+                    className="flex-1"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="flex-1"
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Adding...' : 'Add Account'}
+                  </Button>
+                </div>
               </div>
             </form>
           </div>
@@ -570,7 +570,7 @@ const Accounts: React.FC = () => {
       {showEditModal && editingAccount && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
           {/* Backdrop */}
-          <div 
+          <div
             onClick={resetEditForm}
             className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
           />
@@ -620,16 +620,16 @@ const Accounts: React.FC = () => {
                               <stop offset="100%" style={{ stopColor: '#C5A028', stopOpacity: 1 }} />
                             </linearGradient>
                           </defs>
-                          <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradientEdit)"/>
-                          <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5"/>
-                          <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5"/>
-                          <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5"/>
-                          <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5"/>
+                          <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradientEdit)" />
+                          <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
+                          <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5" />
+                          <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5" />
+                          <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5" />
                         </svg>
                       </div>
                       <div className="text-xs font-semibold uppercase tracking-wide">
@@ -698,85 +698,85 @@ const Accounts: React.FC = () => {
 
               {/* Form Fields */}
               <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Account Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                  placeholder="e.g., Main Savings Account"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Account Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    placeholder="e.g., Main Savings Account"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Account Type
-                </label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                >
-                  <option value={AccountType.BANK}>Bank Account</option>
-                  <option value={AccountType.MOMO}>Mobile Money</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Account Type
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                  >
+                    <option value={AccountType.BANK}>Bank Account</option>
+                    <option value={AccountType.MOMO}>Mobile Money</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Account Number
-                </label>
-                <input
-                  type="text"
-                  name="number"
-                  value={formData.number}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                  placeholder={formData.type === AccountType.BANK ? "Account number" : "Mobile number"}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Account Number
+                  </label>
+                  <input
+                    type="text"
+                    name="number"
+                    value={formData.number}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    placeholder={formData.type === AccountType.BANK ? "Account number" : "Mobile number"}
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Service Provider
-                </label>
-                <input
-                  type="text"
-                  name="service_provider"
-                  value={formData.service_provider}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                  placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Service Provider
+                  </label>
+                  <input
+                    type="text"
+                    name="service_provider"
+                    value={formData.service_provider}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
+                  />
+                </div>
 
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetEditForm}
-                  className="flex-1"
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="flex-1"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Updating...' : 'Update Account'}
-                </Button>
-              </div>
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetEditForm}
+                    className="flex-1"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="flex-1"
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Updating...' : 'Update Account'}
+                  </Button>
+                </div>
               </div>
             </form>
           </div>
@@ -787,7 +787,7 @@ const Accounts: React.FC = () => {
       {showDeleteModal && deletingAccount && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
           {/* Backdrop */}
-          <div 
+          <div
             onClick={() => {
               setShowDeleteModal(false);
               setDeletingAccount(null);

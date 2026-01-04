@@ -353,14 +353,14 @@ const Dashboard: React.FC = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {/* Revenue Received */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
           <div className="relative">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-white/80">Revenue Received</span>
-              <TrendingUp className="h-5 w-5 text-white/90" />
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-white/80">Revenue Received</span>
+              <TrendingUp className="h-4 w-4 text-white/90" />
             </div>
-            <div className="text-3xl font-bold mb-1">₵{maskAmount(received)}</div>
+            <div className="text-2xl font-bold mb-1">₵{maskAmount(received)}</div>
             <div className="flex items-center gap-1 text-xs text-white/80">
               <TrendingUp className="h-3 w-3" />
               <span>+{analytics.revenuePercentage}% vs last week</span>
@@ -369,30 +369,30 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Amount Sent */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16" />
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12" />
           <div className="relative">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-white/80">Amount Sent</span>
-              <Send className="h-5 w-5 text-white/90" />
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-white/80">Amount Sent</span>
+              <Send className="h-4 w-4 text-white/90" />
             </div>
-            <div className="text-3xl font-bold mb-1">₵{maskAmount(sent)}</div>
+            <div className="text-2xl font-bold mb-1">₵{maskAmount(sent)}</div>
             <div className="text-xs text-white/70">Total payments made</div>
           </div>
         </div>
 
         {/* Total Transactions */}
-        <div className={`relative overflow-hidden rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow ${analytics.transactionCountChange >= 0
+        <div className={`relative overflow-hidden rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-shadow ${analytics.transactionCountChange >= 0
           ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
           : 'bg-gradient-to-br from-orange-500 to-red-600'
           }`}>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
           <div className="relative">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-white/80">Total Transactions</span>
-              <Package className="h-5 w-5 text-white/90" />
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-white/80">Total Transactions</span>
+              <Package className="h-4 w-4 text-white/90" />
             </div>
-            <div className="text-3xl font-bold mb-1">{totalTransactions}</div>
+            <div className="text-2xl font-bold mb-1">{totalTransactions}</div>
             <div className="flex items-center gap-1 text-xs text-white/80">
               {analytics.transactionCountChange >= 0 ? (
                 <TrendingUp className="h-3 w-3" />
@@ -407,14 +407,14 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Active Transactions */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
           <div className="relative">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-white/80">Active</span>
-              <Activity className="h-5 w-5 text-white/90" />
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-white/80">Active</span>
+              <Activity className="h-4 w-4 text-white/90" />
             </div>
-            <div className="text-3xl font-bold mb-1">
+            <div className="text-2xl font-bold mb-1">
               {statusCounts[TransactionStatus.PENDING] + statusCounts[TransactionStatus.PAID] + statusCounts[TransactionStatus.IN_TRANSIT]}
             </div>
             <div className="text-xs text-white/70">Pending, Paid & in-transit</div>
