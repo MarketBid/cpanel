@@ -18,7 +18,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import ScrollToTopButton from './ScrollToTopButton';
-import ThemeToggle from './ThemeToggle';
+
 import NotificationCenter, { Notification } from './NotificationCenter';
 import CommandPalette from './CommandPalette';
 import { useTransactions } from '../hooks/queries/useTransactions';
@@ -342,7 +342,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               onDelete={handleDeleteNotification}
               onClearAll={handleClearAllNotifications}
             />
-            <ThemeToggle />
+
             <button
               onClick={toggleVisibility}
               className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
