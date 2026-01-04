@@ -24,6 +24,8 @@ export interface User {
   social_links?: SocialLink[];
   business_category?: string;
   profile_image?: string;
+  completed_transactions?: number;
+  resolved_disputes?: [number, number]; // [resolved_disputes, total_disputes]
   created_at: string;
   updated_at: string;
 }
