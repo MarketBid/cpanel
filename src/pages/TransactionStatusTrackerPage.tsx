@@ -7,6 +7,7 @@ import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Badge from '../components/ui/Badge';
 import { apiClient } from '../utils/api';
+import { getTransactionTypeStyles } from '../utils/statusUtils';
 
 const statusSteps = [
 	{ key: 'joined', label: 'Both Parties Joined', icon: User },
@@ -81,7 +82,17 @@ const TransactionStatusTrackerPage: React.FC = () => {
 						</Button>
 						<div>
 							<h1 className="text-2xl font-bold text-neutral-900 mb-1">Transaction Status Tracker</h1>
-							<p className="text-gray-600 text-sm">Track the progress of transaction #{transaction.transaction_id}</p>
+							<div className="flex items-center gap-2">
+								<p className="text-gray-600 text-sm">Track the progress of transaction #{transaction.transaction_id}</p>
+								{(() => {
+									const typeStyles = getTransactionTypeStyles(transaction.type);
+									return (
+										<span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+											{typeStyles.label}
+										</span>
+									);
+								})()}
+							</div>
 						</div>
 					</div>
 					<div className="text-right">

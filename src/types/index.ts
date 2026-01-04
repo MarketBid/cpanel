@@ -43,6 +43,12 @@ export enum ContractType {
   MILESTONE_BASED = "milestone_based"
 }
 
+export enum TransactionType {
+  PHYSICAL_GOODS = "PHYSICAL_GOODS",
+  DIGITAL_GOODS = "DIGITAL_GOODS",
+  SERVICE = "SERVICE"
+}
+
 export interface Milestone {
   id: string;
   description: string;
@@ -99,6 +105,7 @@ export interface Transaction {
   };
   refund_policy?: RefundPolicy;
   fee_config?: FeeConfig;
+  type: TransactionType;
 }
 
 

@@ -6,6 +6,7 @@ import { apiClient } from '../utils/api';
 import { useTransaction } from '../hooks/queries/useTransactions';
 import { generateContractPDF } from '../utils/pdfGenerator';
 import Toast from '../components/ui/Toast';
+import { getTransactionTypeStyles } from '../utils/statusUtils';
 
 const JoinTransaction: React.FC = () => {
   const { transactionId: urlTransactionId } = useParams<{ transactionId?: string }>();
@@ -289,6 +290,18 @@ const JoinTransaction: React.FC = () => {
                     <div>
                       <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Service Title</div>
                       <div className="text-[var(--text-primary)] font-medium">{transaction.title}</div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Type</div>
+                      {(() => {
+                        const typeStyles = getTransactionTypeStyles(transaction.type);
+                        return (
+                          <div className={`inline-flex items-center px-2 py-1 rounded border text-xs font-medium ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+                            {typeStyles.label}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
 

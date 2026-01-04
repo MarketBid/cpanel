@@ -96,6 +96,7 @@ export const generateContractPDF = (transaction: Transaction) => {
     doc.setTextColor(textColor.r, textColor.g, textColor.b);
     addSpace(5);
     addText(`Title: ${transaction.title}`, 10, true);
+    addText(`Type: ${transaction.type?.replace(/_/g, ' ') || 'PHYSICAL GOODS'}`, 10);
     addText(`Description: ${transaction.description}`, 10);
     addSpace(5);
     addText(`Total Amount: GHS ${transaction.amount.toLocaleString()}`, 12, true);

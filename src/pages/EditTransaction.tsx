@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Package, DollarSign, Info, Calendar, Shield, Plus, X, FileText } from 'lucide-react';
-import { Transaction, TransactionStatus, ContractType, Milestone, RefundPolicyType, RefundPolicy, FeeConfig } from '../types';
+import { ArrowLeft, Package, DollarSign, Info, Calendar, Shield, Plus, X, FileText, User } from 'lucide-react';
+import { Transaction, ContractType, Milestone, RefundPolicyType, RefundPolicy, FeeConfig, TransactionType } from '../types';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -22,6 +22,7 @@ interface EditTransactionForm {
   };
   refund_policy: RefundPolicy;
   fee_config: FeeConfig;
+  type: TransactionType;
 }
 
 const EditTransaction: React.FC = () => {
@@ -42,7 +43,8 @@ const EditTransaction: React.FC = () => {
       refund_processing_fee_percentage: 5,
       refund_fee_payer: 'split',
       cancellation_fee_percentage: 10
-    }
+    },
+    type: TransactionType.PHYSICAL_GOODS
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -76,12 +78,13 @@ const EditTransaction: React.FC = () => {
           refund_processing_fee_percentage: 5,
           refund_fee_payer: 'split',
           cancellation_fee_percentage: 10
-        }
+        },
+        type: editingTransaction.type || TransactionType.PHYSICAL_GOODS
       });
       if (editingTransaction.milestones) {
         // Ensure each milestone has a unique id
         setMilestones(
-          editingTransaction.milestones.map((m, idx) => ({
+          editingTransaction.milestones.map((m: any, idx: number) => ({
             ...m,
             id: m.id || `${Date.now()}-${idx}`
           }))
@@ -178,7 +181,8 @@ const EditTransaction: React.FC = () => {
           })
           : undefined,
         refund_policy: formData.refund_policy,
-        fee_config: formData.fee_config
+        fee_config: formData.fee_config,
+        type: formData.type
       });
 
       if (response.data) {
@@ -266,6 +270,32 @@ const EditTransaction: React.FC = () => {
           </div>
 
           <div className="space-y-4 pt-4 border-t border-[var(--border-default)]">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                Transaction Type *
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: TransactionType.PHYSICAL_GOODS, label: 'Physical Goods', icon: <Package className="h-4 w-4" /> },
+                  { id: TransactionType.DIGITAL_GOODS, label: 'Digital Goods', icon: <FileText className="h-4 w-4" /> },
+                  { id: TransactionType.SERVICE, label: 'Service', icon: <User className="h-4 w-4" /> }
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, type: t.id }))}
+                    className={`py-3 px-2 rounded-lg font-medium transition-all duration-150 text-xs flex flex-col items-center gap-2 border ${formData.type === t.id
+                      ? 'bg-[var(--color-primary)] text-white shadow-md border-[var(--color-primary)]'
+                      : 'bg-[var(--bg-card)] text-[var(--text-primary)] border-[var(--border-default)] hover:border-[var(--border-medium)]'
+                      }`}
+                  >
+                    {t.icon}
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Product Title *

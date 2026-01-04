@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Package, DollarSign, User, FileText, ArrowLeft, Shield, Info, Plus, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
-import { ContractType, Milestone, RefundPolicyType, RefundPolicy, FeeConfig } from '../types';
+import { ContractType, Milestone, RefundPolicyType, RefundPolicy, FeeConfig, TransactionType } from '../types';
 
 import { useCreateTransaction } from '../hooks/queries/useTransactions';
 import { useUsers } from '../hooks/queries/useUsers';
@@ -23,6 +23,7 @@ interface CreateTransactionForm {
   };
   refund_policy: RefundPolicy;
   fee_config: FeeConfig;
+  type: TransactionType;
 }
 
 
@@ -45,7 +46,8 @@ const CreateTransaction: React.FC = () => {
       refund_processing_fee_percentage: 5,
       refund_fee_payer: 'split',
       cancellation_fee_percentage: 10
-    }
+    },
+    type: TransactionType.PHYSICAL_GOODS
   });
   const [error, setError] = useState('');
   const [searchParams] = useSearchParams();
@@ -302,6 +304,32 @@ const CreateTransaction: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                Transaction Type <span className="text-[var(--alert-error-text)]">*</span>
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: TransactionType.PHYSICAL_GOODS, label: 'Physical Goods', icon: <Package className="h-4 w-4" /> },
+                  { id: TransactionType.DIGITAL_GOODS, label: 'Digital Goods', icon: <FileText className="h-4 w-4" /> },
+                  { id: TransactionType.SERVICE, label: 'Service', icon: <User className="h-4 w-4" /> }
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, type: t.id }))}
+                    className={`py-3 px-2 rounded-lg font-medium transition-all duration-150 text-xs flex flex-col items-center gap-2 border ${formData.type === t.id
+                      ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] shadow-md border-[var(--color-primary)]'
+                      : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-light)] border-transparent'
+                      }`}
+                  >
+                    {t.icon}
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Input
               label="Service Title"
               name="title"
@@ -660,6 +688,12 @@ const CreateTransaction: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="text-[var(--text-secondary)]">Service</span>
                     <span className="font-medium text-[var(--text-primary)]">{formData.title || 'Not specified'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-secondary)]">Type</span>
+                    <span className="font-medium text-[var(--text-primary)] capitalize">
+                      {formData.type.replace(/_/g, ' ').toLowerCase()}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-secondary)]">Contract Type</span>

@@ -23,6 +23,7 @@ import { useTransactionEvents, TransactionEvent } from '../hooks/useTransactionE
 import { useTransactions, transactionKeys } from '../hooks/queries/useTransactions';
 import { useQueryClient } from '@tanstack/react-query';
 import ExportModal from '../components/ExportModal';
+import { getTransactionTypeStyles } from '../utils/statusUtils';
 
 type SortField = 'date' | 'status' | 'amount';
 type SortTransaction = 'asc' | 'desc';
@@ -246,14 +247,14 @@ const Transactions: React.FC = () => {
   const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
 
   const getStatusColor = (status: TransactionStatus) => {
-    const colors: Record<TransactionStatus, { bg: string; text: string; btransaction: string }> = {
-      [TransactionStatus.PENDING]: { bg: 'bg-[var(--status-pending-bg)]', text: 'text-[var(--status-pending-text)]', btransaction: 'border-[var(--status-pending-border)]' },
-      [TransactionStatus.PAID]: { bg: 'bg-[var(--status-paid-bg)]', text: 'text-[var(--status-paid-text)]', btransaction: 'border-[var(--status-paid-border)]' },
-      [TransactionStatus.IN_TRANSIT]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', btransaction: 'border-[var(--status-inTransit-border)]' },
-      [TransactionStatus.DELIVERED]: { bg: 'bg-[var(--status-delivered-bg)]', text: 'text-[var(--status-delivered-text)]', btransaction: 'border-[var(--status-delivered-border)]' },
-      [TransactionStatus.COMPLETED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', btransaction: 'border-[var(--status-completed-border)]' },
-      [TransactionStatus.DISPUTED]: { bg: 'bg-[var(--status-disputed-bg)]', text: 'text-[var(--status-disputed-text)]', btransaction: 'border-[var(--status-disputed-border)]' },
-      [TransactionStatus.CANCELLED]: { bg: 'bg-[var(--status-cancelled-bg)]', text: 'text-[var(--status-cancelled-text)]', btransaction: 'border-[var(--status-cancelled-border)]' },
+    const colors: Record<TransactionStatus, { bg: string; text: string; border: string }> = {
+      [TransactionStatus.PENDING]: { bg: 'bg-[var(--status-pending-bg)]', text: 'text-[var(--status-pending-text)]', border: 'border-[var(--status-pending-border)]' },
+      [TransactionStatus.PAID]: { bg: 'bg-[var(--status-paid-bg)]', text: 'text-[var(--status-paid-text)]', border: 'border-[var(--status-paid-border)]' },
+      [TransactionStatus.IN_TRANSIT]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', border: 'border-[var(--status-inTransit-border)]' },
+      [TransactionStatus.DELIVERED]: { bg: 'bg-[var(--status-delivered-bg)]', text: 'text-[var(--status-delivered-text)]', border: 'border-[var(--status-delivered-border)]' },
+      [TransactionStatus.COMPLETED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', border: 'border-[var(--status-completed-border)]' },
+      [TransactionStatus.DISPUTED]: { bg: 'bg-[var(--status-disputed-bg)]', text: 'text-[var(--status-disputed-text)]', border: 'border-[var(--status-disputed-border)]' },
+      [TransactionStatus.CANCELLED]: { bg: 'bg-[var(--status-cancelled-bg)]', text: 'text-[var(--status-cancelled-text)]', border: 'border-[var(--status-cancelled-border)]' },
     };
     return colors[status];
   };
@@ -476,6 +477,7 @@ const Transactions: React.FC = () => {
             <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
               <tr>
                 <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
+                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Type</th>
                 <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Payment Link</th>
                 <th className="px-5 py-3 text-left">
                   <button
@@ -564,6 +566,16 @@ const Transactions: React.FC = () => {
                             <p className="text-[10px] sm:text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 20)}...</p>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        {(() => {
+                          const typeStyles = getTransactionTypeStyles(transaction.type);
+                          return (
+                            <span className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded border uppercase ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+                              {typeStyles.shortLabel}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
@@ -655,44 +667,46 @@ const Transactions: React.FC = () => {
           </table>
         </div>
 
-        {filteredTransactions.length > 0 && (
-          <div className="px-5 py-4 border-t border-[var(--border-default)]">
-            <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-              <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length} entries</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-1.5 rounded-lg transition-colors ${currentPage === page
-                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+        {
+          filteredTransactions.length > 0 && (
+            <div className="px-5 py-4 border-t border-[var(--border-default)]">
+              <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length} entries</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1.5 rounded-lg transition-colors ${currentPage === page
+                          ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                          : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+                          }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
                 </div>
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )
+        }
+      </div >
 
       {showToast && (
         <Toast
@@ -709,7 +723,7 @@ const Transactions: React.FC = () => {
         onClose={() => setShowExportModal(false)}
         transactions={filteredTransactions}
       />
-    </div>
+    </div >
   );
 };
 

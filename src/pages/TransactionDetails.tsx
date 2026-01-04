@@ -11,6 +11,7 @@ import Toast from '../components/ui/Toast';
 import { useTransactionEvents, TransactionEvent } from '../hooks/useTransactionEvents';
 import { useTransaction, transactionKeys, useUpdateTransactionStatus, useCancelTransaction, useRestoreTransaction, useMarkTransactionInTransit, useMarkTransactionDelivered, useMarkTransactionReceived, useMarkMilestoneComplete } from '../hooks/queries/useTransactions';
 import { useQueryClient } from '@tanstack/react-query';
+import { getTransactionTypeStyles } from '../utils/statusUtils';
 
 const TransactionDetails: React.FC = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
@@ -566,6 +567,14 @@ const TransactionDetails: React.FC = () => {
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(normalizeStatus(transaction.status))}`}>
                     {normalizeStatus(transaction.status).replace('_', ' ')}
                   </span>
+                  {(() => {
+                    const typeStyles = getTransactionTypeStyles(transaction.type);
+                    return (
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+                        {typeStyles.label}
+                      </span>
+                    );
+                  })()}
                 </div>
                 {(isSender || (user?.id === transaction.receiver_id)) && normalizeStatus(transaction.status) === TransactionStatus.PENDING && (
                   <button

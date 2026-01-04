@@ -2,6 +2,7 @@ import { Eye, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Transaction, TransactionStatus } from '../types';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
+import { getTransactionTypeStyles } from '../utils/statusUtils';
 
 interface TransactionCardProps {
   transaction: Transaction;
@@ -37,7 +38,17 @@ export const TransactionCard = ({ transaction, isSender }: TransactionCardProps)
             <Package className="h-5 w-5 text-[var(--text-secondary)]" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{transaction.title}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{transaction.title}</p>
+              {(() => {
+                const typeStyles = getTransactionTypeStyles(transaction.type);
+                return (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded border uppercase font-bold ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+                    {typeStyles.shortLabel}
+                  </span>
+                );
+              })()}
+            </div>
             <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 30)}...</p>
           </div>
         </div>
