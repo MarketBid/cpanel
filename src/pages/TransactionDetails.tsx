@@ -50,6 +50,12 @@ const TransactionDetails: React.FC = () => {
         return TransactionStatus.CANCELLED;
       case 'disputed':
         return TransactionStatus.DISPUTED;
+      case 'ack_delivery':
+      case 'ack-delivery':
+        return TransactionStatus.ACK_DELIVERY;
+      case 'dispute_resolved':
+      case 'dispute-resolved':
+        return TransactionStatus.DISPUTE_RESOLVED;
       default:
         return status as TransactionStatus;
     }
@@ -92,6 +98,8 @@ const TransactionDetails: React.FC = () => {
         [TransactionStatus.COMPLETED]: 'Completed',
         [TransactionStatus.CANCELLED]: 'Cancelled',
         [TransactionStatus.DISPUTED]: 'Disputed',
+        [TransactionStatus.ACK_DELIVERY]: 'Delivery Acknowledged',
+        [TransactionStatus.DISPUTE_RESOLVED]: 'Dispute Resolved',
       };
 
       const statusLabel = statusLabels[newStatus] || event.status;
@@ -103,7 +111,7 @@ const TransactionDetails: React.FC = () => {
         queryClient.invalidateQueries({ queryKey: transactionKeys.detail(transaction.transaction_id) });
         queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       }, 500);
-    } else if (event.type === 'transaction_updated' && event.transactionId === transaction.transaction_id) {
+    } else if (['transaction_updated', 'transaction_completed', 'dispute_resolved'].includes(event.type) && event.transactionId === transaction.transaction_id) {
       // Invalidate to refetch full transaction data
       queryClient.invalidateQueries({ queryKey: transactionKeys.detail(transaction.transaction_id) });
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
@@ -277,6 +285,10 @@ const TransactionDetails: React.FC = () => {
         return 'bg-[var(--status-completed-bg)] text-[var(--status-completed-text)]';
       case TransactionStatus.DISPUTED:
         return 'bg-[var(--status-disputed-bg)] text-[var(--status-disputed-text)]';
+      case TransactionStatus.ACK_DELIVERY:
+        return 'bg-[var(--status-inTransit-bg)] text-[var(--status-inTransit-text)]';
+      case TransactionStatus.DISPUTE_RESOLVED:
+        return 'bg-[var(--status-completed-bg)] text-[var(--status-completed-text)]';
       default:
         return 'bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled-text)]';
     }
@@ -307,12 +319,26 @@ const TransactionDetails: React.FC = () => {
       });
     }
 
-    if (normalizedStatus === TransactionStatus.PAID && isReceiver) {
-      actions.push({
-        label: 'Mark as In Transit',
-        onClick: inTransitTransaction,
-        color: 'bg-blue-600 hover:bg-blue-700',
-      });
+    if (normalizedStatus === TransactionStatus.PAID) {
+      if (isReceiver) {
+        actions.push({
+          label: 'Mark as In Transit',
+          onClick: inTransitTransaction,
+          color: 'bg-blue-600 hover:bg-blue-700',
+        });
+        actions.push({
+          label: 'Disputed',
+          onClick: () => updateTransactionStatus(TransactionStatus.DISPUTED),
+          color: 'bg-red-600 hover:bg-red-700',
+        });
+      }
+      if (isSender) {
+        actions.push({
+          label: 'Disputed',
+          onClick: () => updateTransactionStatus(TransactionStatus.DISPUTED),
+          color: 'bg-red-600 hover:bg-red-700',
+        });
+      }
     }
 
     if (normalizedStatus === TransactionStatus.IN_TRANSIT) {
@@ -410,8 +436,10 @@ const TransactionDetails: React.FC = () => {
           TransactionStatus.PAID,
           TransactionStatus.IN_TRANSIT,
           TransactionStatus.DELIVERED,
+          TransactionStatus.ACK_DELIVERY,
           TransactionStatus.COMPLETED,
-          TransactionStatus.DISPUTED // Include DISPUTED so paid stage stays complete
+          TransactionStatus.DISPUTED,
+          TransactionStatus.DISPUTE_RESOLVED
         ].includes(normalizedStatus),
       },
       {
@@ -422,8 +450,10 @@ const TransactionDetails: React.FC = () => {
         isComplete: [
           TransactionStatus.IN_TRANSIT,
           TransactionStatus.DELIVERED,
+          TransactionStatus.ACK_DELIVERY,
           TransactionStatus.COMPLETED,
-          TransactionStatus.DISPUTED // Include DISPUTED - assumes dispute can happen during/after transit
+          TransactionStatus.DISPUTED,
+          TransactionStatus.DISPUTE_RESOLVED
         ].includes(normalizedStatus),
       },
       {
@@ -433,8 +463,21 @@ const TransactionDetails: React.FC = () => {
         description: 'Client Transaction Delivered',
         isComplete: [
           TransactionStatus.DELIVERED,
+          TransactionStatus.ACK_DELIVERY,
           TransactionStatus.COMPLETED,
-          TransactionStatus.DISPUTED // Include DISPUTED - assumes delivery happened before dispute
+          TransactionStatus.DISPUTED,
+          TransactionStatus.DISPUTE_RESOLVED
+        ].includes(normalizedStatus),
+      },
+      {
+        key: 'ack_delivery',
+        label: 'Delivery Acknowledged',
+        icon: CheckCircle,
+        description: 'Customer has acknowledged receipt of the delivery.',
+        isComplete: [
+          TransactionStatus.ACK_DELIVERY,
+          TransactionStatus.COMPLETED,
+          TransactionStatus.DISPUTE_RESOLVED
         ].includes(normalizedStatus),
       },
       {
@@ -446,13 +489,21 @@ const TransactionDetails: React.FC = () => {
       },
     ];
 
-    if (normalizedStatus === TransactionStatus.DISPUTED) {
+    if (normalizedStatus === TransactionStatus.DISPUTED || normalizedStatus === TransactionStatus.DISPUTE_RESOLVED) {
       steps.push({
         key: 'disputed',
         label: 'Transaction Disputed',
         icon: AlertCircle,
         description: 'There is a dispute regarding this transaction.',
         isComplete: true,
+      });
+
+      steps.push({
+        key: 'dispute_resolved',
+        label: 'Dispute Resolved',
+        icon: CheckCircle,
+        description: 'The dispute has been resolved.',
+        isComplete: normalizedStatus === TransactionStatus.DISPUTE_RESOLVED,
       });
     }
 

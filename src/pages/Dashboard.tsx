@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
   const navigate = useNavigate();
-  
+
   const { data: transactions = [], isLoading: loading } = useTransactions();
 
   // Calculate revenue trend data for chart with sent and received
@@ -52,11 +52,11 @@ const Dashboard: React.FC = () => {
 
     const now = new Date();
     const data: RevenueDataPoint[] = [];
-    
+
     let periods: number;
     let periodType: 'day' | 'month' | 'year';
     let periodLabel: (date: Date) => string;
-    
+
     if (timeframe === 'weekly') {
       periods = 7;
       periodType = 'day';
@@ -73,11 +73,11 @@ const Dashboard: React.FC = () => {
 
     for (let i = periods - 1; i >= 0; i--) {
       const date = new Date(now);
-      
+
       // Calculate this period
       let thisPeriodStart: Date;
       let thisPeriodEnd: Date;
-      
+
       if (periodType === 'day') {
         // Calculate day going backwards from today (last 7 days)
         const daysBack = i;
@@ -224,7 +224,7 @@ const Dashboard: React.FC = () => {
   const getRevenueData = () => {
     const received = transactions.reduce((sum, transaction) => {
       if (transaction.receiver_id === user?.id &&
-          [TransactionStatus.PAID, TransactionStatus.IN_TRANSIT, TransactionStatus.DELIVERED, TransactionStatus.COMPLETED].includes(transaction.status)) {
+        [TransactionStatus.PAID, TransactionStatus.IN_TRANSIT, TransactionStatus.DELIVERED, TransactionStatus.COMPLETED].includes(transaction.status)) {
         return sum + transaction.amount;
       }
       return sum;
@@ -232,7 +232,7 @@ const Dashboard: React.FC = () => {
 
     const sent = transactions.reduce((sum, transaction) => {
       if (transaction.sender_id === user?.id &&
-          [TransactionStatus.PAID, TransactionStatus.IN_TRANSIT, TransactionStatus.DELIVERED, TransactionStatus.COMPLETED].includes(transaction.status)) {
+        [TransactionStatus.PAID, TransactionStatus.IN_TRANSIT, TransactionStatus.DELIVERED, TransactionStatus.COMPLETED].includes(transaction.status)) {
         return sum + transaction.amount;
       }
       return sum;
@@ -368,11 +368,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Total Transactions */}
-        <div className={`relative overflow-hidden rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow ${
-          analytics.transactionCountChange >= 0
+        <div className={`relative overflow-hidden rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow ${analytics.transactionCountChange >= 0
             ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
             : 'bg-gradient-to-br from-orange-500 to-red-600'
-        }`}>
+          }`}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">

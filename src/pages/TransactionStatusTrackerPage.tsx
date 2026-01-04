@@ -14,8 +14,10 @@ const statusSteps = [
 	{ key: 'paid', label: 'Payment Made', icon: DollarSign },
 	{ key: 'in_transit', label: 'Transaction In Transit', icon: Clock },
 	{ key: 'delivered', label: 'Transaction Delivered', icon: Package },
+	{ key: 'ack_delivery', label: 'Delivery Acknowledged', icon: CheckCircle },
 	{ key: 'completed', label: 'Transaction Completed', icon: CheckCircle },
 	{ key: 'disputed', label: 'Transaction Disputed', icon: AlertCircle },
+	{ key: 'dispute_resolved', label: 'Dispute Resolved', icon: CheckCircle },
 	{ key: 'cancelled', label: 'Transaction Cancelled', icon: AlertCircle },
 ];
 
@@ -29,10 +31,14 @@ const getStageDetails = (transaction: Transaction, stepKey: string) => {
 			return `Transaction is now in transit.`;
 		case 'delivered':
 			return `Client Transaction Delivered`;
+		case 'ack_delivery':
+			return `Customer has acknowledged receipt of the delivery.`;
 		case 'completed':
 			return `Transaction has been completed successfully.`;
 		case 'disputed':
 			return `There is a dispute regarding this transaction.`;
+		case 'dispute_resolved':
+			return `The dispute has been resolved.`;
 		case 'cancelled':
 			return `Transaction has been cancelled.`;
 		default:
@@ -150,13 +156,16 @@ const TransactionStatusTrackerPage: React.FC = () => {
 								{statusSteps.map((step, idx) => {
 									const Icon = step.icon;
 									const isActive = (() => {
+										const status = transaction.status;
 										if (step.key === 'joined') return true;
-										if (step.key === 'paid') return transaction.status === 'paid' || transaction.status === 'intransit' || transaction.status === 'delivered' || transaction.status === 'completed';
-										if (step.key === 'in_transit') return transaction.status === 'intransit' || transaction.status === 'delivered' || transaction.status === 'completed';
-										if (step.key === 'delivered') return transaction.status === 'delivered' || transaction.status === 'completed';
-										if (step.key === 'completed') return transaction.status === 'completed';
-										if (step.key === 'disputed') return transaction.status === 'disputed';
-										if (step.key === 'cancelled') return transaction.status === 'cancelled';
+										if (step.key === 'paid') return ['paid', 'intransit', 'delivered', 'ack_delivery', 'completed', 'disputed', 'dispute_resolved'].includes(status);
+										if (step.key === 'in_transit') return ['intransit', 'delivered', 'ack_delivery', 'completed', 'disputed', 'dispute_resolved'].includes(status);
+										if (step.key === 'delivered') return ['delivered', 'ack_delivery', 'completed', 'disputed', 'dispute_resolved'].includes(status);
+										if (step.key === 'ack_delivery') return ['ack_delivery', 'completed', 'dispute_resolved'].includes(status);
+										if (step.key === 'completed') return status === 'completed';
+										if (step.key === 'disputed') return status === 'disputed' || status === 'dispute_resolved';
+										if (step.key === 'dispute_resolved') return status === 'dispute_resolved' || status === 'completed';
+										if (step.key === 'cancelled') return status === 'cancelled';
 										return false;
 									})();
 									return (

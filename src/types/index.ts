@@ -33,8 +33,10 @@ export enum TransactionStatus {
   PAID = "paid",
   IN_TRANSIT = "intransit",
   DELIVERED = "delivered",
+  ACK_DELIVERY = "ack_delivery",
   COMPLETED = "completed",
   DISPUTED = "disputed",
+  DISPUTE_RESOLVED = "dispute_resolved",
   CANCELLED = "cancelled"
 }
 

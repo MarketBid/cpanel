@@ -18,8 +18,10 @@ export const TransactionCard = ({ transaction, isSender }: TransactionCardProps)
     [TransactionStatus.PAID]: { label: 'Paid', color: 'text-[#0F9B73]', bg: 'bg-[rgba(16,185,129,0.12)]' },
     [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-[#1D4ED8]', bg: 'bg-[rgba(59,130,246,0.12)]' },
     [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-[#0F9B73]', bg: 'bg-[rgba(16,185,129,0.12)]' },
+    [TransactionStatus.ACK_DELIVERY]: { label: 'Delivery Acknowledged', color: 'text-[#1D4ED8]', bg: 'bg-[rgba(59,130,246,0.12)]' },
     [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-[#B7791F]', bg: 'bg-[rgba(245,158,11,0.12)]' },
     [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-[#B91C1C]', bg: 'bg-[rgba(239,68,68,0.12)]' },
+    [TransactionStatus.DISPUTE_RESOLVED]: { label: 'Dispute Resolved', color: 'text-[#0F9B73]', bg: 'bg-[rgba(16,185,129,0.12)]' },
     [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-[#4B5563]', bg: 'bg-[#F3F4F6]' },
   };
 

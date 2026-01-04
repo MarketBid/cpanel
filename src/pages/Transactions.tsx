@@ -187,9 +187,11 @@ const Transactions: React.FC = () => {
           [TransactionStatus.PAID]: 2,
           [TransactionStatus.IN_TRANSIT]: 3,
           [TransactionStatus.DELIVERED]: 4,
-          [TransactionStatus.COMPLETED]: 5,
-          [TransactionStatus.DISPUTED]: 6,
-          [TransactionStatus.CANCELLED]: 7,
+          [TransactionStatus.ACK_DELIVERY]: 5,
+          [TransactionStatus.COMPLETED]: 6,
+          [TransactionStatus.DISPUTED]: 7,
+          [TransactionStatus.DISPUTE_RESOLVED]: 8,
+          [TransactionStatus.CANCELLED]: 9,
         };
         comparison = statusTransaction[a.status] - statusTransaction[b.status];
       }
@@ -252,8 +254,10 @@ const Transactions: React.FC = () => {
       [TransactionStatus.PAID]: { bg: 'bg-[var(--status-paid-bg)]', text: 'text-[var(--status-paid-text)]', border: 'border-[var(--status-paid-border)]' },
       [TransactionStatus.IN_TRANSIT]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', border: 'border-[var(--status-inTransit-border)]' },
       [TransactionStatus.DELIVERED]: { bg: 'bg-[var(--status-delivered-bg)]', text: 'text-[var(--status-delivered-text)]', border: 'border-[var(--status-delivered-border)]' },
+      [TransactionStatus.ACK_DELIVERY]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', border: 'border-[var(--status-inTransit-border)]' },
       [TransactionStatus.COMPLETED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', border: 'border-[var(--status-completed-border)]' },
       [TransactionStatus.DISPUTED]: { bg: 'bg-[var(--status-disputed-bg)]', text: 'text-[var(--status-disputed-text)]', border: 'border-[var(--status-disputed-border)]' },
+      [TransactionStatus.DISPUTE_RESOLVED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', border: 'border-[var(--status-completed-border)]' },
       [TransactionStatus.CANCELLED]: { bg: 'bg-[var(--status-cancelled-bg)]', text: 'text-[var(--status-cancelled-text)]', border: 'border-[var(--status-cancelled-border)]' },
     };
     return colors[status];
@@ -542,8 +546,10 @@ const Transactions: React.FC = () => {
                     [TransactionStatus.PAID]: { label: 'Paid', color: 'text-[var(--status-paid-text)]', bg: 'bg-[var(--status-paid-bg)]' },
                     [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
                     [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-[var(--status-delivered-text)]', bg: 'bg-[var(--status-delivered-bg)]' },
+                    [TransactionStatus.ACK_DELIVERY]: { label: 'Delivery Acknowledged', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
                     [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-[var(--status-pending-text)]', bg: 'bg-[var(--status-pending-bg)]' },
                     [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-[var(--status-disputed-text)]', bg: 'bg-[var(--status-disputed-bg)]' },
+                    [TransactionStatus.DISPUTE_RESOLVED]: { label: 'Dispute Resolved', color: 'text-[var(--status-completed-text)]', bg: 'bg-[var(--status-completed-bg)]' },
                     [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-[var(--status-cancelled-text)]', bg: 'bg-[var(--status-cancelled-bg)]' },
                   };
 
