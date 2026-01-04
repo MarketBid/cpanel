@@ -7,17 +7,10 @@ import {
   Sun,
   Mail,
   Phone,
-
-  Edit2,
-
   X,
   Smartphone,
-
   MapPin,
   Calendar,
-
-
-
   ShieldCheck,
   Globe
 } from 'lucide-react';
@@ -188,17 +181,8 @@ const ProfileSection = () => {
               ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
               : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
               }`}>
-              {user.verified ? (
-                <>
-                  <ShieldCheck className="h-4 w-4" />
-                  Verified
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="h-4 w-4" />
-                  Not Verified
-                </>
-              )}
+              <ShieldCheck className="h-4 w-4" />
+              {user.verified ? 'Verified' : 'Not Verified'}
             </span>
           </div>
 
@@ -281,7 +265,7 @@ const ProfileSection = () => {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-[var(--text-tertiary)]">Phone Number</label>
-                  <p className="text-base text-[var(--text-primary)]">{user.contact}</p>
+                  <p className="text-base text-[var(--text-primary)]">{user.contact || 'Not specified'}</p>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-[var(--text-tertiary)]">Date of Birth</label>
@@ -395,7 +379,7 @@ const ProfileSection = () => {
           </div>
         )}
       </form>
-    </div >
+    </div>
   );
 };
 
@@ -555,7 +539,7 @@ const Settings: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Sidebar */}
         <div className="w-full lg:w-64 flex-shrink-0 lg:border-r lg:border-[var(--border-default)] lg:pr-6">
-          <nav className="flex lg:flex-col overflow-x-auto pb-4 lg:pb-0 gap-2 lg:gap-0 lg:space-y-1 no-scrollbar">
+          <nav className="space-y-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -564,7 +548,7 @@ const Settings: React.FC = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`
-                    flex-shrink-0 lg:w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap
+                    w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                     ${isActive
                       ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 shadow-sm'
                       : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]'
