@@ -131,17 +131,30 @@ const ProfileSection = () => {
           value: link.value.trim()
         }));
 
-      const updateData = {
-        name: formData.name,
-        email: formData.email,
-        contact: formData.contact,
-        date_of_birth: formData.date_of_birth,
-        location: formData.location,
-        business_category: formData.business_category,
-        social_links: socialLinksArray
-      };
+      const updateData: Record<string, any> = {};
 
-      await updateUser(updateData);
+      if (formData.name !== (user?.name || '')) updateData.name = formData.name;
+      if (formData.email !== (user?.email || '')) updateData.email = formData.email;
+      if (formData.contact !== (user?.contact || '')) updateData.contact = formData.contact;
+      if (formData.date_of_birth !== (user?.date_of_birth || '')) updateData.date_of_birth = formData.date_of_birth;
+      if (formData.location !== (user?.location || '')) updateData.location = formData.location;
+      if (formData.business_category !== (user?.business_category || '')) updateData.business_category = formData.business_category;
+
+      const currentSocialLinks = user?.social_links || [];
+      const hasSocialLinksChanged =
+        currentSocialLinks.length !== socialLinksArray.length ||
+        !currentSocialLinks.every((link, index) =>
+          link.name === socialLinksArray[index].name &&
+          link.value === socialLinksArray[index].value
+        );
+
+      if (hasSocialLinksChanged) {
+        updateData.social_links = socialLinksArray;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        await updateUser(updateData);
+      }
       setEditing(false);
     } catch (error) {
       console.error('Failed to update profile:', error);

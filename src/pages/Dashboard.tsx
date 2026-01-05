@@ -352,12 +352,12 @@ const Dashboard: React.FC = () => {
         transition={{ delay: 0.1 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
-        {/* Revenue Received */}
+        {/* Amount Received */}
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
           <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
           <div className="relative">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/80">Revenue Received</span>
+              <span className="text-xs font-medium text-white/80">Amount Received</span>
               <TrendingUp className="h-4 w-4 text-white/90" />
             </div>
             <div className="text-2xl font-bold mb-1">₵{maskAmount(received)}</div>

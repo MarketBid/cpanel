@@ -132,24 +132,7 @@ const Users: React.FC = () => {
 
                   </div>
 
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                      <Mail className="h-4 w-4 text-[var(--text-tertiary)]" />
-                      <span className="truncate">{user.email}</span>
-                    </div>
-                    {user.contact && (
-                      <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                        <Phone className="h-4 w-4 text-[var(--text-tertiary)]" />
-                        <span>{user.contact}</span>
-                      </div>
-                    )}
-                    {user.location && (
-                      <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                        <MapPin className="h-4 w-4 text-[var(--text-tertiary)]" />
-                        <span>{user.location}</span>
-                      </div>
-                    )}
-                  </div>
+
 
                   <div className="pt-4 border-t border-[var(--border-default)]">
                     <h4 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3 text-center">Transaction Stats</h4>
