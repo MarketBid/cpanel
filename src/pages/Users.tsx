@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Building, User as UserIcon, Mail, Phone, X, CheckCircle, Scale } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Building, User as UserIcon, Mail, Phone, X, CheckCircle, Scale, DollarSign, ArrowRight, ArrowLeft } from 'lucide-react';
 import { User } from '../types';
 import { apiClient } from '../utils/api';
 import { Card, CardContent } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 const Users: React.FC = () => {
@@ -13,6 +15,8 @@ const Users: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [transactionSelectUser, setTransactionSelectUser] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -56,6 +60,24 @@ const Users: React.FC = () => {
   const closeUserModal = () => {
     setSelectedUser(null);
     setShowUserModal(false);
+  };
+
+  const handleCreateTransaction = () => {
+    setTransactionSelectUser(selectedUser);
+    setShowUserModal(false);
+  };
+
+  const handleRoleSelect = (role: 'pay' | 'receive') => {
+    if (!transactionSelectUser) return;
+
+    if (role === 'pay') {
+      // I am paying -> I am Sender -> User is Receiver
+      navigate(`/transactions/create?receiver=${transactionSelectUser.id}`);
+    } else {
+      // I am receiving -> I am Receiver -> User is Sender
+      navigate(`/transactions/create?sender=${transactionSelectUser.id}`);
+    }
+    setTransactionSelectUser(null);
   };
 
   if (loading) {
@@ -250,7 +272,67 @@ const Users: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
+                <Button
+                  onClick={handleCreateTransaction}
+                  className="w-full"
+                  leftIcon={<DollarSign className="h-4 w-4" />}
+                >
+                  Create Transaction
+                </Button>
+              </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {transactionSelectUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
+          <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full overflow-hidden animate-fade-in p-6">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Create Transaction</h3>
+            <p className="text-[var(--text-secondary)] mb-6">
+              How would you like to transact with <span className="font-semibold text-[var(--text-primary)]">{transactionSelectUser.name}</span>?
+            </p>
+
+            <div className="grid grid-cols-1 gap-4">
+              <button
+                onClick={() => handleRoleSelect('pay')}
+                className="flex items-center justify-between p-4 rounded-xl border border-[var(--border-default)] hover:border-[var(--color-primary)] hover:bg-[var(--bg-tertiary)] transition-all group text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[var(--text-primary)]">Pay {transactionSelectUser.name}</div>
+                    <div className="text-xs text-[var(--text-secondary)]">I want to send money</div>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleRoleSelect('receive')}
+                className="flex items-center justify-between p-4 rounded-xl border border-[var(--border-default)] hover:border-[var(--color-primary)] hover:bg-[var(--bg-tertiary)] transition-all group text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <ArrowLeft className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[var(--text-primary)]">Receive from {transactionSelectUser.name}</div>
+                    <div className="text-xs text-[var(--text-secondary)]">I want to request money</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setTransactionSelectUser(null)}
+              className="mt-6 w-full py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
