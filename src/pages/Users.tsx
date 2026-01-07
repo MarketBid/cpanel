@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Search, MapPin, Building, User as UserIcon, Mail, Phone, X, CheckCircle, Scale, DollarSign, ArrowRight, ArrowLeft } from 'lucide-react';
 import { User } from '../types';
 import { apiClient } from '../utils/api';
@@ -16,7 +17,9 @@ const Users: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
   const [transactionSelectUser, setTransactionSelectUser] = useState<User | null>(null);
+  const [showMessageConfirmation, setShowMessageConfirmation] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     fetchUsers();
@@ -67,7 +70,13 @@ const Users: React.FC = () => {
     setShowUserModal(false);
   };
 
-  const handleMessageUser = async () => {
+  const handleMessageUser = () => {
+    if (!selectedUser) return;
+    setShowUserModal(false);
+    setShowMessageConfirmation(true);
+  };
+
+  const executeMessageUser = async () => {
     if (!selectedUser) return;
 
     try {
@@ -78,10 +87,17 @@ const Users: React.FC = () => {
       });
 
       const conversationId = response.data.id;
+
+      // Invalidate conversations query to ensure the new conversation shows up
+      await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+
       navigate(`/chats?conversationId=${conversationId}`);
     } catch (error) {
       console.error('Failed to create conversation:', error);
       // You might want to show an error toast here
+    } finally {
+      setShowMessageConfirmation(false);
+      setSelectedUser(null);
     }
   };
 
@@ -342,6 +358,33 @@ const Users: React.FC = () => {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+      {showMessageConfirmation && selectedUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
+          <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full overflow-hidden animate-fade-in p-6">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Start Conversation</h3>
+            <p className="text-[var(--text-secondary)] mb-6">
+              Are you sure you want to start a conversation with <span className="font-semibold text-[var(--text-primary)]">{selectedUser.name}</span>?
+            </p>
+
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowMessageConfirmation(false)}
+                variant="secondary"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={executeMessageUser}
+                className="flex-1"
+                leftIcon={<Mail className="h-4 w-4" />}
+              >
+                Start Chat
+              </Button>
+            </div>
           </div>
         </div>
       )}
