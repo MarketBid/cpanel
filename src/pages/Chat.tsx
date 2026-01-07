@@ -305,9 +305,21 @@ const Chat: React.FC = () => {
 
 
     // Scroll to bottom when new messages arrive or typing status changes
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, typingUsers]);
+    const lastConversationIdRef = useRef<string | null>(null);
+
+    React.useLayoutEffect(() => {
+        if (messagesEndRef.current) {
+            const isNewConversation = selectedConversation !== lastConversationIdRef.current;
+
+            messagesEndRef.current.scrollIntoView({
+                behavior: isNewConversation ? 'auto' : 'smooth'
+            });
+
+            if (isNewConversation) {
+                lastConversationIdRef.current = selectedConversation;
+            }
+        }
+    }, [messages, typingUsers, selectedConversation]);
 
     // Mark conversation as read when opened
     useEffect(() => {
@@ -397,6 +409,26 @@ const Chat: React.FC = () => {
         }
 
         return 'You';
+    };
+
+    const getDateLabel = (dateString: string) => {
+        const date = new Date(dateString);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (date.toDateString() === today.toDateString()) {
+            return 'Today';
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday';
+        } else {
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
     };
 
     const getConversationAvatar = (conversation: Conversation) => {
@@ -606,37 +638,53 @@ const Chat: React.FC = () => {
                                 </div>
                             ) : (
                                 <>
-                                    {messages.map((msg) => {
-                                        if (msg.message_type === 'system') {
-                                            return <SystemMessage key={msg.id} message={msg} />;
-                                        }
+                                    {messages.map((msg, index) => {
+                                        const currentDateLabel = getDateLabel(msg.created_at);
+                                        const previousDateLabel = index > 0
+                                            ? getDateLabel(messages[index - 1].created_at)
+                                            : null;
 
-                                        const isMe = String(msg.sender_id) === String(user?.id);
+                                        const showDateSeparator = currentDateLabel !== previousDateLabel;
 
                                         return (
-                                            <motion.div
-                                                key={msg.id}
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-2`}
-                                            >
-                                                <div className={`flex max-w-[70%] min-w-0 ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end gap-2`}>
-
-
-                                                    <div
-                                                        className={`p-3 rounded-2xl min-w-0 ${isMe
-                                                            ? 'bg-[var(--color-primary)] text-white rounded-br-none'
-                                                            : 'bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-bl-none'
-                                                            } shadow-sm`}
-                                                        style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-                                                    >
-                                                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                                        <p className={`text-[10px] mt-1 text-right ${isMe ? 'text-white/70' : 'text-[var(--text-secondary)]'}`}>
-                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </p>
+                                            <React.Fragment key={msg.id}>
+                                                {showDateSeparator && (
+                                                    <div className="flex justify-center my-6">
+                                                        <div className="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] text-[11px] font-medium px-3 py-1 rounded-full border border-[var(--border-light)] shadow-sm">
+                                                            {currentDateLabel}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </motion.div>
+                                                )}
+                                                {msg.message_type === 'system' ? (
+                                                    <SystemMessage message={msg} />
+                                                ) : (
+                                                    (() => {
+                                                        const isMe = String(msg.sender_id) === String(user?.id);
+                                                        return (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-2`}
+                                                            >
+                                                                <div className={`flex max-w-[70%] min-w-0 ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end gap-2`}>
+                                                                    <div
+                                                                        className={`p-3 rounded-2xl min-w-0 ${isMe
+                                                                            ? 'bg-[var(--color-primary)] text-white rounded-br-none'
+                                                                            : 'bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-bl-none'
+                                                                            } shadow-sm`}
+                                                                        style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                                                                    >
+                                                                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                                                        <p className={`text-[10px] mt-1 text-right ${isMe ? 'text-white/70' : 'text-[var(--text-secondary)]'}`}>
+                                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        );
+                                                    })()
+                                                )}
+                                            </React.Fragment>
                                         );
                                     })}
 
