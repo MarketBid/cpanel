@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, Zap, CreditCard, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.tsx';
+import { useTheme } from '../hooks/useTheme';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import ThemeToggle from '../components/ThemeToggle';
 
 import Logo from '../components/Logo';
 
@@ -18,6 +18,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
 
   const { login, isAuthenticated } = useAuth();
+  const { setForcedTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,6 +29,12 @@ const Login: React.FC = () => {
     ((location.state as any)?.from
       ? `${(location.state as any).from.pathname}${(location.state as any).from.search}`
       : '/dashboard');
+
+  // Force light theme on login page
+  useEffect(() => {
+    setForcedTheme('light');
+    return () => setForcedTheme(null);
+  }, [setForcedTheme]);
 
   // Handle navigation when authenticated - must be in useEffect, not during render
   useEffect(() => {
@@ -75,9 +82,6 @@ const Login: React.FC = () => {
           </div>
           <span className="hidden sm:inline">Back to Home</span>
         </Link>
-      </div>
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
       </div>
       <div className="w-full max-w-6xl flex gap-8 items-center">
         <div className="hidden lg:flex flex-1 flex-col justify-center">

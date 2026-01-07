@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, Eye, EyeOff, Building, ShieldCheck, Sparkles, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 import { BUSINESS_CATEGORIES } from '../types';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Card, CardContent } from '../components/ui/Card';
-import ThemeToggle from '../components/ThemeToggle';
 
 import Logo from '../components/Logo';
 
@@ -30,7 +30,14 @@ const Register: React.FC = () => {
   const [error, setError] = useState('');
 
   const { register } = useAuth();
+  const { setForcedTheme } = useTheme();
   const navigate = useNavigate();
+
+  // Force light theme on register page
+  useEffect(() => {
+    setForcedTheme('light');
+    return () => setForcedTheme(null);
+  }, [setForcedTheme]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,9 +98,6 @@ const Register: React.FC = () => {
           </div>
           <span className="hidden sm:inline">Back to Home</span>
         </Link>
-      </div>
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
       </div>
       <div className="w-full max-w-6xl flex gap-8 items-center">
         <div className="hidden lg:flex flex-1 flex-col justify-center">

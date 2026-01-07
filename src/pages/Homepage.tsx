@@ -1,98 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import {
   Activity,
-  AlertTriangle,
   ArrowRight,
-  CheckCircle2,
-  Clock3,
-  FileCheck2,
-  Fingerprint,
-  Handshake,
-  Lock,
-  Radar,
-  Shield,
-  Users,
-  Sparkles,
-  Globe,
+  Building2,
   Calendar,
-  Target,
+  CheckCircle2,
   DollarSign,
-  FileText,
+  Globe,
+  Handshake,
   Link2,
+  Lock,
+  MessageSquare,
+  Scale,
+  Shield,
+  Sparkles,
+  Target,
+  Users,
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import PublicLayout from '../components/PublicLayout.tsx';
 import Button from '../components/ui/Button';
-import Carousel from '../components/ui/Carousel';
+
 import { useAuth } from '../hooks/useAuth';
 import AppShowcase from '../components/AppShowcase';
 import AnimatedGradient from '../components/ui/AnimatedGradient';
-import FloatingCard from '../components/ui/FloatingCard';
-import AnimatedNumber from '../components/ui/AnimatedNumber';
+
 import ScrollToTopButton from '../components/ScrollToTopButton';
 
-const valueProps = [
-  {
-    icon: Shield,
-    title: 'Secure escrow protection',
-    desc: 'Funds are held in segregated escrow accounts until delivery is confirmed. Both payment senders and receivers are protected with customizable refund policies and cancellation terms.',
-  },
-  {
-    icon: Fingerprint,
-    title: 'Quick setup & flexible transactions',
-    desc: 'Get onboarded and start transacting in minutes. Create transactions as sender or receiver. Add participants during creation or send secure links for them to join. Choose from time-based or milestone-based contract types.',
-  },
-  {
-    icon: FileCheck2,
-    title: 'Smart contract types',
-    desc: 'Time-based completion with auto-release buffers, or milestone-based with percentage payouts. Automatic fund release when conditions are met, with dispute resolution built-in.',
-  },
-];
 
-const solutionTracks = [
-  {
-    title: 'Transactions & milestones',
-    description:
-      'Structure complex deliveries with escrow wallets, multi-signer approvals, and time-boxed inspection windows.',
-    points: ['Milestone wallets', 'Acceptance SLAs', 'Neutral mediation'],
-    accent: 'from-[#04805B] to-[#025037]',
-  },
-  {
-    title: 'Comprehensive protection',
-    description:
-      'Multiple refund policies, transparent fees, and cancellation protection ensure both senders and receivers are fully protected.',
-    points: ['Flexible refund policies', 'Transparent fee structure', 'Cancellation protection'],
-    accent: 'from-[#04805B] to-[#0B7A5A]',
-  },
-  {
-    title: 'High-value assets',
-    description:
-      'Secure equipment, vehicles, and property transactions with identity verification and proof-of-delivery capture.',
-    points: ['Chain-of-custody', 'ID verification', 'Release evidence'],
-    accent: 'from-[#025037] to-[#0F2F1F]',
-  },
-];
-
-const howItWorks = [
-  { title: 'Create transaction', desc: 'Anyone can create a transaction. Choose to be the payment sender or receiver, add the other participant during creation, or create and send a link for them to join.', icon: Activity },
-  { title: 'Secure the funds', desc: 'Payment sender deposits funds into our secure escrow account. Money is held safely until delivery is confirmed or contract conditions are met.', icon: Lock },
-  { title: 'Verify & release', desc: 'Choose time-based or milestone-based completion. Funds are automatically released when conditions are met, or manually upon approval.', icon: CheckCircle2 },
-];
-
-const analyticsCards = [
-  { label: 'Live transactions', value: '48', badge: 'No anomalies', icon: Radar },
-  { label: 'Avg. inspection window', value: '24h', badge: 'On policy', icon: Clock3 },
-  { label: 'Compliance score', value: '99.3%', badge: 'KYC/AML clear', icon: Fingerprint },
-  { label: 'Resolution time', value: '36h', badge: '↓ 22% vs last month', icon: Handshake },
-];
-
-const trustSignals = [
-  { icon: Lock, title: 'Bank-grade security', desc: '256-bit encryption, continuous monitoring, and segregated accounts.' },
-  { icon: AlertTriangle, title: 'Risk & anomaly guard', desc: 'Early-warning signals on behavior, velocity, and identity drift.' },
-  { icon: Handshake, title: 'Neutral mediation', desc: 'Independent review paths and fair rules that keep parties aligned.' },
-  { icon: Users, title: 'Role-based access', desc: 'Finance, legal, buyers, and sellers see only what they need—with audit logs.' },
-];
 
 const Homepage: React.FC = () => {
   const navigate = useNavigate();
@@ -230,22 +166,10 @@ const Homepage: React.FC = () => {
                     }}
                     className="inline-block"
                   >
-                    Secure escrow payments
+                    The Secure
                   </motion.span>
                 </div>
                 <br className="hidden sm:block" />
-                <div className="overflow-hidden inline-block align-bottom">
-                  <motion.span
-                    variants={{
-                      hidden: { y: "100%" },
-                      visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
-                    }}
-                    className="inline-block mr-[0.2em]"
-                  >
-                    between
-                  </motion.span>
-                </div>
-                {' '}
                 <div className="overflow-hidden inline-block align-bottom">
                   <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent inline-block">
                     <motion.span
@@ -255,9 +179,21 @@ const Homepage: React.FC = () => {
                       }}
                       className="inline-block"
                     >
-                      senders and receivers
+                      Trust Vault Platform
                     </motion.span>
                   </span>
+                </div>
+                <br className="hidden sm:block" />
+                <div className="overflow-hidden inline-block align-bottom">
+                  <motion.span
+                    variants={{
+                      hidden: { y: "100%" },
+                      visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                    }}
+                    className="inline-block"
+                  >
+                    for Senders & Receivers
+                  </motion.span>
                 </div>
               </motion.h1>
 
@@ -267,7 +203,7 @@ const Homepage: React.FC = () => {
                 transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="text-lg sm:text-xl text-slate-600 dark:text-white/80 max-w-3xl mx-auto leading-relaxed"
               >
-                Get started in minutes with quick onboarding and setup. Create secure transactions instantly—add participants during creation or send a link for them to join. Funds are held safely in escrow until delivery is confirmed—protecting both payment senders and receivers.
+                Clarsix is a secure trust vault platform that protects both buyers and sellers in online transactions. We hold payments safely until both parties are satisfied, eliminating fraud and building trust in every deal.
               </motion.p>
 
               <motion.div
@@ -348,232 +284,157 @@ const Homepage: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* Enhanced Value Props with Floating Cards */}
-      <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24 relative">
+      {/* The Problem & Solution Section - Replaces Value Props Cards */}
+      <section className="bg-[var(--bg-primary)] py-20 lg:py-32 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              Why Clarsix
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              <span className="text-sm font-bold uppercase tracking-[0.12em] text-red-500 mb-4 block">
+                The Problem
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-6 leading-tight">
+                Online transactions come with risks.
+              </h2>
+              <div className="space-y-6 text-lg text-[var(--text-secondary)]">
+                <p>
+                  Buyers worry about paying for goods they'll never receive. Sellers fear shipping products without getting paid.
+                </p>
+                <p>
+                  Scammers exploit this lack of trust, costing honest people millions every year. The anxiety of "will I get scammed?" shouldn't be part of doing business.
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3 text-balance"
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative"
             >
-              Escrow-grade assurance with automation, compliance, and clarity.
-            </motion.h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            {valueProps.map((card, index) => {
-              const Icon = card.icon;
-              return (
-                <FloatingCard key={card.title} delay={index * 0.15}>
-                  <motion.div
-                    whileHover={{
-                      y: -8,
-                      boxShadow: '0 25px 50px -12px rgba(16, 185, 129, 0.25)',
-                      borderColor: 'rgba(16, 185, 129, 0.4)',
-                    }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-6 transition-colors duration-300 relative overflow-hidden group"
-                  >
-                    {/* Gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/20"
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-3xl transform rotate-3" />
+              <div className="relative bg-[var(--bg-card)] border border-[var(--border-default)] p-8 sm:p-12 rounded-3xl shadow-2xl">
+                <span className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-4 block">
+                  The Solution
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] mb-6">
+                  Clarsix changes that.
+                </h3>
+                <p className="text-lg text-[var(--text-secondary)] mb-8 leading-relaxed">
+                  We act as a neutral third party, holding funds securely in our <span className="font-bold text-[var(--text-primary)]">Trust Vault</span> until both sides fulfill their obligations.
+                </p>
+                <ul className="space-y-4">
+                  {[
+                    'No more anxiety',
+                    'No more fraud',
+                    'Just safe, transparent transactions'
+                  ].map((item, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 + (i * 0.1) }}
+                      className="flex items-center gap-3 text-[var(--text-primary)] font-medium"
                     >
-                      <Icon className="h-7 w-7" />
-                    </motion.div>
-
-                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3 relative">{card.title}</h3>
-                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed relative">{card.desc}</p>
-
-                    {/* Arrow indicator on hover */}
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      whileHover={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute bottom-6 right-6 text-[var(--color-primary)]"
-                    >
-                      <ArrowRight className="h-5 w-5" />
-                    </motion.div>
-                  </motion.div>
-                </FloatingCard>
-              );
-            })}
+                      <div className="h-6 w-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+                      {item}
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
           </div>
-
-          {/* Stats Row */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 p-8 rounded-2xl bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--bg-card)] border border-[var(--border-default)]"
-          >
-            {[
-              { label: 'Transactions', value: 10000, suffix: '+' },
-              { label: 'Active Users', value: 2500, suffix: '+' },
-              { label: 'Success Rate', value: 99.9, suffix: '%' },
-              { label: 'Countries', value: 50, suffix: '+' },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 + 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="text-center"
-              >
-                <div className="text-3xl sm:text-4xl font-black text-[var(--color-primary)] mb-2">
-                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="text-sm text-[var(--text-secondary)] font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
-      {/* Solutions - Enhanced for light mode */}
-      <section className="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 dark:from-[#0A1F16] dark:text-white py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+      {/* Why Choose Clarsix - Split Section */}
+      <section className="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30 dark:from-[#0A1F16] dark:text-white py-20 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(16,185,129,0.15),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(6,182,212,0.12),transparent_35%)] dark:bg-[radial-gradient(circle_at_20%_30%,rgba(4,128,91,0.22),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(2,80,55,0.2),transparent_35%)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col lg:flex-row lg:items-end gap-6 lg:gap-10"
+            viewport={{ once: true }}
+            className="text-center mb-16"
           >
-            <div className="flex-1">
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-sm font-bold uppercase tracking-[0.12em] text-emerald-700 dark:text-white/70"
-              >
-                Solutions
-              </motion.p>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mt-3 text-slate-900 dark:text-white"
-              >
-                Built for every project, platforms, and high-value assets.
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="text-lg text-slate-600 dark:text-white/75 mt-4 max-w-2xl"
-              >
-                Remove trust gaps with programmable logic, real-time tracking, and compliance by default.
-              </motion.p>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex-none"
-            >
-              <Button
-                variant="primary"
-                onClick={() => navigate('/solutions')}
-                className="bg-emerald-600 dark:bg-white text-white dark:text-[var(--color-primary-dark)] hover:bg-emerald-700 dark:hover:bg-white/90 border-0 dark:border-white/20"
-                rightIcon={<ArrowRight className="h-4 w-4" />}
-              >
-                Explore solutions
-              </Button>
-            </motion.div>
+            <span className="text-sm font-bold uppercase tracking-[0.12em] text-emerald-700 dark:text-white/70">
+              Why Choose Clarsix?
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mt-3 text-slate-900 dark:text-white">
+              Protection for Everyone
+            </h2>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.15,
-                },
-              },
-            }}
-            className="grid lg:grid-cols-3 gap-6 mt-10"
-          >
-            {solutionTracks.map((item, index) => (
-              <motion.div
-                key={item.title}
-                variants={{
-                  hidden: { opacity: 0, y: 40 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ y: -8, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
-                className="rounded-2xl border border-emerald-200/50 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur p-6 space-y-4 hover:shadow-xl dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-shadow duration-300"
-              >
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  whileInView={{ scale: 1, rotate: 0 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.15, rotate: 10 }}
-                  transition={{ delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200, damping: 15 }}
-                  className={`h-12 w-12 rounded-xl bg-gradient-to-br ${item.accent} flex items-center justify-center`}
-                >
-                  <Shield className="h-5 w-5 text-white" />
-                </motion.div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{item.title}</h3>
-                <p className="text-sm text-slate-600 dark:text-white/75 leading-relaxed">{item.description}</p>
-                <div className="space-y-2">
-                  {item.points.map((point, pointIndex) => (
-                    <motion.div
-                      key={point}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 + pointIndex * 0.1 + 0.5, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      className="flex items-center gap-2 text-sm text-slate-700 dark:text-white/80"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                      <span>{point}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            {/* For Buyers */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 lg:p-10 border border-emerald-100 dark:border-white/10"
+            >
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-8 shadow-lg shadow-blue-500/20">
+                <Users className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">For Buyers</h3>
+              <ul className="space-y-4">
+                {[
+                  'Pay only when you receive what you ordered',
+                  'Inspect goods before funds are released',
+                  'Protection against fraud and misrepresentation',
+                  'Dispute resolution support if issues arise'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-700 dark:text-white/80">
+                    <CheckCircle2 className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* For Sellers */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 lg:p-10 border border-emerald-100 dark:border-white/10"
+            >
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-8 shadow-lg shadow-emerald-500/20">
+                <Building2 className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">For Sellers</h3>
+              <ul className="space-y-4">
+                {[
+                  'Guaranteed payment for legitimate transactions',
+                  'No chargebacks after successful delivery',
+                  'Build credibility with hesitant buyers',
+                  'Focus on your business, not payment worries'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-700 dark:text-white/80">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* App Showcase with Screenshots */}
       <AppShowcase variant="homepage" />
 
-      {/* How it works */}
+      {/* How it works - Updated with Chat */}
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -599,7 +460,7 @@ const Homepage: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
             >
-              Simple escrow process: create, secure, and release.
+              Simple, Secure, Smart.
             </motion.h2>
           </motion.div>
           <motion.div
@@ -613,16 +474,37 @@ const Homepage: React.FC = () => {
                 },
               },
             }}
-            className="grid md:grid-cols-3 gap-6 mt-10"
+            className="grid md:grid-cols-4 gap-6 mt-10"
           >
-            {howItWorks.map((step, idx) => {
+            {[
+              {
+                title: 'Agreement',
+                desc: 'Buyer and seller agree on transaction terms and choose Clarsix as their trust vault partner.',
+                icon: Handshake
+              },
+              {
+                title: 'Secure Payment',
+                desc: 'Buyer deposits payment into our secure trust vault account. Funds are held safely and cannot be accessed by either party.',
+                icon: Lock
+              },
+              {
+                title: 'Delivery & Inspection',
+                desc: 'Seller ships product. Buyer inspects. Use our internal chat system to communicate and share updates throughout.',
+                icon: Activity
+              },
+              {
+                title: 'Release',
+                desc: 'Once satisfied, we release payment. Our AI-powered support system helps resolve any disputes fairly.',
+                icon: CheckCircle2
+              }
+            ].map((step, idx) => {
               const Icon = step.icon;
               return (
                 <motion.div
                   key={step.title}
                   variants={{
-                    hidden: { opacity: 0, x: idx % 2 === 0 ? -30 : 30 },
-                    visible: { opacity: 1, x: 0 },
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0 },
                   }}
                   transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
@@ -895,186 +777,97 @@ const Homepage: React.FC = () => {
         </div>
       </section>
 
-      {/* Analytics preview */}
+      {/* AI & Chat Feature Highlight */}
       <section className="bg-[var(--bg-secondary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6 }}
-              className="space-y-4"
+              viewport={{ once: true }}
+              className="space-y-6"
             >
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
-              >
-                Visibility
-              </motion.p>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl sm:text-4xl font-black text-[var(--text-primary)]"
-              >
-                Live controls, audit-ready evidence.
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg text-[var(--text-secondary)] leading-relaxed"
-              >
-                Monitor funds, inspection windows, and compliance health in one place. Export audit logs instantly, share status links with counterparties, and keep finance and legal aligned.
-              </motion.p>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.1,
-                    },
-                  },
-                }}
-                className="flex flex-wrap gap-3"
-              >
-                {['Audit-ready', 'Real-time alerts', 'Transaction exports'].map((badge, index) => (
-                  <motion.span
-                    key={badge}
-                    variants={{
-                      hidden: { opacity: 0, scale: 0.8 },
-                      visible: { opacity: 1, scale: 1 },
-                    }}
-                    transition={{ duration: 0.3, delay: index * 0.1 + 0.3 }}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-primary-light)] text-[var(--color-primary-dark)]"
-                  >
-                    {badge}
-                  </motion.span>
-                ))}
-              </motion.div>
+              <span className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]">
+                Advanced Features
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)]">
+                AI-Powered Resolution & Internal Chat
+              </h2>
+              <p className="text-lg text-[var(--text-secondary)] leading-relaxed">
+                Communication is key to trust. That's why we built a secure internal chat system directly into every transaction.
+              </p>
+
+              <div className="space-y-6 pt-4">
+                <div className="flex gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0 text-purple-600 dark:text-purple-400">
+                    <MessageSquare className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Internal Chat System</h3>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      Communicate directly with your counterparty. Share updates, photos, and documents securely within the platform. All history is preserved for transparency.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0 text-emerald-600 dark:text-emerald-400">
+                    <Scale className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">AI-Powered Dispute Resolution</h3>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      If a dispute arises, our AI system analyzes the entire chat history, shared documents, and transaction evidence to provide a fair, unbiased resolution recommendation instantly.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </motion.div>
+
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex justify-center lg:justify-end"
+              viewport={{ once: true }}
+              className="relative h-[500px] bg-[var(--bg-card)] border border-[var(--border-default)] rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center p-8"
             >
-              <Carousel
-                items={analyticsCards.map((card, index) => ({
-                  ...card,
-                  id: index,
-                  icon: React.createElement(card.icon, { className: 'h-5 w-5 text-[var(--color-primary)]' }),
-                }))}
-                baseWidth={420}
-                loop={true}
-                autoplay={true}
-                autoplayDelay={4000}
-                pauseOnHover={true}
-                renderItem={(item) => {
-                  return (
-                    <div className="w-full h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-6 space-y-3 shadow-[0_12px_28px_rgba(0,0,0,0.06)] flex flex-col justify-between">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {item.icon}
-                          <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-[0.08em]">{item.label}</p>
-                        </div>
-                        {item.badge && (
-                          <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] font-semibold">
-                            {item.badge}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-3xl font-black text-[var(--text-primary)]">{item.value}</p>
-                    </div>
-                  );
-                }}
-              />
+              {/* Abstract Representation of Chat/AI */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--bg-secondary)]" />
+              <div className="relative z-10 w-full max-w-md space-y-4">
+                {/* Mock Chat Message 1 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-white dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none shadow-sm self-start w-3/4"
+                >
+                  <p className="text-xs text-slate-400 mb-1">Seller • 10:30 AM</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-200">I've shipped the item. Here is the tracking number and a photo of the package.</p>
+                </motion.div>
+
+                {/* Mock Chat Message 2 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl rounded-tr-none shadow-sm ml-auto w-3/4"
+                >
+                  <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mb-1 text-right">You • 10:35 AM</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-200">Thanks! I see the photo. I'll inspect it once it arrives.</p>
+                </motion.div>
+
+                {/* AI Analysis Badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="mx-auto bg-purple-600 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 w-fit shadow-lg shadow-purple-500/30 mt-8"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  AI Analysis: Transaction Proceeding Normally
+                </motion.div>
+              </div>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Trust */}
-      <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl"
-          >
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]"
-            >
-              Trust signals
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mt-3"
-            >
-              Security, transparency, and control in every step.
-            </motion.h2>
-          </motion.div>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.1,
-                },
-              },
-            }}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10"
-          >
-            {trustSignals.map((pillar, index) => {
-              const Icon = pillar.icon;
-              return (
-                <motion.div
-                  key={pillar.title}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                  whileHover={{ y: -6, borderColor: 'var(--color-primary)', transition: { duration: 0.3 } }}
-                  className="rounded-2xl border border-[var(--border-default)] p-5 bg-[var(--bg-tertiary)] transition-all duration-300"
-                >
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    whileInView={{ scale: 1, rotate: 0 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200, damping: 15 }}
-                    className="h-10 w-10 rounded-xl bg-[var(--bg-tertiary)] flex items-center justify-center text-[var(--color-primary)] mb-3"
-                  >
-                    <Icon className="h-5 w-5" />
-                  </motion.div>
-                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{pillar.title}</h3>
-                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{pillar.desc}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
         </div>
       </section>
 

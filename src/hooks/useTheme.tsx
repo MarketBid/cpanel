@@ -6,6 +6,7 @@ interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
+  setForcedTheme: (theme: Theme | null) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -24,12 +25,20 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return 'light';
   });
 
+  const [forcedTheme, setForcedTheme] = useState<Theme | null>(null);
+
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+
+    const activeTheme = forcedTheme || theme;
+    root.classList.add(activeTheme);
+
+    // Only save to localStorage if it's the user's preference (not forced)
+    if (!forcedTheme) {
+      localStorage.setItem('theme', theme);
+    }
+  }, [theme, forcedTheme]);
 
   useEffect(() => {
     // Listen for system theme changes
@@ -46,6 +55,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   const toggleTheme = () => {
+    if (forcedTheme) return; // Disable toggling if theme is forced
     setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
@@ -54,7 +64,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, setForcedTheme }}>
       {children}
     </ThemeContext.Provider>
   );

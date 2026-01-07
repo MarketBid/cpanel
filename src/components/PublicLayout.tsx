@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import Button from './ui/Button';
 import { useAuth } from '../hooks/useAuth';
-import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../hooks/useTheme';
 
 import Logo from './Logo';
 
@@ -14,6 +14,7 @@ interface PublicLayoutProps {
 
 const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassName = 'bg-[var(--bg-primary)]' }) => {
   const { isAuthenticated } = useAuth();
+  const { setForcedTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
@@ -23,6 +24,12 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
     { label: 'Solutions', href: '/solutions' },
     { label: 'Contact', href: '/contact' },
   ];
+
+  // Force light theme on public pages
+  useEffect(() => {
+    setForcedTheme('light');
+    return () => setForcedTheme(null);
+  }, [setForcedTheme]);
 
   // Close menu when route changes
   useEffect(() => {
@@ -57,7 +64,6 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
             </Link>
 
             <div className="flex items-center gap-2">
-              <ThemeToggle />
               <button
                 className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] text-[var(--text-primary)] transition-colors touch-manipulation"
                 onClick={() => setOpen((prev) => !prev)}
@@ -92,7 +98,6 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children, backgroundClassNa
               </nav>
 
               <div className="flex items-center gap-3">
-                <ThemeToggle />
                 <Button
                   variant="ghost"
                   size="sm"

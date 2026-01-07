@@ -1,25 +1,21 @@
 import React from 'react';
 import {
-  AlarmCheck,
   ArrowRight,
-  BadgeCheck,
-  Building2,
-  Fingerprint,
-  Globe2,
-  Layers,
-  Shield,
-  Workflow,
-  Zap,
-  CheckCircle2,
-  TrendingUp,
+  Briefcase,
   Calendar,
+  CheckCircle2,
+  Globe,
+  Globe2,
+  Link2,
+  MessageSquare,
+  Scale,
+  Shield,
   Target,
-  DollarSign,
-  FileText,
+  Truck,
   User,
   UserCheck,
-  Link2,
-  Clock,
+  Zap,
+  Layers,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
@@ -27,71 +23,9 @@ import PublicLayout from '../components/PublicLayout.tsx';
 import Button from '../components/ui/Button';
 import AppShowcase from '../components/AppShowcase';
 import AnimatedGradient from '../components/ui/AnimatedGradient';
-import FloatingCard from '../components/ui/FloatingCard';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 
-const solutionBlocks = [
-  {
-    title: 'Time-Based Contracts',
-    description: 'Set completion dates with automatic fund release. Perfect for fixed-term projects and services with clear deadlines.',
-    icon: Calendar,
-    bullets: ['Completion date & time', 'Auto-release buffer (24h default)', 'Automatic fund release'],
-    tone: 'from-emerald-500 to-teal-600',
-    stats: { value: '10K+', label: 'Transactions' },
-  },
-  {
-    title: 'Milestone-Based Contracts',
-    description: 'Break work into multiple milestones with percentage-based payouts. Ideal for long-term projects and phased deliveries.',
-    icon: Target,
-    bullets: ['Multiple milestones', 'Percentage payouts', 'Due dates & conditions'],
-    tone: 'from-blue-500 to-indigo-600',
-    stats: { value: '99.9%', label: 'Success Rate' },
-  },
-  {
-    title: 'Flexible Participant Setup',
-    description: 'Create transactions as sender or receiver. Add participants during creation or send secure links for them to join.',
-    icon: Link2,
-    bullets: ['Add during creation', 'Send secure links', 'Role-based access'],
-    tone: 'from-purple-500 to-pink-600',
-    stats: { value: '50+', label: 'Countries' },
-  },
-  {
-    title: 'Protection & Refund Policies',
-    description: 'Comprehensive protection with customizable refund policies, cancellation terms, and transparent fee structures.',
-    icon: Shield,
-    bullets: ['Multiple refund options', 'Cancellation protection', 'Transparent fees'],
-    tone: 'from-orange-500 to-red-600',
-    stats: { value: '24/7', label: 'Support' },
-  },
-];
 
-const proofPoints = [
-  {
-    title: 'Secure escrow protection',
-    desc: 'Funds held in segregated accounts until delivery confirmation. Both senders and receivers protected with customizable policies.',
-    icon: Shield,
-    color: 'from-emerald-500 to-teal-600',
-  },
-  {
-    title: 'Flexible contract types',
-    desc: 'Time-based with auto-release or milestone-based with percentage payouts. Choose what works best for your transaction.',
-    icon: Workflow,
-    color: 'from-blue-500 to-indigo-600',
-  },
-  {
-    title: 'Easy participant setup',
-    desc: 'Add participants during creation or send secure links. Anyone can create transactions as sender or receiver.',
-    icon: UserCheck,
-    color: 'from-purple-500 to-pink-600',
-  },
-];
-
-const comparison = [
-  { label: 'Contract types', clarsix: 'Time-based & milestone-based with auto-release', legacy: 'Single contract type only', icon: FileText },
-  { label: 'Participant setup', clarsix: 'Add during creation or send secure links', legacy: 'Manual coordination required', icon: Link2 },
-  { label: 'Refund protection', clarsix: 'Multiple policies: full, conditional, partial, custom', legacy: 'Limited refund options', icon: Shield },
-  { label: 'Fee transparency', clarsix: 'Clear fee structure: 5% refund, 10% cancellation', legacy: 'Hidden fees and unclear terms', icon: DollarSign },
-];
 
 const Solutions: React.FC = () => {
   const navigate = useNavigate();
@@ -143,22 +77,10 @@ const Solutions: React.FC = () => {
                   }}
                   className="inline-block"
                 >
-                  Secure escrow payments
+                  Built on Trust.
                 </motion.span>
               </div>
               <br className="hidden sm:block" />
-              <div className="overflow-hidden inline-block align-bottom">
-                <motion.span
-                  variants={{
-                    hidden: { y: "100%" },
-                    visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
-                  }}
-                  className="inline-block mr-[0.2em]"
-                >
-                  for
-                </motion.span>
-              </div>
-              {' '}
               <div className="overflow-hidden inline-block align-bottom">
                 <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent inline-block">
                   <motion.span
@@ -168,7 +90,7 @@ const Solutions: React.FC = () => {
                     }}
                     className="inline-block"
                   >
-                    payment senders and receivers
+                    Powered by Security.
                   </motion.span>
                 </span>
               </div>
@@ -180,7 +102,7 @@ const Solutions: React.FC = () => {
               transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="text-lg text-slate-600 dark:text-white/80 leading-relaxed"
             >
-              Get onboarded and start transacting in minutes. Create secure transactions instantly—choose your role as sender or receiver, add participants during creation or send secure links. Funds are protected with customizable contract types, refund policies, and transparent fee structures.
+              Bank-level encryption and security protocols protect every transaction from start to finish. With our AI-powered dispute resolution and internal chat system, you can transact with complete confidence.
             </motion.p>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
@@ -222,7 +144,7 @@ const Solutions: React.FC = () => {
         </div>
       </section>
 
-      {/* Solution Blocks with Enhanced Cards */}
+      {/* Who Uses Clarsix Section */}
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -233,98 +155,64 @@ const Solutions: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
-              Escrow solutions for every transaction type
+              Who Uses Clarsix?
             </h2>
             <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-              From simple one-time payments to complex multi-milestone projects, protect both senders and receivers with flexible contract types
+              Trusted by diverse markets for secure, transparent transactions.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {solutionBlocks.map((solution, index) => {
-              const Icon = solution.icon;
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: 'Freelancers & Clients',
+                desc: 'Project payments held until work is approved.',
+                icon: User
+              },
+              {
+                title: 'Online Marketplace Sellers',
+                desc: 'High-value items sold with confidence.',
+                icon: Globe2
+              },
+              {
+                title: 'Service Providers',
+                desc: 'Payment guaranteed for completed services.',
+                icon: Briefcase
+              },
+              {
+                title: 'International Traders',
+                desc: 'Cross-border transactions made simple and safe.',
+                icon: Globe
+              },
+              {
+                title: 'Vehicle & Equipment Sales',
+                desc: 'Big-ticket purchases protected.',
+                icon: Truck
+              }
+            ].map((item, index) => {
+              const Icon = item.icon;
               return (
-                <FloatingCard key={solution.title} delay={index * 0.1}>
-                  <motion.div
-                    whileHover={{
-                      y: -5,
-                      boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
-                      borderColor: 'var(--color-primary)'
-                    }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-8 space-y-6 group relative overflow-hidden transition-colors"
-                  >
-                    {/* Gradient overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${solution.tone} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-
-                    {/* Icon and Stats */}
-                    <div className="flex items-start justify-between relative">
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: 'spring', stiffness: 300 }}
-                        className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${solution.tone} text-white flex items-center justify-center shadow-lg`}
-                      >
-                        <Icon className="h-7 w-7" />
-                      </motion.div>
-
-                      <div className="text-right">
-                        <div className="text-2xl font-black text-[var(--text-primary)]">{solution.stats.value}</div>
-                        <div className="text-xs text-[var(--text-tertiary)] font-medium">{solution.stats.label}</div>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="relative space-y-3">
-                      <h3 className="text-2xl font-bold text-[var(--text-primary)]">{solution.title}</h3>
-                      <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{solution.description}</p>
-                    </div>
-
-                    {/* Features */}
-                    <motion.div
-                      className="space-y-2 relative"
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      variants={{
-                        visible: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
-                      }}
-                    >
-                      {solution.bullets.map((item) => (
-                        <motion.div
-                          key={item}
-                          variants={{
-                            hidden: { opacity: 0, x: -20 },
-                            visible: { opacity: 1, x: 0 }
-                          }}
-                          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                          className="flex items-center gap-3 text-sm text-[var(--text-primary)]"
-                        >
-                          <div className={`h-6 w-6 rounded-lg bg-gradient-to-br ${solution.tone} flex items-center justify-center flex-shrink-0`}>
-                            <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                          </div>
-                          <span className="font-medium">{item}</span>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-
-                    {/* Hover arrow */}
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      whileHover={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute bottom-8 right-8 text-[var(--text-tertiary)] group-hover:text-[var(--color-primary)]"
-                    >
-                      <ArrowRight className="h-6 w-6" />
-                    </motion.div>
-                  </motion.div>
-                </FloatingCard>
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-default)] hover:shadow-lg transition-shadow"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center mb-4">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">{item.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">{item.desc}</p>
+                </motion.div>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* Proof Points Section */}
+      {/* Our Commitment Section */}
       <section className="bg-[var(--bg-secondary)] py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -336,17 +224,42 @@ const Solutions: React.FC = () => {
               className="space-y-6"
             >
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Why Clarsix</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Our Commitment</p>
                 <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
-                  Secure escrow with flexible contracts and comprehensive protection.
+                  Built on Trust, Powered by Security
                 </h2>
                 <p className="text-lg text-[var(--text-secondary)] leading-relaxed">
-                  Built for payment senders and receivers: choose your contract type, set protection policies, and add participants your way. All with transparent fees and automatic fund release.
+                  We are dedicated to providing a safe, transparent, and fair transaction environment for everyone.
                 </p>
               </div>
 
-              <div className="grid gap-4">
-                {proofPoints.map((item, index) => {
+              <div className="grid gap-6">
+                {[
+                  {
+                    title: 'Secure Transactions',
+                    desc: 'Bank-level encryption and security protocols protect every transaction from start to finish.',
+                    icon: Shield,
+                    color: 'from-emerald-500 to-teal-600',
+                  },
+                  {
+                    title: 'Transparent Process',
+                    desc: 'Track status in real-time. Our built-in chat system lets buyers and sellers communicate directly, exchange images, and create a clear record.',
+                    icon: MessageSquare,
+                    color: 'from-blue-500 to-indigo-600',
+                  },
+                  {
+                    title: 'Fair Resolution',
+                    desc: 'AI-powered support system analyzes chat history and evidence to provide fast, fair resolutions with minimal human intervention.',
+                    icon: Scale,
+                    color: 'from-purple-500 to-pink-600',
+                  },
+                  {
+                    title: 'Fast Processing',
+                    desc: 'Quick verification and payment release so your business keeps moving.',
+                    icon: Zap,
+                    color: 'from-orange-500 to-red-600',
+                  },
+                ].map((item, index) => {
                   const Icon = item.icon;
                   return (
                     <motion.div
@@ -355,7 +268,6 @@ const Solutions: React.FC = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      whileHover={{ x: 10 }}
                       className="flex items-start gap-4 p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-default)] hover:border-[var(--color-primary)]/30 transition-all"
                     >
                       <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
@@ -371,53 +283,18 @@ const Solutions: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Right: Live Control Panel */}
+            {/* Right: Visual/Image Placeholder */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="rounded-3xl bg-[var(--bg-card)] border border-[var(--border-default)] shadow-2xl p-8 space-y-6"
+              className="relative h-full min-h-[500px] rounded-3xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-[var(--text-primary)]">Live control panel</h3>
-                <BadgeCheck className="h-6 w-6 text-[var(--color-primary)]" />
-              </div>
-
-              <div className="space-y-4">
-                {[
-                  { label: 'Active deals', value: '48', trend: '+12%' },
-                  { label: 'Avg. inspection window', value: '24h', trend: 'On policy' },
-                  { label: 'Compliance score', value: '99.3%', trend: 'KYC/AML clear' },
-                  { label: 'Resolution time', value: '36h', trend: '↓ 22% vs last month' },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-4 rounded-xl bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] transition-colors"
-                  >
-                    <div>
-                      <span className="text-sm text-[var(--text-secondary)] font-medium">{stat.label}</span>
-                      <div className="text-2xl font-black text-[var(--text-primary)] mt-1">{stat.value}</div>
-                    </div>
-                    <span className="text-xs px-3 py-1.5 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] font-semibold">
-                      {stat.trend}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-4">
-                <div className="rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border border-emerald-500/20 p-4">
-                  <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Risk monitor</p>
-                  <p className="text-sm font-bold text-emerald-600">No anomalies</p>
-                </div>
-                <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border border-blue-500/20 p-4">
-                  <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Exports</p>
-                  <p className="text-sm font-bold text-blue-600">Audit-ready</p>
-                </div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent_70%)]" />
+              <div className="text-center p-8">
+                <Shield className="h-24 w-24 text-[var(--color-primary)] mx-auto mb-6 opacity-80" />
+                <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Trust Vault Technology</h3>
+                <p className="text-[var(--text-secondary)]">Securing your digital transactions</p>
               </div>
             </motion.div>
           </div>
@@ -686,59 +563,46 @@ const Solutions: React.FC = () => {
       {/* App Showcase */}
       <AppShowcase variant="solutions" />
 
-      {/* Comparison Table */}
+      {/* FAQ Section */}
       <section className="bg-[var(--bg-primary)] py-16 sm:py-20 lg:py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-3xl text-center mx-auto"
-          >
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary)] mb-3">Why choose Clarsix</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">Clarsix vs traditional escrow services.</h2>
-            <p className="text-lg text-[var(--text-secondary)]">Flexible contract types, easy participant setup, comprehensive protection policies, and transparent fees—all designed for modern payment senders and receivers.</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-2xl border border-[var(--border-default)] overflow-hidden bg-[var(--bg-card)] shadow-xl"
-          >
-            <div className="grid grid-cols-3 bg-gradient-to-r from-[var(--bg-tertiary)] to-[var(--bg-secondary)] text-sm font-semibold text-[var(--text-primary)] uppercase tracking-[0.08em]">
-              <div className="px-6 py-4">Capability</div>
-              <div className="px-6 py-4">Clarsix</div>
-              <div className="px-6 py-4">Legacy escrow</div>
-            </div>
-            <div>
-              {comparison.map((row, index) => {
-                const Icon = row.icon;
-                return (
-                  <motion.div
-                    key={row.label}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="grid grid-cols-3 border-t border-[var(--border-default)] text-sm hover:bg-[var(--bg-tertiary)] transition-colors"
-                  >
-                    <div className="px-6 py-4 flex items-center gap-3">
-                      <Icon className="h-5 w-5 text-[var(--text-tertiary)]" />
-                      <span className="font-semibold text-[var(--text-primary)]">{row.label}</span>
-                    </div>
-                    <div className="px-6 py-4 flex items-center">
-                      <span className="inline-flex items-center gap-2 text-[var(--color-primary)] font-semibold">
-                        <CheckCircle2 className="h-4 w-4" />
-                        {row.clarsix}
-                      </span>
-                    </div>
-                    <div className="px-6 py-4 flex items-center text-[var(--text-secondary)]">{row.legacy}</div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] mb-4">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="space-y-6">
+            {[
+              {
+                q: 'How much does Clarsix cost?',
+                a: 'Our transparent fee structure is based on transaction value. Fees are typically split between buyer and seller, with no hidden charges.'
+              },
+              {
+                q: 'How long does the process take?',
+                a: 'Transaction duration depends on your chosen payment structure. For time-based transactions, funds are held for the agreed period set during creation. For milestone-based transactions, each phase is completed according to the timeline you establish. We process final payments within 24 hours of transaction completion or buyer approval.'
+              },
+              {
+                q: "What if there's a dispute?",
+                a: 'Our AI-powered support system reviews chat conversations, shared images, documents, and all transaction evidence to provide quick, fair resolutions. The complete communication history between both parties ensures transparent decision-making. If needed, our human support team provides additional assistance.'
+              },
+              {
+                q: 'Is my money safe?',
+                a: 'Absolutely. All funds are held in secure, segregated accounts and are never accessible by Clarsix for operational purposes.'
+              }
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-default)]"
+              >
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{faq.q}</h3>
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{faq.a}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
