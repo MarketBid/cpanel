@@ -27,186 +27,198 @@ import PaymentCallback from './pages/PaymentCallback';
 import JoinTransaction from './pages/JoinTransaction';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Chat from './pages/Chat';
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+    const { pathname } = useLocation();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
 
-  return null;
+    return null;
 }
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <SensitiveInfoProvider>
-            <Router>
-              <ScrollToTop />
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+    return (
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+                <AuthProvider>
+                    <SensitiveInfoProvider>
+                        <Router>
+                            <ScrollToTop />
+                            <Routes>
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                                <Route path="/verify-email" element={<VerifyEmail />} />
+                                <Route path="/forgot-password" element={<ForgotPassword />} />
+                                <Route path="/reset-password" element={<ResetPassword />} />
 
-                <Route
-                  path="/"
-                  element={<Homepage />}
-                />
+                                <Route
+                                    path="/"
+                                    element={<Homepage />}
+                                />
 
-                <Route
-                  path="/solutions"
-                  element={<Solutions />}
-                />
+                                <Route
+                                    path="/solutions"
+                                    element={<Solutions />}
+                                />
 
-                <Route
-                  path="/contact"
-                  element={<Contact />}
-                />
+                                <Route
+                                    path="/contact"
+                                    element={<Contact />}
+                                />
 
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Dashboard />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/dashboard"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <Dashboard />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/transactions"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Transactions />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/transactions"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <Transactions />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/transactions/create"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <CreateTransaction />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/transactions/create"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <CreateTransaction />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/transactions/edit"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <EditTransaction />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/transactions/edit"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <EditTransaction />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/transactions/join"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <JoinTransaction />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/transactions/join"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <JoinTransaction />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/transactions/join/:transactionId"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <JoinTransaction />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/transactions/join/:transactionId"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <JoinTransaction />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/transactions/:transactionId"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <TransactionDetails />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/transactions/:transactionId"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <TransactionDetails />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/pay/:paymentCode"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PaymentCode />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/pay/:paymentCode"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <PaymentCode />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/payment/initiate-payment/:transactionId"
-                  element={<InitiatePayment />}
-                />
+                                <Route
+                                    path="/payment/initiate-payment/:transactionId"
+                                    element={<InitiatePayment />}
+                                />
 
-                <Route
-                  path="/accounts"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Accounts />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/accounts"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <Accounts />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/settings"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Settings />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/settings"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <Settings />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/users"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Users />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+                                <Route
+                                    path="/users"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <Users />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route
-                  path="/payment-callback"
-                  element={<PaymentCallback />}
-                />
+                                <Route
+                                    path="/chats"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Layout>
+                                                <Chat />
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Router>
-          </SensitiveInfoProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
+                                <Route
+                                    path="/payment-callback"
+                                    element={<PaymentCallback />}
+                                />
+
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </Router>
+                    </SensitiveInfoProvider>
+                </AuthProvider>
+            </ThemeProvider>
+        </QueryClientProvider>
+    );
 }
 
 export default App;

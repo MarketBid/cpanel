@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, ArrowLeft, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Card, CardContent } from '../components/ui/Card';
-import ThemeToggle from '../components/ThemeToggle';
 import Logo from '../components/Logo';
 
 const VerifyEmail: React.FC = () => {
@@ -18,8 +18,15 @@ const VerifyEmail: React.FC = () => {
     const [isMaxAttempts, setIsMaxAttempts] = useState(false);
 
     const { verifyUser, resendOtp, isAuthenticated } = useAuth();
+    const { setForcedTheme } = useTheme();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
+
+    // Force light theme
+    useEffect(() => {
+        setForcedTheme('light');
+        return () => setForcedTheme(null);
+    }, [setForcedTheme]);
 
     useEffect(() => {
         const storedEmail = localStorage.getItem('pending_verification_email');
@@ -116,9 +123,7 @@ const VerifyEmail: React.FC = () => {
                     <span className="hidden sm:inline">{isAuthenticated ? "Back to Dashboard" : "Back to Login"}</span>
                 </Link>
             </div>
-            <div className="absolute top-4 right-4">
-                <ThemeToggle />
-            </div>
+
 
             <div className="w-full max-w-md">
                 <Card className="border-2 border-[var(--color-primary-light)]">

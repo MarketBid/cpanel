@@ -7,6 +7,7 @@ import { ContractType, Milestone, RefundPolicyType, RefundPolicy, FeeConfig, Tra
 
 import { useCreateTransaction } from '../hooks/queries/useTransactions';
 import { useUsers } from '../hooks/queries/useUsers';
+import { apiClient } from '../utils/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -66,12 +67,17 @@ const CreateTransaction: React.FC = () => {
   useEffect(() => {
     const senderId = searchParams.get('sender');
     const receiverId = searchParams.get('receiver');
+    const senderEmail = searchParams.get('sender_email');
+    const receiverEmail = searchParams.get('receiver_email');
 
     if (senderId && users.length > 0) {
       const sender = users.find(u => u.id === parseInt(senderId));
       if (sender) {
         setManualSenderEmail(sender.email);
       }
+    }
+    if (senderEmail) {
+      setManualSenderEmail(senderEmail);
     }
 
     if (receiverId) {
@@ -82,6 +88,10 @@ const CreateTransaction: React.FC = () => {
           setManualReceiverEmail(receiver.email);
         }
       }
+    }
+    if (receiverEmail) {
+      setRole('sender');
+      setManualReceiverEmail(receiverEmail);
     }
   }, [searchParams, users]);
 
@@ -145,6 +155,22 @@ const CreateTransaction: React.FC = () => {
       };
       const createdTransaction: any = unwrap(transaction as any);
       const newTransactionId = createdTransaction?.transaction_id || createdTransaction?.id;
+
+      // Check if we need to link to a conversation
+      const conversationId = searchParams.get('conversation_id');
+      if (conversationId && newTransactionId) {
+        try {
+          await apiClient.post(`/chat/conversations/${conversationId}/link-transaction`, {
+            transaction_id: newTransactionId
+          });
+          navigate(`/chats?conversationId=${conversationId}`);
+          return;
+        } catch (linkError) {
+          console.error('Failed to link transaction to conversation:', linkError);
+          // Fallback to transaction page if linking fails, or maybe show a warning
+        }
+      }
+
       navigate(`/transactions/${newTransactionId}`);
     } catch (err: any) {
       setError(err.message || 'Failed to create transaction');

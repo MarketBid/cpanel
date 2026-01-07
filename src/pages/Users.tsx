@@ -67,6 +67,24 @@ const Users: React.FC = () => {
     setShowUserModal(false);
   };
 
+  const handleMessageUser = async () => {
+    if (!selectedUser) return;
+
+    try {
+      // Create or get existing conversation
+      const response = await apiClient.post('/chat/conversations', {
+        type: 'direct',
+        participant_ids: [selectedUser.id]
+      });
+
+      const conversationId = response.data.id;
+      navigate(`/chats?conversationId=${conversationId}`);
+    } catch (error) {
+      console.error('Failed to create conversation:', error);
+      // You might want to show an error toast here
+    }
+  };
+
   const handleRoleSelect = (role: 'pay' | 'receive') => {
     if (!transactionSelectUser) return;
 
@@ -256,7 +274,15 @@ const Users: React.FC = () => {
                 </div>
               )}
 
-              <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
+              <div className="mt-6 pt-6 border-t border-[var(--border-default)] grid grid-cols-2 gap-3">
+                <Button
+                  onClick={handleMessageUser}
+                  variant="secondary"
+                  className="w-full"
+                  leftIcon={<Mail className="h-4 w-4" />}
+                >
+                  Message
+                </Button>
                 <Button
                   onClick={handleCreateTransaction}
                   className="w-full"

@@ -55,7 +55,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Connect WebSocket after successful login
-      WebSocketManager.connect();
+      if (freshUser?.id) {
+        WebSocketManager.connect(String(freshUser.id));
+      }
     },
     [queryClient]
   );
@@ -71,8 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await authService.verifyUser(email, otp);
     setIsAuthenticated(true);
     await queryClient.invalidateQueries({ queryKey: userKeys.current() });
-    // Connect WebSocket after successful verification
-    WebSocketManager.connect();
+    // WebSocket connection will be handled by the useEffect when user data is loaded
   };
 
   const resendOtp = async (email: string) => {
@@ -102,15 +103,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Auto-connect on mount if already authenticated
   useEffect(() => {
-    if (isAuthenticated && !WebSocketManager.isConnected() && !WebSocketManager.isConnecting()) {
-      WebSocketManager.connect();
+    if (isAuthenticated && user?.id && !WebSocketManager.isConnected() && !WebSocketManager.isConnecting()) {
+      WebSocketManager.connect(String(user.id));
     }
 
     return () => {
       // Optional: disconnect on unmount if needed
       // WebSocketManager.disconnect();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.id]);
 
   // Sync auth state across tabs
   useEffect(() => {

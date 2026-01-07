@@ -14,6 +14,7 @@ import {
   EyeOff,
   Search,
   Command,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
@@ -24,6 +25,7 @@ import CommandPalette from './CommandPalette';
 import { useTransactions } from '../hooks/queries/useTransactions';
 
 import Logo from './Logo';
+import GlobalChatListener from './GlobalChatListener';
 
 interface LayoutProps {
   children: ReactNode;
@@ -139,6 +141,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Transactions', href: '/transactions', icon: Package },
     { name: 'Join Transaction', href: '/transactions/join', icon: Users },
     { name: 'Payments', href: '/accounts', icon: CreditCard },
+    { name: 'Chats', href: '/chats', icon: MessageSquare },
     { name: 'Users', href: '/users', icon: Users },
   ];
 
@@ -241,6 +244,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-[var(--bg-secondary)]">
+      <GlobalChatListener />
       {/* Mobile sidebar */}
       <div
         className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'
