@@ -4,7 +4,17 @@ import { apiClient } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import { useTransactionEvents, TransactionEvent } from '../hooks/useTransactionEvents';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Send, Plus, Smile, MessageSquare, DollarSign, ArrowRight, ArrowLeft, X, ChevronDown, ChevronRight } from 'lucide-react';
+import {
+    useTransaction,
+    useUpdateTransactionStatus,
+    useCancelTransaction,
+    useRestoreTransaction,
+    useMarkTransactionInTransit,
+    useMarkTransactionDelivered,
+    useMarkTransactionReceived
+} from '../hooks/queries/useTransactions';
+import { Transaction, TransactionStatus } from '../types';
+import { Send, Plus, Smile, MessageSquare, DollarSign, ArrowRight, ArrowLeft, X, ChevronDown, ChevronRight, Zap, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Types
@@ -78,6 +88,8 @@ const Chat: React.FC = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [transactionTargetUser, setTransactionTargetUser] = useState<User | null>(null);
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+    const [showQuickActions, setShowQuickActions] = useState(false);
+    const [updatingTransaction, setUpdatingTransaction] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -147,6 +159,8 @@ const Chat: React.FC = () => {
         navigate(`/transactions/create?${params.toString()}`);
         setShowTransactionModal(false);
     };
+    // Transaction Logic
+
 
     // Fetch conversations
     const { data: conversations = [], isLoading: loadingConversations } = useQuery({
@@ -157,6 +171,167 @@ const Chat: React.FC = () => {
         },
         refetchInterval: 30000,
     });
+
+    const selectedConversationObj = conversations.find(c => c.id === selectedConversation);
+    const transactionId = selectedConversationObj?.transaction_id;
+
+    const { data: transaction } = useTransaction(transactionId, !!transactionId);
+
+    const updateTransactionStatusMutation = useUpdateTransactionStatus();
+    const cancelTransactionMutation = useCancelTransaction();
+    const restoreTransactionMutation = useRestoreTransaction();
+    const inTransitTransactionMutation = useMarkTransactionInTransit();
+    const receivedTransactionMutation = useMarkTransactionReceived();
+    const deliveredTransactionMutation = useMarkTransactionDelivered();
+
+    const normalizeStatus = useCallback((status: string | TransactionStatus): TransactionStatus => {
+        const statusStr = status.toString().toLowerCase();
+        switch (statusStr) {
+            case 'pending': return TransactionStatus.PENDING;
+            case 'paid': return TransactionStatus.PAID;
+            case 'intransit':
+            case 'in_transit':
+            case 'in-transit': return TransactionStatus.IN_TRANSIT;
+            case 'delivered': return TransactionStatus.DELIVERED;
+            case 'completed': return TransactionStatus.COMPLETED;
+            case 'cancelled':
+            case 'canceled': return TransactionStatus.CANCELLED;
+            case 'disputed': return TransactionStatus.DISPUTED;
+            case 'ack_delivery':
+            case 'ack-delivery': return TransactionStatus.ACK_DELIVERY;
+            case 'dispute_resolved':
+            case 'dispute-resolved': return TransactionStatus.DISPUTE_RESOLVED;
+            default: return status as TransactionStatus;
+        }
+    }, []);
+
+    const handleTransactionAction = async (action: () => Promise<any>) => {
+        setUpdatingTransaction(true);
+        try {
+            await action();
+            setShowQuickActions(false);
+        } catch (error) {
+            console.error('Transaction action failed:', error);
+        } finally {
+            setUpdatingTransaction(false);
+        }
+    };
+
+    const handlePayment = async () => {
+        if (!transaction) return;
+        setUpdatingTransaction(true);
+        try {
+            const response = await apiClient.post(`/payment/initiate-payment/${transaction.transaction_id}`, {});
+            const responseData = response.data as any;
+
+            if (response.status === 'success' && responseData?.message === 'Payment already completed') {
+                console.log('Payment already completed');
+                queryClient.invalidateQueries({ queryKey: transactionKeys.detail(transaction.transaction_id) });
+                return;
+            }
+
+            window.location.href = responseData as string;
+        } catch (error) {
+            console.error('Payment initiation error:', error);
+        } finally {
+            setUpdatingTransaction(false);
+        }
+    };
+
+    const getAvailableActions = useCallback(() => {
+        if (!transaction || !user) return [];
+        const isSender = String(transaction.sender_id) === String(user.id);
+        const isReceiver = String(transaction.receiver_id) === String(user.id);
+        const normalizedStatus = normalizeStatus(transaction.status);
+        const actions = [];
+
+        if (normalizedStatus === TransactionStatus.PENDING && (isSender || isReceiver)) {
+
+            actions.push({
+                label: 'Decline',
+                onClick: () => handleTransactionAction(() => cancelTransactionMutation.mutateAsync(transaction.transaction_id)),
+                color: 'text-red-600 hover:bg-red-50',
+            });
+        }
+
+        if (normalizedStatus === TransactionStatus.CANCELLED && isReceiver) {
+            actions.push({
+                label: 'Restore Transaction',
+                onClick: () => handleTransactionAction(() => restoreTransactionMutation.mutateAsync(transaction.transaction_id)),
+                color: 'text-blue-600 hover:bg-blue-50',
+            });
+        }
+
+        if (normalizedStatus === TransactionStatus.PAID) {
+            if (isReceiver) {
+                actions.push({
+                    label: 'Mark as In Transit',
+                    onClick: () => handleTransactionAction(() => inTransitTransactionMutation.mutateAsync(transaction.transaction_id)),
+                    color: 'text-blue-600 hover:bg-blue-50',
+                });
+                actions.push({
+                    label: 'Disputed',
+                    onClick: () => handleTransactionAction(() => updateTransactionStatusMutation.mutateAsync({ id: transaction.transaction_id, status: TransactionStatus.DISPUTED })),
+                    color: 'text-red-600 hover:bg-red-50',
+                });
+            }
+            if (isSender) {
+                actions.push({
+                    label: 'Disputed',
+                    onClick: () => handleTransactionAction(() => updateTransactionStatusMutation.mutateAsync({ id: transaction.transaction_id, status: TransactionStatus.DISPUTED })),
+                    color: 'text-red-600 hover:bg-red-50',
+                });
+            }
+        }
+
+        if (normalizedStatus === TransactionStatus.IN_TRANSIT) {
+            if (isReceiver) {
+                actions.push({
+                    label: 'Mark as Delivered',
+                    onClick: () => handleTransactionAction(() => deliveredTransactionMutation.mutateAsync(transaction.transaction_id)),
+                    color: 'text-green-600 hover:bg-green-50',
+                });
+                actions.push({
+                    label: 'Disputed',
+                    onClick: () => handleTransactionAction(() => updateTransactionStatusMutation.mutateAsync({ id: transaction.transaction_id, status: TransactionStatus.DISPUTED })),
+                    color: 'text-red-600 hover:bg-red-50',
+                });
+            }
+            if (isSender) {
+                actions.push({
+                    label: 'Disputed',
+                    onClick: () => handleTransactionAction(() => updateTransactionStatusMutation.mutateAsync({ id: transaction.transaction_id, status: TransactionStatus.DISPUTED })),
+                    color: 'text-red-600 hover:bg-red-50',
+                });
+            }
+        }
+
+        if (normalizedStatus === TransactionStatus.DELIVERED) {
+            if (isReceiver) {
+                actions.push({
+                    label: 'Disputed',
+                    onClick: () => handleTransactionAction(() => updateTransactionStatusMutation.mutateAsync({ id: transaction.transaction_id, status: TransactionStatus.DISPUTED })),
+                    color: 'text-red-600 hover:bg-red-50',
+                });
+            }
+            if (isSender) {
+                actions.push({
+                    label: 'Mark as Acknowledged',
+                    onClick: () => handleTransactionAction(() => receivedTransactionMutation.mutateAsync(transaction.transaction_id)),
+                    color: 'text-green-600 hover:bg-green-50',
+                });
+                actions.push({
+                    label: 'Disputed',
+                    onClick: () => handleTransactionAction(() => updateTransactionStatusMutation.mutateAsync({ id: transaction.transaction_id, status: TransactionStatus.DISPUTED })),
+                    color: 'text-red-600 hover:bg-red-50',
+                });
+            }
+        }
+
+        return actions;
+    }, [transaction, user, normalizeStatus, cancelTransactionMutation, restoreTransactionMutation, inTransitTransactionMutation, updateTransactionStatusMutation, deliveredTransactionMutation, receivedTransactionMutation]);
+
+    const availableActions = getAvailableActions();
 
     // Fetch messages for selected conversation
     const { data: messages = [], isLoading: loadingMessages } = useQuery({
@@ -171,38 +346,60 @@ const Chat: React.FC = () => {
 
     // WebSocket Integration
     const handleWebSocketMessage = useCallback((event: TransactionEvent) => {
-        if (event.type === 'new_message' && event.message) {
-            const message = event.message;
-            // Update messages if viewing this conversation
-            if (selectedConversation && message.conversation_id === selectedConversation) {
-                queryClient.setQueryData(['messages', selectedConversation], (old: Message[] = []) => {
-                    // Check if we have a temp message with the same content and sender
-                    // This is a heuristic since we don't have the temp ID mapped to the real ID yet
-                    const tempMessageIndex = old.findIndex(m =>
-                        m.id.startsWith('temp-') &&
-                        m.content === message.content &&
-                        String(m.sender_id) === String(message.sender_id)
-                    );
+        if (event.type === 'new_message') {
+            console.log('New message received:', event.message);
+            let message = event.message;
 
-                    if (tempMessageIndex !== -1) {
-                        // Replace temp message with real message
-                        const newMessages = [...old];
-                        newMessages[tempMessageIndex] = message;
-                        return newMessages;
-                    }
-
-                    // Check for exact duplicates
-                    if (old.some(m => m.id === message.id)) return old;
-
-                    return [...old, message];
-                });
-
-                // Mark as read
-                markAsRead(selectedConversation);
+            // Handle broadcast system messages
+            if (!message && event.message_type === 'system' && event.content) {
+                message = {
+                    id: `system-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    conversation_id: selectedConversation || 'system',
+                    sender_id: 'system',
+                    content: event.content,
+                    message_type: 'system',
+                    created_at: new Date().toISOString(),
+                };
             }
 
-            // Update conversation list
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            if (message) {
+                // Update messages if viewing this conversation or if it's a system broadcast
+                const isRelevant = selectedConversation && (
+                    message.conversation_id === selectedConversation ||
+                    message.message_type === 'system'
+                );
+
+                if (isRelevant) {
+                    queryClient.setQueryData(['messages', selectedConversation], (old: Message[] = []) => {
+                        // Check if we have a temp message with the same content and sender
+                        const tempMessageIndex = old.findIndex(m =>
+                            m.id.startsWith('temp-') &&
+                            m.content === message.content &&
+                            String(m.sender_id) === String(message.sender_id)
+                        );
+
+                        if (tempMessageIndex !== -1) {
+                            // Replace temp message with real message
+                            const newMessages = [...old];
+                            newMessages[tempMessageIndex] = message;
+                            return newMessages;
+                        }
+
+                        // Check for exact duplicates
+                        if (old.some(m => m.id === message.id)) return old;
+
+                        return [...old, message];
+                    });
+
+                    // Mark as read only for regular messages in the active conversation
+                    if (message.conversation_id === selectedConversation && message.message_type !== 'system') {
+                        markAsRead(selectedConversation);
+                    }
+                }
+
+                // Update conversation list
+                queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            }
         } else if (event.type === 'user_typing') {
             if (event.conversation_id && event.user_id) {
                 setTypingUsers(prev => ({
@@ -627,6 +824,73 @@ const Chat: React.FC = () => {
                                     }
                                     return null;
                                 })()}
+
+                                {/* View Transaction Details Button */}
+                                {transaction && (
+                                    <button
+                                        onClick={() => navigate(`/transactions/${transaction.transaction_id}`)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary-hover)] transition-colors border border-[var(--border-default)]"
+                                    >
+                                        <FileText className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                                        View Details
+                                    </button>
+                                )}
+
+                                {/* Pay Now Button in Header */}
+                                {(() => {
+                                    if (transaction && normalizeStatus(transaction.status) === TransactionStatus.PENDING && String(transaction.sender_id) === String(user?.id)) {
+                                        return (
+                                            <button
+                                                onClick={handlePayment}
+                                                disabled={updatingTransaction}
+                                                className="mr-2 flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700 transition-colors shadow-sm"
+                                            >
+                                                {updatingTransaction ? (
+                                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                ) : (
+                                                    <DollarSign className="h-3.5 w-3.5" />
+                                                )}
+                                                Pay Now
+                                            </button>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+
+                                {/* Transaction Quick Actions */}
+                                {transaction && availableActions.length > 0 && (
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setShowQuickActions(!showQuickActions)}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--bg-tertiary-hover)] transition-colors border border-[var(--border-default)]"
+                                        >
+                                            <Zap className="h-3.5 w-3.5 text-amber-500" />
+                                            Quick Actions
+                                            <ChevronDown className="h-3 w-3 text-[var(--text-secondary)]" />
+                                        </button>
+
+                                        {showQuickActions && (
+                                            <>
+                                                <div
+                                                    className="fixed inset-0 z-10"
+                                                    onClick={() => setShowQuickActions(false)}
+                                                />
+                                                <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--bg-card)] rounded-xl shadow-lg border border-[var(--border-default)] z-20 overflow-hidden py-1">
+                                                    {availableActions.map((action, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={action.onClick}
+                                                            disabled={updatingTransaction}
+                                                            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 ${action.color || 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'}`}
+                                                        >
+                                                            {action.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

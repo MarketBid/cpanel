@@ -29,36 +29,86 @@ interface CreateTransactionForm {
 
 
 
+const DRAFT_KEY = 'clarsix_transaction_draft';
+
+const defaultFormData: CreateTransactionForm = {
+  title: '',
+  description: '',
+  amount: 0,
+  contract_type: ContractType.TIME_BASED,
+  time_based_config: {
+    completion_date: '',
+    completion_time: '',
+    auto_completion_buffer_hours: 24
+  },
+  refund_policy: {
+    type: RefundPolicyType.FULL_REFUND
+  },
+  fee_config: {
+    refund_processing_fee_percentage: 5,
+    refund_fee_payer: 'split',
+    cancellation_fee_percentage: 10
+  },
+  type: TransactionType.PHYSICAL_GOODS
+};
+
 const CreateTransaction: React.FC = () => {
-  const [formData, setFormData] = useState<CreateTransactionForm>({
-    title: '',
-    description: '',
-    amount: 0,
-    contract_type: ContractType.TIME_BASED,
-    time_based_config: {
-      completion_date: '',
-      completion_time: '',
-      auto_completion_buffer_hours: 24
-    },
-    refund_policy: {
-      type: RefundPolicyType.FULL_REFUND
-    },
-    fee_config: {
-      refund_processing_fee_percentage: 5,
-      refund_fee_payer: 'split',
-      cancellation_fee_percentage: 10
-    },
-    type: TransactionType.PHYSICAL_GOODS
+  const [formData, setFormData] = useState<CreateTransactionForm>(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      return saved ? JSON.parse(saved).formData : defaultFormData;
+    } catch (e) {
+      return defaultFormData;
+    }
   });
   const [error, setError] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [manualSenderEmail, setManualSenderEmail] = useState('');
-  const [manualReceiverEmail, setManualReceiverEmail] = useState('');
-  const [role, setRole] = useState<'sender' | 'receiver'>('receiver');
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [manualSenderEmail, setManualSenderEmail] = useState(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      return saved ? JSON.parse(saved).manualSenderEmail : '';
+    } catch (e) {
+      return '';
+    }
+  });
+  const [manualReceiverEmail, setManualReceiverEmail] = useState(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      return saved ? JSON.parse(saved).manualReceiverEmail : '';
+    } catch (e) {
+      return '';
+    }
+  });
+  const [role, setRole] = useState<'sender' | 'receiver'>(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      return saved ? JSON.parse(saved).role : 'receiver';
+    } catch (e) {
+      return 'receiver';
+    }
+  });
+  const [milestones, setMilestones] = useState<Milestone[]>(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      return saved ? JSON.parse(saved).milestones : [];
+    } catch (e) {
+      return [];
+    }
+  });
   const { maskAmount } = useSensitiveInfo();
+
+  const [conversationId, setConversationId] = useState<string | null>(() => {
+    const paramId = searchParams.get('conversation_id');
+    if (paramId) return paramId;
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      return saved ? JSON.parse(saved).conversationId : null;
+    } catch (e) {
+      return null;
+    }
+  });
 
   // Use React Query to fetch users with caching
   const { data: users = [] } = useUsers();
@@ -69,6 +119,11 @@ const CreateTransaction: React.FC = () => {
     const receiverId = searchParams.get('receiver');
     const senderEmail = searchParams.get('sender_email');
     const receiverEmail = searchParams.get('receiver_email');
+    const paramConversationId = searchParams.get('conversation_id');
+
+    if (paramConversationId) {
+      setConversationId(paramConversationId);
+    }
 
     if (senderId && users.length > 0) {
       const sender = users.find(u => u.id === parseInt(senderId));
@@ -94,6 +149,19 @@ const CreateTransaction: React.FC = () => {
       setManualReceiverEmail(receiverEmail);
     }
   }, [searchParams, users]);
+
+  // Save draft to localStorage whenever state changes
+  useEffect(() => {
+    const draft = {
+      formData,
+      role,
+      milestones,
+      manualSenderEmail,
+      manualReceiverEmail,
+      conversationId
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  }, [formData, role, milestones, manualSenderEmail, manualReceiverEmail, conversationId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,8 +224,10 @@ const CreateTransaction: React.FC = () => {
       const createdTransaction: any = unwrap(transaction as any);
       const newTransactionId = createdTransaction?.transaction_id || createdTransaction?.id;
 
+      // Clear draft on success
+      localStorage.removeItem(DRAFT_KEY);
+
       // Check if we need to link to a conversation
-      const conversationId = searchParams.get('conversation_id');
       if (conversationId && newTransactionId) {
         try {
           await apiClient.post(`/chat/conversations/${conversationId}/link-transaction`, {
@@ -832,7 +902,10 @@ const CreateTransaction: React.FC = () => {
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              localStorage.removeItem(DRAFT_KEY);
+              navigate(-1);
+            }}
             className="flex-1"
           >
             Cancel

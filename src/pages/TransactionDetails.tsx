@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Package, Users, DollarSign, Clock, CheckCircle, AlertCircle, CreditCard, Truck, ShoppingCart, Lock, MoveRight, Zap, FileText } from 'lucide-react';
+import { ArrowLeft, Package, Users, DollarSign, Clock, CheckCircle, AlertCircle, CreditCard, Truck, ShoppingCart, Lock, MoveRight, Zap, FileText, MessageSquare, ArrowRight } from 'lucide-react';
 import { generateContractPDF } from '../utils/pdfGenerator';
 import { Transaction, TransactionStatus, ContractType } from '../types';
 import { useAuth } from '../hooks/useAuth';
@@ -10,7 +10,7 @@ import Button from '../components/ui/Button';
 import Toast from '../components/ui/Toast';
 import { useTransactionEvents, TransactionEvent } from '../hooks/useTransactionEvents';
 import { useTransaction, transactionKeys, useUpdateTransactionStatus, useCancelTransaction, useRestoreTransaction, useMarkTransactionInTransit, useMarkTransactionDelivered, useMarkTransactionReceived, useMarkMilestoneComplete } from '../hooks/queries/useTransactions';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getTransactionTypeStyles } from '../utils/statusUtils';
 
 const TransactionDetails: React.FC = () => {
@@ -25,9 +25,22 @@ const TransactionDetails: React.FC = () => {
   const { maskAmount } = useSensitiveInfo();
   const location = useLocation();
   const queryClient = useQueryClient();
+  const [showChatConfirmation, setShowChatConfirmation] = useState(false);
 
   // Use React Query to fetch transaction with caching
   const { data: transaction, isLoading: loading } = useTransaction(transactionId, !!transactionId || !!location.state?.transaction);
+
+  // Fetch conversations to check if one exists for this transaction
+  const { data: conversations = [] } = useQuery({
+    queryKey: ['conversations'],
+    queryFn: async () => {
+      const response = await apiClient.get<any[]>('/chat/conversations');
+      return response.data;
+    },
+    enabled: !!user,
+  });
+
+  const linkedConversation = conversations.find((c: any) => c.transaction_id === transaction?.transaction_id);
 
   // Helper function to normalize status values
   const normalizeStatus = useCallback((status: string | TransactionStatus): TransactionStatus => {
@@ -264,13 +277,55 @@ const TransactionDetails: React.FC = () => {
         return;
       }
 
-      // Redirect to payment page - expecting data to be the URL string
       window.location.href = responseData as string;
     } catch (error) {
       console.error('Payment initiation error:', error);
       setError('Failed to initiate payment. Please try again.');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleOpenChat = () => {
+    if (linkedConversation) {
+      navigate(`/chats?conversationId=${linkedConversation.id}`);
+    } else {
+      setShowChatConfirmation(true);
+    }
+  };
+
+  const executeOpenChat = async () => {
+    if (!transaction || !user) return;
+
+    const otherUserId = transaction.sender_id === user.id ? transaction.receiver_id : transaction.sender_id;
+    if (!otherUserId) return;
+
+    setUpdating(true);
+    try {
+      // Create conversation linked to transaction
+      const response = await apiClient.post<{ id: string }>('/chat/conversations', {
+        type: 'direct',
+        participant_ids: [otherUserId],
+        transaction_id: transaction.transaction_id
+      });
+
+      const conversationId = response.data.id;
+
+      // Explicitly link the transaction to the conversation
+      await apiClient.post(`/chat/conversations/${conversationId}/link-transaction`, {
+        transaction_id: transaction.transaction_id
+      });
+
+      // Invalidate conversations to update cache
+      await queryClient.invalidateQueries({ queryKey: ['conversations'] });
+
+      navigate(`/chats?conversationId=${conversationId}`);
+    } catch (error) {
+      console.error('Failed to create conversation:', error);
+      setError('Failed to create conversation. Please try again.');
+    } finally {
+      setUpdating(false);
+      setShowChatConfirmation(false);
     }
   };
 
@@ -777,7 +832,7 @@ const TransactionDetails: React.FC = () => {
             )}
 
             {/* Payment Link Card for Receivers */}
-            {isReceiver && transaction.payment_link && (
+            {isReceiver && transaction.payment_link && normalizeStatus(transaction.status) === TransactionStatus.PENDING && (
               <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl shadow-lg p-6 text-white">
                 <h3 className="text-lg font-bold mb-2">Share Payment Link</h3>
                 <p className="text-sm text-white/80 mb-4">Copy and share this payment link with the sender</p>
@@ -791,6 +846,45 @@ const TransactionDetails: React.FC = () => {
                   <CreditCard className="h-5 w-5" />
                   Copy Payment Link
                 </button>
+              </div>
+            )}
+
+            {/* Open Conversation Option */}
+            {transaction.sender_id && transaction.receiver_id && !linkedConversation && (
+              <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6">
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-[var(--color-primary)]" />
+                  Communication
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)] mb-4">
+                  Start a conversation with the other party regarding this transaction.
+                </p>
+                <button
+                  onClick={handleOpenChat}
+                  disabled={updating}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-primary)] font-medium hover:bg-[var(--bg-tertiary-hover)] border border-[var(--border-default)] transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Start Conversation
+                </button>
+              </div>
+            )}
+
+            {/* Linked Conversation Option */}
+            {linkedConversation && (
+              <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={handleOpenChat}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center text-[var(--color-primary)]">
+                      <MessageSquare className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[var(--text-primary)]">Transaction Chat</h3>
+                      <p className="text-xs text-[var(--text-secondary)]">View conversation</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-[var(--text-tertiary)]" />
+                </div>
               </div>
             )}
 
@@ -953,6 +1047,35 @@ const TransactionDetails: React.FC = () => {
               setToastMessage('');
             }}
           />
+        )}
+        {/* Chat Confirmation Modal */}
+        {showChatConfirmation && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
+            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full overflow-hidden animate-fade-in p-6">
+              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Start Conversation</h3>
+              <p className="text-[var(--text-secondary)] mb-6">
+                Are you sure you want to start a new conversation linked to this transaction? This will allow you to discuss details directly.
+              </p>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowChatConfirmation(false)}
+                  variant="secondary"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={executeOpenChat}
+                  className="flex-1"
+                  leftIcon={<MessageSquare className="h-4 w-4" />}
+                  disabled={updating}
+                >
+                  {updating ? 'Creating...' : 'Start Chat'}
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
