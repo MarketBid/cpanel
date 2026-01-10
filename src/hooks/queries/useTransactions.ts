@@ -76,7 +76,9 @@ export const useUpdateTransactionStatus = () => {
     },
     onSuccess: (updatedTransaction) => {
       // Update the specific transaction in cache with the fresh response
-      queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      if (updatedTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      }
 
       // Also update in the transactions list cache
       queryClient.setQueryData(transactionKeys.lists(), (old: Transaction[] | undefined) => {
@@ -86,7 +88,9 @@ export const useUpdateTransactionStatus = () => {
 
       // Invalidate to ensure consistency
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: transactionKeys.detail(updatedTransaction.transaction_id) });
+      if (updatedTransaction?.transaction_id) {
+        queryClient.invalidateQueries({ queryKey: transactionKeys.detail(updatedTransaction.transaction_id) });
+      }
     },
   });
 };
@@ -101,7 +105,9 @@ export const useCancelTransaction = () => {
       return response.data;
     },
     onSuccess: (cancelledTransaction) => {
-      queryClient.setQueryData(transactionKeys.detail(cancelledTransaction.transaction_id), cancelledTransaction);
+      if (cancelledTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(cancelledTransaction.transaction_id), cancelledTransaction);
+      }
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
     },
   });
@@ -117,7 +123,9 @@ export const useRestoreTransaction = () => {
       return response.data;
     },
     onSuccess: (restoredTransaction) => {
-      queryClient.setQueryData(transactionKeys.detail(restoredTransaction.transaction_id), restoredTransaction);
+      if (restoredTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(restoredTransaction.transaction_id), restoredTransaction);
+      }
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
     },
   });
@@ -133,7 +141,9 @@ export const useMarkTransactionInTransit = () => {
       return response.data;
     },
     onSuccess: (updatedTransaction) => {
-      queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      if (updatedTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      }
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
     },
   });
@@ -149,7 +159,9 @@ export const useMarkTransactionDelivered = () => {
       return response.data;
     },
     onSuccess: (updatedTransaction) => {
-      queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      if (updatedTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      }
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
     },
   });
@@ -165,7 +177,9 @@ export const useMarkTransactionReceived = () => {
       return response.data;
     },
     onSuccess: (updatedTransaction) => {
-      queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      if (updatedTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      }
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
     },
   });
@@ -181,7 +195,9 @@ export const useMarkMilestoneComplete = () => {
       return response.data;
     },
     onSuccess: (updatedTransaction) => {
-      queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      if (updatedTransaction?.transaction_id) {
+        queryClient.setQueryData(transactionKeys.detail(updatedTransaction.transaction_id), updatedTransaction);
+      }
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
     },
   });

@@ -12,7 +12,8 @@ import {
   MapPin,
   Calendar,
   ShieldCheck,
-  Globe
+  Globe,
+  Wallet
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
@@ -23,6 +24,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useTransactions } from '../hooks/queries/useTransactions';
+import Accounts from './Accounts';
 
 // --- Components ---
 
@@ -527,7 +529,7 @@ const AppearanceSection = () => {
 // --- Main Settings Page ---
 
 const Settings: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'appearance'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'appearance' | 'payments'>('profile');
   const { user } = useAuth();
 
   if (!user) {
@@ -543,6 +545,7 @@ const Settings: React.FC = () => {
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'appearance', label: 'Appearance', icon: Moon },
+    { id: 'payments', label: 'Payments', icon: Wallet },
   ];
 
   return (
@@ -582,6 +585,7 @@ const Settings: React.FC = () => {
           {activeTab === 'security' && <SecuritySection />}
           {activeTab === 'notifications' && <NotificationsSection />}
           {activeTab === 'appearance' && <AppearanceSection />}
+          {activeTab === 'payments' && <Accounts />}
         </div>
       </div>
     </div>

@@ -20,7 +20,6 @@ import EditTransaction from './pages/EditTransaction';
 import TransactionDetails from './pages/TransactionDetails';
 import PaymentCode from './pages/PaymentCode';
 import InitiatePayment from './pages/InitiatePayment';
-import Accounts from './pages/Accounts';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
 import PaymentCallback from './pages/PaymentCallback';
@@ -160,17 +159,6 @@ function App() {
                                 <Route
                                     path="/payment/initiate-payment/:transactionId"
                                     element={<InitiatePayment />}
-                                />
-
-                                <Route
-                                    path="/accounts"
-                                    element={
-                                        <ProtectedRoute>
-                                            <Layout>
-                                                <Accounts />
-                                            </Layout>
-                                        </ProtectedRoute>
-                                    }
                                 />
 
                                 <Route

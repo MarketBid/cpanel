@@ -140,7 +140,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
     { name: 'Transactions', href: '/transactions', icon: Package },
     { name: 'Join Transaction', href: '/transactions/join', icon: Users },
-    { name: 'Payments', href: '/accounts', icon: CreditCard },
     { name: 'Chats', href: '/chats', icon: MessageSquare },
     { name: 'Users', href: '/users', icon: Users },
   ];

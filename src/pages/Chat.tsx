@@ -14,7 +14,7 @@ import {
     useMarkTransactionReceived
 } from '../hooks/queries/useTransactions';
 import { Transaction, TransactionStatus } from '../types';
-import { Send, Plus, Smile, MessageSquare, DollarSign, ArrowRight, ArrowLeft, X, ChevronDown, ChevronRight, Zap, FileText } from 'lucide-react';
+import { Send, Plus, Smile, MessageSquare, DollarSign, ArrowRight, ArrowLeft, X, ChevronDown, ChevronRight, Zap, FileText, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Types
@@ -90,6 +90,8 @@ const Chat: React.FC = () => {
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
     const [showQuickActions, setShowQuickActions] = useState(false);
     const [updatingTransaction, setUpdatingTransaction] = useState(false);
+    const [filter, setFilter] = useState<'all' | 'unread'>('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -562,30 +564,7 @@ const Chat: React.FC = () => {
         });
     };
 
-    // Group conversations by participant
-    const groupedConversations = React.useMemo(() => {
-        const groups: Record<string, { user: { id: string; name: string; email?: string }; conversations: Conversation[] }> = {};
-
-        conversations.forEach(conv => {
-            // Find the other participant (not the current user)
-            const otherParticipant = conv.participant_details?.find(p => String(p.id) !== String(user?.id));
-
-            if (otherParticipant) {
-                const userId = otherParticipant.id;
-                if (!groups[userId]) {
-                    groups[userId] = {
-                        user: otherParticipant,
-                        conversations: []
-                    };
-                }
-                groups[userId].conversations.push(conv);
-            }
-        });
-
-        return groups;
-    }, [conversations, user?.id]);
-
-    const getConversationTitle = (conversation: Conversation) => {
+    const getConversationTitle = useCallback((conversation: Conversation) => {
         if (!conversation) return 'Unknown';
         if (conversation.type === 'group') return conversation.title || 'Group Chat';
 
@@ -606,7 +585,46 @@ const Chat: React.FC = () => {
         }
 
         return 'You';
-    };
+    }, [user]);
+
+    const filteredConversations = React.useMemo(() => {
+        if (!conversations) return [];
+        return conversations.filter(conv => {
+            // Filter by type
+            if (filter === 'unread' && conv.unread_count === 0) return false;
+
+            // Filter by search query
+            if (searchQuery) {
+                const title = getConversationTitle(conv).toLowerCase();
+                return title.includes(searchQuery.toLowerCase());
+            }
+
+            return true;
+        });
+    }, [conversations, filter, searchQuery, getConversationTitle]);
+
+    // Group conversations by participant
+    const groupedConversations = React.useMemo(() => {
+        const groups: Record<string, { user: { id: string; name: string; email?: string }; conversations: Conversation[] }> = {};
+
+        filteredConversations.forEach(conv => {
+            // Find the other participant (not the current user)
+            const otherParticipant = conv.participant_details?.find(p => String(p.id) !== String(user?.id));
+
+            if (otherParticipant) {
+                const userId = otherParticipant.id;
+                if (!groups[userId]) {
+                    groups[userId] = {
+                        user: otherParticipant,
+                        conversations: []
+                    };
+                }
+                groups[userId].conversations.push(conv);
+            }
+        });
+
+        return groups;
+    }, [filteredConversations, user?.id]);
 
     const getDateLabel = (dateString: string) => {
         const date = new Date(dateString);
@@ -633,12 +651,63 @@ const Chat: React.FC = () => {
         return title.charAt(0).toUpperCase();
     };
 
+    // Calculate unread conversation count
+    const unreadConversationCount = React.useMemo(() => {
+        return conversations.filter(conv => conv.unread_count > 0).length;
+    }, [conversations]);
+
     return (
         <div className="flex h-[calc(100vh-6rem)] bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden shadow-sm">
             {/* Sidebar */}
             <div className="w-80 border-r border-[var(--border-default)] flex flex-col bg-[var(--bg-secondary)]">
-                <div className="p-4 border-b border-[var(--border-default)] flex justify-between items-center bg-[var(--bg-card)]">
-                    <h2 className="font-semibold text-[var(--text-primary)]">Messages</h2>
+                <div className="p-4 border-b border-[var(--border-default)] flex flex-col gap-4 bg-[var(--bg-card)]">
+                    <div className="flex justify-between items-center">
+                        <h2 className="font-semibold text-[var(--text-primary)]">Messages</h2>
+                    </div>
+
+                    {/* Search and Filter */}
+                    <div className="flex flex-col gap-3">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-tertiary)]" />
+                            <input
+                                type="text"
+                                placeholder="Search messages..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2 bg-[var(--bg-tertiary)] border-none rounded-lg text-sm focus:ring-1 focus:ring-[var(--color-primary)] placeholder-[var(--text-tertiary)]"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setFilter('all')}
+                                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${filter === 'all'
+                                    ? 'bg-[var(--color-primary)] text-white'
+                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                    }`}
+                            >
+                                All
+                            </button>
+                            <button
+                                onClick={() => setFilter('unread')}
+                                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${filter === 'unread'
+                                    ? 'bg-[var(--color-primary)] text-white'
+                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                    }`}
+                            >
+                                <span className="flex items-center justify-center gap-1.5">
+                                    Unread
+                                    {unreadConversationCount > 0 && (
+                                        <span className={`h-4 min-w-[1rem] px-1 rounded-full text-[10px] font-medium flex items-center justify-center ${filter === 'unread'
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-[var(--color-primary)] text-white'
+                                            }`}>
+                                            {unreadConversationCount}
+                                        </span>
+                                    )}
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto">
@@ -813,13 +882,25 @@ const Chat: React.FC = () => {
                                     const conv = conversations.find(c => c.id === selectedConversation);
                                     if (conv && !conv.transaction_id) {
                                         return (
-                                            <button
-                                                onClick={handleCreateTransactionClick}
-                                                className="mr-2 flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
-                                            >
-                                                <DollarSign className="h-3.5 w-3.5" />
-                                                Create Transaction
-                                            </button>
+                                            <div className="relative group">
+                                                <button
+                                                    onClick={user?.verified ? handleCreateTransactionClick : undefined}
+                                                    disabled={!user?.verified}
+                                                    className={`mr-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${user?.verified
+                                                        ? 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] cursor-pointer'
+                                                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                                                        }`}
+                                                >
+                                                    <DollarSign className="h-3.5 w-3.5" />
+                                                    Create Transaction
+                                                </button>
+                                                {!user?.verified && (
+                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                                                        Please verify your account in Settings to create transactions
+                                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -mb-1 border-4 border-transparent border-b-gray-900 dark:border-b-gray-800"></div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         );
                                     }
                                     return null;

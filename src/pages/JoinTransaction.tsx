@@ -21,10 +21,12 @@ const JoinTransaction: React.FC = () => {
   const navigate = useNavigate();
 
   const {
-    data: transaction,
+    data: queryData,
     isLoading: loading,
     error: queryError
   } = useTransaction(urlTransactionId, !!urlTransactionId);
+
+  const transaction = urlTransactionId ? queryData : null;
 
   // Sync transactionId state with URL parameter
   useEffect(() => {

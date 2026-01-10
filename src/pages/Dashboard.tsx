@@ -33,13 +33,10 @@ import Tabs, { Tab } from '../components/ui/Tabs';
 import ProgressBar from '../components/ui/ProgressBar';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
-import ExportModal from '../components/ExportModal';
 
 const Dashboard: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
-  const [showStatusCards, setShowStatusCards] = useState(true);
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
-  const [showExportModal, setShowExportModal] = useState(false);
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
   const navigate = useNavigate();
@@ -315,34 +312,6 @@ const Dashboard: React.FC = () => {
             Track your transactions and revenue in real-time
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowExportModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--bg-card)] text-[var(--text-primary)] text-sm font-medium rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--color-primary)] transition-colors shadow-sm"
-          >
-            <Download className="h-4 w-4" />
-            Export
-          </button>
-          <div className="relative group">
-            <button
-              onClick={() => user?.verified ? navigate('/transactions/create') : null}
-              disabled={!user?.verified}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors shadow-sm ${user?.verified
-                ? 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] cursor-pointer'
-                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                }`}
-            >
-              <Plus className="h-4 w-4" />
-              Create Transaction
-            </button>
-            {!user?.verified && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
-                Please verify your account in Settings to create transactions
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-              </div>
-            )}
-          </div>
-        </div>
       </motion.div>
 
       {/* Quick Stats - Fintech Style */}
@@ -552,11 +521,6 @@ const Dashboard: React.FC = () => {
         />
       )}
 
-      <ExportModal
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-        transactions={transactions}
-      />
     </div>
   );
 };
