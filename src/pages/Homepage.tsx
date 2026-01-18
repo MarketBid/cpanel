@@ -728,15 +728,11 @@ const Homepage: React.FC = () => {
               <ul className="space-y-2 text-sm text-slate-700 dark:text-white/80">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                  <span><strong>Refund Processing Fee:</strong> 5% of payment amount</span>
+                  <span><strong>Processing Fee:</strong> 3% of payment amount</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
                   <span>Fee payer: Sender, Receiver, or Split (50/50)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-[#8CF5C0]" />
-                  <span><strong>Cancellation Fee:</strong> 10% if sender cancels after work begins</span>
                 </li>
               </ul>
             </motion.div>

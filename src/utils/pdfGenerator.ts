@@ -54,7 +54,7 @@ export const generateContractPDF = (transaction: Transaction) => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
-    doc.text('CLARSIX ESCROW SERVICE AGREEMENT', pageWidth / 2, 25, { align: 'center' });
+    doc.text('CLARSIX TRANSACTION SERVICE AGREEMENT', pageWidth / 2, 25, { align: 'center' });
 
     yPosition = 50;
     doc.setTextColor(textColor.r, textColor.g, textColor.b);
@@ -180,20 +180,18 @@ export const generateContractPDF = (transaction: Transaction) => {
     doc.setTextColor(textColor.r, textColor.g, textColor.b);
     addSpace(5);
 
-    const refundFee = transaction.amount * 0.05;
-    const cancellationFee = transaction.amount * 0.10;
+    const processingFee = transaction.amount * 0.03;
 
-    addText(`Refund Processing Fee: 5% (GHS ${refundFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`, 10);
-    if (transaction.fee_config?.refund_fee_payer) {
-        const payerLabel = transaction.fee_config.refund_fee_payer === 'split'
+    addText(`Processing Fee: 3% (GHS ${processingFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`, 10);
+    if (transaction.fee_config?.fee_payer) {
+        const payerLabel = transaction.fee_config.fee_payer === 'split'
             ? 'Split (50/50)'
-            : transaction.fee_config.refund_fee_payer === 'sender'
+            : transaction.fee_config.fee_payer === 'sender'
                 ? 'Payment Sender'
                 : 'Payment Receiver';
         addText(`Paid by: ${payerLabel}`, 10);
     }
     addSpace(3);
-    addText(`Cancellation Fee: 10% (GHS ${cancellationFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`, 10);
     addText('(Applicable if payment sender cancels after work begins)', 9);
     addSpace(10);
     addLine();

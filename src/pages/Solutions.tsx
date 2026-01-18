@@ -464,17 +464,10 @@ const Solutions: React.FC = () => {
                 <div className="space-y-3">
                   <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
                     <div className="flex items-center justify-between mb-2">
-                      <h5 className="font-semibold text-[var(--text-primary)]">Refund Processing Fee</h5>
-                      <span className="text-lg font-bold text-[var(--color-primary)]">5%</span>
+                      <h5 className="font-semibold text-[var(--text-primary)]">Processing Fee</h5>
+                      <span className="text-lg font-bold text-[var(--color-primary)]">3%</span>
                     </div>
                     <p className="text-sm text-[var(--text-secondary)]">Of payment amount. Choose who pays: Sender, Receiver, or Split (50/50)</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
-                    <div className="flex items-center justify-between mb-2">
-                      <h5 className="font-semibold text-[var(--text-primary)]">Cancellation Fee</h5>
-                      <span className="text-lg font-bold text-[var(--color-primary)]">10%</span>
-                    </div>
-                    <p className="text-sm text-[var(--text-secondary)]">Retained if payment sender cancels after work has begun</p>
                   </div>
                   <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border border-emerald-500/20">
                     <h5 className="font-semibold text-[var(--text-primary)] mb-1">No Hidden Fees</h5>

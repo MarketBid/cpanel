@@ -78,9 +78,8 @@ export interface RefundPolicy {
 }
 
 export interface FeeConfig {
-  refund_processing_fee_percentage?: number; // e.g., 5
-  refund_fee_payer: 'sender' | 'receiver' | 'split';
-  cancellation_fee_percentage?: number; // e.g., 10
+  processing_fee_percentage: number; // e.g., 3
+  fee_payer: 'sender' | 'receiver' | 'split';
 }
 
 

@@ -54,9 +54,8 @@ const defaultFormData: CreateTransactionForm = {
     type: RefundPolicyType.FULL_REFUND
   },
   fee_config: {
-    refund_processing_fee_percentage: 5,
-    refund_fee_payer: 'split',
-    cancellation_fee_percentage: 10
+    processing_fee_percentage: 3,
+    fee_payer: 'split',
   },
   type: TransactionType.PHYSICAL_GOODS
 };
@@ -65,7 +64,18 @@ const CreateTransaction: React.FC = () => {
   const [formData, setFormData] = useState<CreateTransactionForm>(() => {
     try {
       const saved = localStorage.getItem(DRAFT_KEY);
-      return saved ? JSON.parse(saved).formData : defaultFormData;
+      if (saved) {
+        const parsedFormData = JSON.parse(saved).formData;
+        return {
+          ...defaultFormData,
+          ...parsedFormData,
+          fee_config: {
+            ...defaultFormData.fee_config,
+            ...(parsedFormData?.fee_config || {})
+          }
+        };
+      }
+      return defaultFormData;
     } catch (e) {
       return defaultFormData;
     }
@@ -226,10 +236,9 @@ const CreateTransaction: React.FC = () => {
           ? milestones.map(({ id, ...rest }) => rest)
           : undefined,
         fee_config: {
-          refund_fee_payer: formData.fee_config.refund_fee_payer
+          fee_payer: formData.fee_config.fee_payer
         }
       };
-      console.log(transactionData);
       const transaction = await createTransactionMutation.mutateAsync(transactionData);
       // The mutation returns the created transaction. Be defensive in case the
       // API returns a wrapped payload (e.g. { data: transaction }).
@@ -320,6 +329,9 @@ const CreateTransaction: React.FC = () => {
         if (formData.amount <= 0) { setError('Amount must be greater than 0'); return false; }
         if (formData.refund_policy.type === RefundPolicyType.CONDITIONAL_REFUND && (!formData.refund_policy.conditions || formData.refund_policy.conditions.length === 0)) {
           setError('Please select at least one condition'); return false;
+        }
+        if (formData.refund_policy.type === RefundPolicyType.PARTIAL_FIXED && (!formData.refund_policy.refund_percentage || formData.refund_policy.refund_percentage <= 0 || formData.refund_policy.refund_percentage >= 100)) {
+          setError('Please enter a valid refund percentage between 1 and 99'); return false;
         }
         return true;
       default: return true;
@@ -767,15 +779,66 @@ const CreateTransaction: React.FC = () => {
                         </div>
                       )}
 
+                      {formData.refund_policy.type === RefundPolicyType.PARTIAL_FIXED && (
+                        <div className="mt-4 p-4 bg-[var(--bg-tertiary)] rounded-xl animate-fade-in">
+                          <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                            Refund Percentage (%)
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={formData.refund_policy.refund_percentage || ''}
+                              onChange={e => setFormData(prev => ({
+                                ...prev,
+                                refund_policy: { ...prev.refund_policy, refund_percentage: parseFloat(e.target.value) }
+                              }))}
+                              placeholder="e.g. 50"
+                              className="w-full px-4 py-3 border border-[var(--border-default)] rounded-xl focus:border-[var(--color-primary)] focus:outline-none bg-[var(--bg-card)] text-[var(--text-primary)] pr-8"
+                            />
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] font-medium">%</span>
+                          </div>
+                          <p className="text-xs text-[var(--text-secondary)] mt-2">
+                            Percentage of total amount returned to sender if cancelled/disputed.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Fee Payer Selection */}
+                      <div className="pt-4 border-t border-[var(--border-light)] animate-fade-in">
+                        <label className="block text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
+                          Fee Payer
+                        </label>
+                        <div className="grid grid-cols-3 gap-3">
+                          {[
+                            { value: 'sender', label: 'Sender' },
+                            { value: 'receiver', label: 'Receiver' },
+                            { value: 'split', label: 'Split (50/50)' }
+                          ].map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => setFormData(prev => ({
+                                ...prev,
+                                fee_config: { ...prev.fee_config, fee_payer: option.value as any }
+                              }))}
+                              className={`py-3 px-2 rounded-xl text-sm font-medium border transition-all ${formData.fee_config.fee_payer === option.value
+                                ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-sm'
+                                : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border-transparent hover:bg-[var(--border-light)]'
+                                }`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
                       {/* Fee summary could go here */}
                       <div className="mt-4 pt-4 border-t border-[var(--border-light)] text-xs text-[var(--text-secondary)]">
                         <div className="flex justify-between mb-1">
-                          <span>Refund Processing Fee</span>
-                          <span className="font-medium">5%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cancellation Fee</span>
-                          <span className="font-medium">10%</span>
+                          <span>Processing Fee</span>
+                          <span className="font-medium">3%</span>
                         </div>
                       </div>
                     </div>
@@ -784,60 +847,183 @@ const CreateTransaction: React.FC = () => {
               )}
               {/* STEP 5: SUMMARY */}
               {currentStep === 5 && (
-                <div className="space-y-6">
-                  <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm space-y-4">
-                    <h3 className="font-bold text-[var(--text-primary)] border-b border-[var(--border-light)] pb-2">Overview</h3>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-6 animate-fade-in">
+
+                  {/* Service Information */}
+                  <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
+                    <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
+                      <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
+                        <FileText className="h-4 w-4" /> Service Details
+                      </h3>
+                      <button type="button" onClick={() => handleStepClick(2)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit</button>
+                    </div>
+                    <div className="p-4 space-y-4">
                       <div>
-                        <span className="block text-[var(--text-secondary)] text-xs uppercase tracking-wider">Role</span>
-                        <span className="font-semibold text-[var(--text-primary)]">{role === 'sender' ? 'Sender' : 'Receiver'}</span>
+                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Title</span>
+                        <p className="font-semibold text-[var(--text-primary)]">{formData.title}</p>
                       </div>
                       <div>
-                        <span className="block text-[var(--text-secondary)] text-xs uppercase tracking-wider">Counterparty</span>
-                        <span className="font-semibold text-[var(--text-primary)]">
-                          {role === 'sender'
-                            ? (manualReceiverEmail || 'Not specified')
-                            : (manualSenderEmail || 'Not specified')}
-                        </span>
+                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Description</span>
+                        <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap">{formData.description}</p>
                       </div>
                       <div>
-                        <span className="block text-[var(--text-secondary)] text-xs uppercase tracking-wider">Type</span>
-                        <span className="font-semibold text-[var(--text-primary)] capitalize">{formData.type.toLowerCase().replace('_', ' ')}</span>
-                      </div>
-                      <div>
-                        <span className="block text-[var(--text-secondary)] text-xs uppercase tracking-wider">Contract</span>
-                        <span className="font-semibold text-[var(--text-primary)]">
-                          {formData.contract_type === ContractType.TIME_BASED ? 'Time-Based' : 'Milestone-Based'}
+                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Category</span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary-light)] text-[var(--color-primary-dark)]">
+                          {formData.type.replace('_', ' ')}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm space-y-4">
-                    <h3 className="font-bold text-[var(--text-primary)] border-b border-[var(--border-light)] pb-2">Financials</h3>
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <span className="block text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-1">Total Amount</span>
-                        <span className="text-3xl font-bold text-[var(--color-primary)]">₵{formData.amount?.toFixed(2)}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-1">Payer</span>
-                        <span className="font-semibold text-[var(--text-primary)]">
-                          {role === 'sender' ? 'You' : (manualSenderEmail || 'Sender')}
-                        </span>
-                      </div>
+                  {/* Contract Specifics */}
+                  <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
+                    <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
+                      <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
+                        <FileText className="h-4 w-4" /> Contract Terms
+                      </h3>
+                      <button type="button" onClick={() => handleStepClick(3)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit</button>
                     </div>
-                    <div className="pt-2 text-xs text-[var(--text-secondary)] space-y-1">
-                      <div className="flex justify-between">
-                        <span>Refund Policy:</span>
-                        <span className="font-medium text-[var(--text-primary)] capitalize">{formData.refund_policy.type.toLowerCase().replace('_', ' ')}</span>
+                    <div className="p-4">
+                      {/* Time Based View */}
+                      {formData.contract_type === ContractType.TIME_BASED && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Completion Date</span>
+                            <p className="font-medium text-[var(--text-primary)]">{formData.time_based_config?.completion_date}</p>
+                          </div>
+                          <div>
+                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Completion Time</span>
+                            <p className="font-medium text-[var(--text-primary)]">{formData.time_based_config?.completion_time}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Auto-Release Buffer</span>
+                            <p className="text-sm text-[var(--text-primary)]">{formData.time_based_config?.auto_completion_buffer_hours} Hours after delivery</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Milestone View */}
+                      {formData.contract_type === ContractType.MILESTONE_BASED && (
+                        <div className="space-y-3">
+                          {milestones.map((m, i) => (
+                            <div key={i} className="flex justify-between items-center p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
+                              <div>
+                                <p className="font-bold text-[var(--text-primary)]">{m.description}</p>
+                                <p className="text-xs text-[var(--text-secondary)]">Due: {m.due_date} • {m.completion_condition}</p>
+                              </div>
+                              <div className="font-bold text-[var(--text-primary)]">{m.amount_percentage}%</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Financial & Protection */}
+                  <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
+                    <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
+                      <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
+                        <Shield className="h-4 w-4" /> Payment & Protection
+                      </h3>
+                      <button type="button" onClick={() => handleStepClick(4)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit</button>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <div className="flex justify-between items-center pb-4 border-b border-[var(--border-light)]">
+                        <span className="text-sm font-medium text-[var(--text-secondary)]">Total Amount</span>
+                        <span className="text-2xl font-bold text-[var(--text-primary)]">₵{formData.amount?.toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Escrow Protection:</span>
-                        <span className="font-medium text-[var(--amount-positive)]">Active</span>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Refund Policy</span>
+                          <p className="font-medium text-[var(--text-primary)] capitalize">{formData.refund_policy.type.replace('_', ' ').toLowerCase()}</p>
+
+                          {formData.refund_policy.type === RefundPolicyType.PARTIAL_FIXED && (
+                            <p className="text-xs text-[var(--text-secondary)] mt-1">{formData.refund_policy.refund_percentage}% Refund on cancellation/dispute</p>
+                          )}
+
+                          {formData.refund_policy.type === RefundPolicyType.CONDITIONAL_REFUND && (
+                            <ul className="text-xs text-[var(--text-secondary)] list-disc ml-4 mt-1">
+                              {formData.refund_policy.conditions?.map(c => <li key={c}>{c}</li>)}
+                            </ul>
+                          )}
+                        </div>
+
+                        <div>
+                          <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Parties</span>
+                          <div className="text-sm">
+                            <p><span className="text-[var(--text-tertiary)]">Role:</span> {role === 'sender' ? 'Sender' : 'Receiver'}</p>
+                            <p><span className="text-[var(--text-tertiary)]">Counterparty:</span> {role === 'sender' ? (manualReceiverEmail || 'Pending') : (manualSenderEmail || 'Pending')}</p>
+                          </div>
+                        </div>
+
+                        <div className="md:col-span-2 pt-4 border-t border-[var(--border-light)] grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Fee Configuration</span>
+                            <div className="text-sm space-y-1">
+                              <p><span className="text-[var(--text-tertiary)]">Processing Fee:</span> {formData.fee_config.processing_fee_percentage}%</p>
+                              <p><span className="text-[var(--text-tertiary)]">Fee Payer:</span> <span className="capitalize">{formData.fee_config.fee_payer}</span></p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Payment Structure</span>
+                            <div className="text-sm space-y-1">
+                              {formData.fee_config.fee_payer === 'sender' && (
+                                <div className="space-y-2">
+                                  <div>
+                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
+                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Amount:</span> <span>₵{(formData.amount || 0).toFixed(2)}</span></div>
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({formData.fee_config.processing_fee_percentage}%):</span> <span>₵{((formData.amount || 0) * (formData.fee_config.processing_fee_percentage / 100)).toFixed(2)}</span></div>
+                                      <div className="flex justify-between font-bold pt-1 border-t border-[var(--border-light)] mt-1"><span className="text-[var(--text-primary)]">Total:</span> <span>₵{((formData.amount || 0) * (1 + formData.fee_config.processing_fee_percentage / 100)).toFixed(2)}</span></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {formData.fee_config.fee_payer === 'receiver' && (
+                                <div className="space-y-2">
+                                  <div>
+                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
+                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Total Payment:</span> <span>₵{(formData.amount || 0).toFixed(2)}</span></div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Receiver</p>
+                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({formData.fee_config.processing_fee_percentage}%):</span> <span>₵{((formData.amount || 0) * (formData.fee_config.processing_fee_percentage / 100)).toFixed(2)}</span></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {formData.fee_config.fee_payer === 'split' && (
+                                <div className="space-y-2">
+                                  <div>
+                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
+                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Amount:</span> <span>₵{(formData.amount || 0).toFixed(2)}</span></div>
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({(formData.fee_config.processing_fee_percentage / 2).toFixed(2).replace(/[.,]00$/, "")}%):</span> <span>₵{((formData.amount || 0) * ((formData.fee_config.processing_fee_percentage / 2) / 100)).toFixed(2)}</span></div>
+                                      <div className="flex justify-between font-bold pt-1 border-t border-[var(--border-light)] mt-1"><span className="text-[var(--text-primary)]">Total:</span> <span>₵{((formData.amount || 0) * (1 + (formData.fee_config.processing_fee_percentage / 2) / 100)).toFixed(2)}</span></div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Receiver</p>
+                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
+                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({(formData.fee_config.processing_fee_percentage / 2).toFixed(2).replace(/[.,]00$/, "")}%):</span> <span>₵{((formData.amount || 0) * ((formData.fee_config.processing_fee_percentage / 2) / 100)).toFixed(2)}</span></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
               )}
             </form>

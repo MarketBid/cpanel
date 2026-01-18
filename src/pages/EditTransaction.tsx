@@ -40,9 +40,8 @@ const EditTransaction: React.FC = () => {
       type: RefundPolicyType.FULL_REFUND
     },
     fee_config: {
-      refund_processing_fee_percentage: 5,
-      refund_fee_payer: 'split',
-      cancellation_fee_percentage: 10
+      processing_fee_percentage: 3,
+      fee_payer: 'split',
     },
     type: TransactionType.PHYSICAL_GOODS
   });
@@ -75,9 +74,8 @@ const EditTransaction: React.FC = () => {
           type: RefundPolicyType.FULL_REFUND
         },
         fee_config: editingTransaction.fee_config || {
-          refund_processing_fee_percentage: 5,
-          refund_fee_payer: 'split',
-          cancellation_fee_percentage: 10
+          processing_fee_percentage: 3,
+          fee_payer: 'split',
         },
         type: editingTransaction.type || TransactionType.PHYSICAL_GOODS
       });
@@ -652,7 +650,7 @@ const EditTransaction: React.FC = () => {
             {/* Fee Configuration */}
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                Refund Processing Fee Payer
+                Processing Fee Payer
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
@@ -665,9 +663,9 @@ const EditTransaction: React.FC = () => {
                     type="button"
                     onClick={() => setFormData(prev => ({
                       ...prev,
-                      fee_config: { ...prev.fee_config, refund_fee_payer: option.value as any }
+                      fee_config: { ...prev.fee_config, fee_payer: option.value as any }
                     }))}
-                    className={`py-2 px-3 rounded-lg text-sm font-medium border transition-all ${formData.fee_config.refund_fee_payer === option.value
+                    className={`py-2 px-3 rounded-lg text-sm font-medium border transition-all ${formData.fee_config.fee_payer === option.value
                       ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
                       : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--border-medium)]'
                       }`}
@@ -677,7 +675,7 @@ const EditTransaction: React.FC = () => {
                 ))}
               </div>
               <p className="text-xs text-[var(--text-tertiary)] mt-2">
-                Determines who pays the 5% processing fee if a refund occurs.
+                Determines who pays the 3% processing fee.
               </p>
             </div>
           </div>
