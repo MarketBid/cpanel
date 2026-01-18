@@ -2,37 +2,37 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search,
-  Filter,
   Plus,
-  Package,
   Eye,
   Copy,
   Download,
   Calendar,
   ArrowUpDown,
-  ArrowUp,
-  ArrowDown
+  ChevronDown,
+  FileText,
+  MoreVertical
 } from 'lucide-react';
-import { Transaction, TransactionStatus } from '../types';
+import { Transaction, TransactionStatus, TransactionType } from '../types';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import Toast from '../components/ui/Toast';
-import { TransactionCard } from '../components/TransactionCard';
 import { useTransactionEvents, TransactionEvent } from '../hooks/useTransactionEvents';
 import { useTransactions, transactionKeys } from '../hooks/queries/useTransactions';
 import { useQueryClient } from '@tanstack/react-query';
 import ExportModal from '../components/ExportModal';
 import { getTransactionTypeStyles } from '../utils/statusUtils';
 
-type SortField = 'date' | 'status' | 'amount';
+type SortField = 'date' | 'status' | 'amount' | 'type';
 type SortTransaction = 'asc' | 'desc';
 
 const Transactions: React.FC = () => {
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilters, setStatusFilters] = useState<TransactionStatus[]>([]);
+  const [typeFilters, setTypeFilters] = useState<TransactionType[]>([]);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortTransaction, setSortTransaction] = useState<SortTransaction>('desc');
@@ -42,8 +42,10 @@ const Transactions: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
   const transactionsPerPage = 15;
   const statusDropdownRef = useRef<HTMLDivElement>(null);
+  const typeDropdownRef = useRef<HTMLDivElement>(null);
   const dateDropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -127,20 +129,28 @@ const Transactions: React.FC = () => {
 
   useEffect(() => {
     filterAndSortTransactions();
-  }, [transactions, searchTerm, statusFilters, dateFrom, dateTo, sortField, sortTransaction]);
+  }, [transactions, searchTerm, statusFilters, typeFilters, dateFrom, dateTo, sortField, sortTransaction]);
 
   useEffect(() => {
     // Reset to first page when filters change
     setCurrentPage(1);
-  }, [searchTerm, statusFilters, dateFrom, dateTo]);
+  }, [searchTerm, statusFilters, typeFilters, dateFrom, dateTo]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target as Node)) {
         setShowStatusDropdown(false);
       }
+      if (typeDropdownRef.current && !typeDropdownRef.current.contains(event.target as Node)) {
+        setShowTypeDropdown(false);
+      }
       if (dateDropdownRef.current && !dateDropdownRef.current.contains(event.target as Node)) {
         setShowDateDropdown(false);
+      }
+      // Close action menu when clicking outside
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-action-menu]')) {
+        setOpenActionMenu(null);
       }
     };
 
@@ -162,6 +172,9 @@ const Transactions: React.FC = () => {
     }
     if (statusFilters.length > 0) {
       filtered = filtered.filter(transaction => statusFilters.includes(transaction.status));
+    }
+    if (typeFilters.length > 0) {
+      filtered = filtered.filter(transaction => typeFilters.includes(transaction.type));
     }
     if (dateFrom) {
       const fromDate = new Date(dateFrom);
@@ -194,6 +207,8 @@ const Transactions: React.FC = () => {
           [TransactionStatus.CANCELLED]: 9,
         };
         comparison = statusTransaction[a.status] - statusTransaction[b.status];
+      } else if (sortField === 'type') {
+        comparison = a.type.localeCompare(b.type);
       }
 
       return sortTransaction === 'asc' ? comparison : -comparison;
@@ -224,6 +239,18 @@ const Transactions: React.FC = () => {
     setStatusFilters([]);
   };
 
+  const toggleTypeFilter = (type: TransactionType) => {
+    setTypeFilters(prev =>
+      prev.includes(type)
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+  };
+
+  const clearTypeFilters = () => {
+    setTypeFilters([]);
+  };
+
   const clearDateFilter = () => {
     setDateFrom('');
     setDateTo('');
@@ -241,6 +268,25 @@ const Transactions: React.FC = () => {
   const hasActiveDateFilter = dateFrom || dateTo;
 
   const allStatuses = Object.values(TransactionStatus);
+  const allTypes = Object.values(TransactionType);
+
+  const statusColors: Record<TransactionStatus, string> = {
+    [TransactionStatus.PENDING]: '#b45309', // amber-700
+    [TransactionStatus.PAID]: '#1d4ed8', // blue-700
+    [TransactionStatus.IN_TRANSIT]: '#4338ca', // indigo-700
+    [TransactionStatus.DELIVERED]: '#7e22ce', // purple-700
+    [TransactionStatus.ACK_DELIVERY]: '#4338ca', // indigo-700
+    [TransactionStatus.COMPLETED]: '#047857', // emerald-700
+    [TransactionStatus.DISPUTED]: '#b91c1c', // red-700
+    [TransactionStatus.DISPUTE_RESOLVED]: '#047857', // emerald-700
+    [TransactionStatus.CANCELLED]: '#374151', // gray-700
+  };
+
+  const typeColors: Record<TransactionType, string> = {
+    [TransactionType.PHYSICAL_GOODS]: '#2563eb', // blue-600
+    [TransactionType.DIGITAL_GOODS]: '#9333ea', // purple-600
+    [TransactionType.SERVICE]: '#d97706', // amber-600
+  };
 
   // Pagination logic
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
@@ -248,20 +294,7 @@ const Transactions: React.FC = () => {
   const endIndex = startIndex + transactionsPerPage;
   const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
 
-  const getStatusColor = (status: TransactionStatus) => {
-    const colors: Record<TransactionStatus, { bg: string; text: string; border: string }> = {
-      [TransactionStatus.PENDING]: { bg: 'bg-[var(--status-pending-bg)]', text: 'text-[var(--status-pending-text)]', border: 'border-[var(--status-pending-border)]' },
-      [TransactionStatus.PAID]: { bg: 'bg-[var(--status-paid-bg)]', text: 'text-[var(--status-paid-text)]', border: 'border-[var(--status-paid-border)]' },
-      [TransactionStatus.IN_TRANSIT]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', border: 'border-[var(--status-inTransit-border)]' },
-      [TransactionStatus.DELIVERED]: { bg: 'bg-[var(--status-delivered-bg)]', text: 'text-[var(--status-delivered-text)]', border: 'border-[var(--status-delivered-border)]' },
-      [TransactionStatus.ACK_DELIVERY]: { bg: 'bg-[var(--status-inTransit-bg)]', text: 'text-[var(--status-inTransit-text)]', border: 'border-[var(--status-inTransit-border)]' },
-      [TransactionStatus.COMPLETED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', border: 'border-[var(--status-completed-border)]' },
-      [TransactionStatus.DISPUTED]: { bg: 'bg-[var(--status-disputed-bg)]', text: 'text-[var(--status-disputed-text)]', border: 'border-[var(--status-disputed-border)]' },
-      [TransactionStatus.DISPUTE_RESOLVED]: { bg: 'bg-[var(--status-completed-bg)]', text: 'text-[var(--status-completed-text)]', border: 'border-[var(--status-completed-border)]' },
-      [TransactionStatus.CANCELLED]: { bg: 'bg-[var(--status-cancelled-bg)]', text: 'text-[var(--status-cancelled-text)]', border: 'border-[var(--status-cancelled-border)]' },
-    };
-    return colors[status];
-  };
+
 
   if (loading) {
     return (
@@ -272,293 +305,254 @@ const Transactions: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+    <div className="h-full flex flex-col space-y-6 pt-6">
+      <div className="flex-none space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">My Transactions</h1>
-            <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
-              Manage and track all your transactions
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Transactions</h1>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              Manage and track all your payments and transactions
             </p>
           </div>
 
-        </div>
-        <div className="relative group w-full sm:w-auto">
-          <button
-            onClick={() => user?.verified ? navigate('/transactions/create') : null}
-            disabled={!user?.verified}
-            className={`flex items-center justify-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-colors w-full sm:w-auto ${user?.verified
-              ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
-              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-              }`}
-          >
-            <Plus className="h-4 w-4" />
-            Create Transaction
-          </button>
-          {!user?.verified && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
-              Please verify your account in Settings to create transactions
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)]">
-        <div className="p-4 sm:p-5 border-b border-[var(--border-default)]">
-          <div className="flex flex-col gap-3">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--text-tertiary)]" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search transactions..."
-                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                placeholder="Search..."
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] text-[var(--text-primary)] transition-all"
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <div className="relative flex-1" ref={dateDropdownRef}>
-                <button
-                  onClick={() => setShowDateDropdown(!showDateDropdown)}
-                  className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm border rounded-lg transition-colors w-full ${hasActiveDateFilter
-                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]'
-                    : 'text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-tertiary)]'
-                    }`}
-                >
-                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm">Date Filter</span>
-                  {hasActiveDateFilter && <span className="ml-1 px-1.5 py-0.5 bg-[var(--color-primary-text)]/20 rounded text-[10px]">✓</span>}
-                </button>
-                {showDateDropdown && (
-                  <div className="absolute top-full left-0 right-0 sm:left-auto sm:right-0 sm:w-80 mt-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">Filter by Date</span>
-                      {hasActiveDateFilter && (
-                        <button
-                          onClick={clearDateFilter}
-                          className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium"
+
+            <div className="relative group">
+              <button
+                onClick={() => user?.verified ? navigate('/transactions/create') : null}
+                disabled={!user?.verified}
+                className={`flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors w-full sm:w-auto whitespace-nowrap ${user?.verified
+                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
+                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                  }`}
+              >
+                <Plus className="h-4 w-4" />
+                New Transaction
+              </button>
+              {!user?.verified && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                  Please verify your account in Settings to create transactions
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Row */}
+        <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Status Filter (All) */}
+            <div className="relative" ref={statusDropdownRef}>
+              <button
+                onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors min-w-[100px] justify-between"
+              >
+                <span>{statusFilters.length > 0 ? `${statusFilters.length} Selected` : 'All'}</span>
+                <ChevronDown className="h-4 w-4 text-[var(--text-secondary)]" />
+              </button>
+              {showStatusDropdown && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-2">
+                  <div className="flex items-center justify-between px-2 py-1.5 mb-1">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Status</span>
+                    {statusFilters.length > 0 && (
+                      <button
+                        onClick={clearStatusFilters}
+                        className="text-xs text-[var(--color-primary)] hover:underline"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="space-y-0.5">
+                    {allStatuses.map(status => {
+                      const isChecked = statusFilters.includes(status);
+                      return (
+                        <label
+                          key={status}
+                          className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-tertiary)] rounded-lg cursor-pointer"
                         >
-                          Clear
-                        </button>
-                      )}
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-medium text-[var(--text-primary)] mb-1.5">
-                          From Date <span className="hidden sm:inline text-[var(--text-tertiary)]">(DD/MM/YYYY)</span>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleStatusFilter(status)}
+                            className="w-3.5 h-3.5 rounded border-[var(--border-medium)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                          />
+                          <span
+                            className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: statusColors[status] }}
+                          />
+                          <span className="text-sm text-[var(--text-primary)] capitalize">
+                            {status.replace('_', ' ').toLowerCase()}
+                          </span>
                         </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Type Filter */}
+            <div className="relative" ref={typeDropdownRef}>
+              <button
+                onClick={() => setShowTypeDropdown(!showTypeDropdown)}
+                className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors min-w-[100px] justify-between"
+              >
+                <span>{typeFilters.length > 0 ? `${typeFilters.length} Types` : 'All Types'}</span>
+                <ChevronDown className="h-4 w-4 text-[var(--text-secondary)]" />
+              </button>
+              {showTypeDropdown && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-2">
+                  <div className="flex items-center justify-between px-2 py-1.5 mb-1">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Type</span>
+                    {typeFilters.length > 0 && (
+                      <button
+                        onClick={clearTypeFilters}
+                        className="text-xs text-[var(--color-primary)] hover:underline"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="space-y-0.5">
+                    {allTypes.map(type => {
+                      const isChecked = typeFilters.includes(type);
+                      return (
+                        <label
+                          key={type}
+                          className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-tertiary)] rounded-lg cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleTypeFilter(type)}
+                            className="w-3.5 h-3.5 rounded border-[var(--border-medium)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                          />
+                          <span
+                            className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: typeColors[type] }}
+                          />
+                          <span className="text-sm text-[var(--text-primary)] capitalize">
+                            {type.replace('_', ' ').toLowerCase()}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Date Range Filter */}
+            <div className="relative" ref={dateDropdownRef}>
+              <button
+                onClick={() => setShowDateDropdown(!showDateDropdown)}
+                className={`flex items-center gap-2 px-3 py-2 bg-[var(--bg-card)] border rounded-lg text-sm font-medium transition-colors ${hasActiveDateFilter
+                  ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
+                  : 'border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
+                  }`}
+              >
+                <Calendar className="h-4 w-4" />
+                <span>Date Range</span>
+              </button>
+              {showDateDropdown && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-[var(--text-primary)]">Filter by Date</span>
+                    {hasActiveDateFilter && (
+                      <button
+                        onClick={clearDateFilter}
+                        className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">From</label>
                         <input
                           type="date"
                           value={dateFrom}
                           onChange={(e) => setDateFrom(e.target.value)}
                           max={dateTo || undefined}
-                          placeholder="dd/mm/yyyy"
-                          className="w-full px-3 py-2 text-sm border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] placeholder:lowercase bg-[var(--bg-card)] text-[var(--text-primary)]"
+                          className="w-full px-2 py-1.5 text-sm border border-[var(--border-default)] rounded-md focus:border-[var(--color-primary)] focus:outline-none bg-[var(--bg-card)] text-[var(--text-primary)]"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-[var(--text-primary)] mb-1.5">
-                          To Date <span className="hidden sm:inline text-[var(--text-tertiary)]">(DD/MM/YYYY)</span>
-                        </label>
+                        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">To</label>
                         <input
                           type="date"
                           value={dateTo}
                           onChange={(e) => setDateTo(e.target.value)}
                           min={dateFrom || undefined}
-                          placeholder="dd/mm/yyyy"
-                          className="w-full px-3 py-2 text-sm border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] placeholder:lowercase bg-[var(--bg-card)] text-[var(--text-primary)]"
+                          className="w-full px-2 py-1.5 text-sm border border-[var(--border-default)] rounded-md focus:border-[var(--color-primary)] focus:outline-none bg-[var(--bg-card)] text-[var(--text-primary)]"
                         />
                       </div>
-                      {hasActiveDateFilter && (
-                        <div className="pt-2 border-t border-[var(--border-default)]">
-                          <div className="text-xs text-[var(--text-secondary)]">
-                            Showing transactions from{' '}
-                            <span className="font-medium text-[var(--text-primary)]">
-                              {dateFrom ? new Date(dateFrom).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'beginning'}
-                            </span>
-                            {' '}to{' '}
-                            <span className="font-medium text-[var(--text-primary)]">
-                              {dateTo ? new Date(dateTo).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'today'}
-                            </span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
-                )}
-              </div>
-              <div className="relative flex-1" ref={statusDropdownRef}>
-                <button
-                  onClick={() => setShowStatusDropdown(!showStatusDropdown)}
-                  className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm border rounded-lg transition-colors w-full ${statusFilters.length > 0
-                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]'
-                    : 'text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-tertiary)]'
-                    }`}
-                >
-                  <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm">Status Filter</span>
-                  {statusFilters.length > 0 && <span className="ml-1 px-1.5 py-0.5 bg-[var(--color-primary-text)]/20 rounded text-[10px]">{statusFilters.length}</span>}
-                </button>
-                {showStatusDropdown && (
-                  <div className="absolute top-full left-0 right-0 sm:left-auto sm:right-0 sm:w-72 mt-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">Filter by Status</span>
-                      {statusFilters.length > 0 && (
-                        <button
-                          onClick={clearStatusFilters}
-                          className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium"
-                        >
-                          Clear All
-                        </button>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      {allStatuses.map(status => {
-                        const colors = getStatusColor(status);
-                        const isChecked = statusFilters.includes(status);
-                        return (
-                          <label
-                            key={status}
-                            className={`flex items-center gap-3 cursor-pointer rounded-lg px-3 py-2 transition-colors border ${isChecked
-                              ? `${colors.bg} ${colors.border}`
-                              : 'border-transparent hover:bg-[var(--bg-tertiary)]'
-                              }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => toggleStatusFilter(status)}
-                              className="w-4 h-4 text-[var(--color-primary)] border-[var(--border-medium)] rounded focus:ring-[var(--color-primary)]"
-                            />
-                            <span className={`text-sm font-medium capitalize ${isChecked ? colors.text : 'text-[var(--text-primary)]'}`}>
-                              {status.replace('_', ' ')}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() => setShowExportModal(true)}
-                className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg hover:bg-[var(--bg-tertiary)] hover:border-[var(--color-primary)] transition-colors flex-1"
-              >
-                <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">Export</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Card View */}
-        <div className="md:hidden space-y-3">
-          {paginatedTransactions.length > 0 ? (
-            paginatedTransactions.map((transaction) => {
-              const isSender = transaction.sender_id === user?.id;
-              return (
-                <TransactionCard key={transaction.id} transaction={transaction} isSender={isSender} />
-              );
-            })
-          ) : (
-            <div className="flex flex-col items-center py-12">
-              <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center mb-4">
-                <Package className="h-8 w-8 text-[var(--text-tertiary)]" />
-              </div>
-              <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
-                {searchTerm || statusFilters.length > 0 || hasActiveDateFilter ? 'No transactions found' : 'No transactions yet'}
-              </h3>
-              <p className="text-sm text-[var(--text-secondary)] mb-4">
-                {searchTerm || statusFilters.length > 0 || hasActiveDateFilter
-                  ? 'Try adjusting your filters or search terms'
-                  : 'Get started by creating your first transaction'}
-              </p>
-              {!searchTerm && statusFilters.length === 0 && !hasActiveDateFilter && (
-                <div className="relative group inline-block">
-                  <button
-                    onClick={() => user?.verified ? navigate('/transactions/create') : null}
-                    disabled={!user?.verified}
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${user?.verified
-                      ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
-                      : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                      }`}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Create Transaction
-                  </button>
-                  {!user?.verified && (
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
-                      Please verify your account in Settings to create transactions
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
 
+            <button
+              onClick={() => setShowExportModal(true)}
+              className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Transactions Table */}
+      <div className="flex-1 min-h-0 bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] overflow-hidden shadow-sm flex flex-col">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[var(--bg-tertiary)] border-b border-[var(--border-default)]">
+        <div className="hidden md:block flex-1 overflow-auto">
+          <table className="w-full relative">
+            <thead className="sticky top-0 z-10 bg-[var(--bg-card)] border-b border-[var(--border-default)] shadow-sm">
               <tr>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Transaction</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Type</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Payment Link</th>
-                <th className="px-5 py-3 text-left">
-                  <button
-                    onClick={() => handleColumnSort('amount')}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors"
-                  >
-                    <span>Amount</span>
-                    {sortField === 'amount' ? (
-                      sortTransaction === 'asc' ? (
-                        <ArrowUp className="h-3.5 w-3.5" />
-                      ) : (
-                        <ArrowDown className="h-3.5 w-3.5" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
-                    )}
+                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('date')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                    Date
+                    <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
-                <th className="px-5 py-3 text-left">
-                  <button
-                    onClick={() => handleColumnSort('date')}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors"
-                  >
-                    <span>Date</span>
-                    {sortField === 'date' ? (
-                      sortTransaction === 'asc' ? (
-                        <ArrowUp className="h-3.5 w-3.5" />
-                      ) : (
-                        <ArrowDown className="h-3.5 w-3.5" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
-                    )}
+                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('amount')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                    Amount
+                    <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
-                <th className="px-5 py-3 text-left">
-                  <button
-                    onClick={() => handleColumnSort('status')}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider hover:text-[var(--text-primary)] transition-colors"
-                  >
-                    <span>Status</span>
-                    {sortField === 'status' ? (
-                      sortTransaction === 'asc' ? (
-                        <ArrowUp className="h-3.5 w-3.5" />
-                      ) : (
-                        <ArrowDown className="h-3.5 w-3.5" />
-                      )
-                    ) : (
-                      <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
-                    )}
+                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('type')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                    Type
+                    <ArrowUpDown className="h-3 w-3" />
                   </button>
                 </th>
-                <th className="px-5 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('status')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                    Status
+                    <ArrowUpDown className="h-3 w-3" />
+                  </button>
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-default)]">
@@ -566,18 +560,17 @@ const Transactions: React.FC = () => {
                 paginatedTransactions.map((transaction) => {
                   const isSender = transaction.sender_id === user?.id;
                   const statusConfig: Record<TransactionStatus, { label: string; color: string; bg: string }> = {
-                    [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-[var(--status-completed-text)]', bg: 'bg-[var(--status-completed-bg)]' },
-                    [TransactionStatus.PAID]: { label: 'Paid', color: 'text-[var(--status-paid-text)]', bg: 'bg-[var(--status-paid-bg)]' },
-                    [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
-                    [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-[var(--status-delivered-text)]', bg: 'bg-[var(--status-delivered-bg)]' },
-                    [TransactionStatus.ACK_DELIVERY]: { label: 'Delivery Acknowledged', color: 'text-[var(--status-inTransit-text)]', bg: 'bg-[var(--status-inTransit-bg)]' },
-                    [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-[var(--status-pending-text)]', bg: 'bg-[var(--status-pending-bg)]' },
-                    [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-[var(--status-disputed-text)]', bg: 'bg-[var(--status-disputed-bg)]' },
-                    [TransactionStatus.DISPUTE_RESOLVED]: { label: 'Dispute Resolved', color: 'text-[var(--status-completed-text)]', bg: 'bg-[var(--status-completed-bg)]' },
-                    [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-[var(--status-cancelled-text)]', bg: 'bg-[var(--status-cancelled-bg)]' },
+                    [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                    [TransactionStatus.PAID]: { label: 'Paid', color: 'text-blue-700 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                    [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-indigo-700 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+                    [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+                    [TransactionStatus.ACK_DELIVERY]: { label: 'Acknowledged', color: 'text-indigo-700 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+                    [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+                    [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-red-700 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20' },
+                    [TransactionStatus.DISPUTE_RESOLVED]: { label: 'Resolved', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                    [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-gray-700 dark:text-gray-400', bg: 'bg-gray-50 dark:bg-gray-800' },
                   };
 
-                  // Provide a fallback config if status is not found, and log for debugging
                   const status = statusConfig[transaction.status as TransactionStatus] || {
                     label: String(transaction.status || 'Unknown').replace('_', ' '),
                     color: 'text-neutral-700',
@@ -585,122 +578,116 @@ const Transactions: React.FC = () => {
                   };
 
                   return (
-                    <tr key={transaction.id} className="hover:bg-[var(--bg-tertiary)] transition-colors">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
-                            <Package className="h-4 w-4 sm:h-5 sm:w-5 text-[var(--text-secondary)]" />
+                    <tr
+                      key={transaction.id}
+                      className="group hover:bg-[var(--bg-tertiary)]/50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-full bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0 border border-[var(--border-default)]">
+                            <FileText className="h-4 w-4 text-[var(--text-secondary)]" />
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-xs sm:text-sm font-medium text-[var(--text-primary)] truncate">{transaction.title}</p>
-                            <p className="text-[10px] sm:text-xs text-[var(--text-secondary)] truncate">{transaction.description?.slice(0, 20)}...</p>
+                          <div>
+                            <p className="text-sm font-medium text-[var(--text-primary)]">{transaction.title}</p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <p className="text-xs text-[var(--text-secondary)] font-mono">{transaction.transaction_id}</p>
+                              <button
+                                onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
+                                className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors p-0.5 rounded hover:bg-[var(--bg-tertiary)]"
+                                title="Copy ID"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-[var(--text-primary)]">
+                          {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`text-sm font-medium ${isSender ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}`}>
+                          ₵{maskAmount(transaction.amount)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
                         {(() => {
                           const typeStyles = getTransactionTypeStyles(transaction.type);
                           return (
-                            <span className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded border uppercase ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+                            <span className={`text-xs font-bold px-2 py-1 rounded border uppercase ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
                               {typeStyles.shortLabel}
                             </span>
                           );
                         })()}
                       </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2">
-                          {transaction.payment_link ? (
-                            <a
-                              href={transaction.payment_link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs sm:text-sm font-mono text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors"
-                            >
-                              {transaction.transaction_id}
-                            </a>
-                          ) : (
-                            <span className="text-xs sm:text-sm font-mono text-[var(--text-secondary)]">
-                              {transaction.transaction_id || 'N/A'}
-                            </span>
-                          )}
-                          {transaction.payment_link && (
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${status.bg} ${status.color} border-transparent`}>
+                          <span className={`w-1.5 h-1.5 rounded-full bg-current`} />
+                          {status.label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end" data-action-menu>
+                          <div className="relative">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                copyToClipboard(transaction.payment_link!, e);
+                                setOpenActionMenu(openActionMenu === transaction.transaction_id ? null : transaction.transaction_id);
                               }}
-                              className="p-1 hover:bg-[var(--bg-tertiary)] rounded transition-colors"
-                              title="Copy payment link"
+                              className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
                             >
-                              <Copy className="h-3 w-3 text-[var(--text-tertiary)]" />
+                              <MoreVertical className="h-4 w-4" />
                             </button>
-                          )}
+
+                            {openActionMenu === transaction.transaction_id && (
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg shadow-xl z-50 py-1">
+                                {transaction.payment_link && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(transaction.payment_link!, e);
+                                      setOpenActionMenu(null);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-left"
+                                  >
+                                    <Copy className="h-4 w-4 text-[var(--text-secondary)]" />
+                                    Copy Payment Link
+                                  </button>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } });
+                                    setOpenActionMenu(null);
+                                  }}
+                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-left"
+                                >
+                                  <Eye className="h-4 w-4 text-[var(--text-secondary)]" />
+                                  View Details
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className={`text-xs sm:text-sm font-medium ${isSender ? 'text-[var(--amount-negative)]' : 'text-[var(--amount-positive)]'}`}>
-                          {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className="text-xs sm:text-sm text-[var(--text-primary)]">
-                          {new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-xs font-medium ${status.bg} ${status.color}`}>
-                          <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${status.color.replace('text-', 'bg-')} mr-1 sm:mr-1.5`} />
-                          <span className="hidden sm:inline">{status.label}</span>
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
-                          className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
-                        >
-                          <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                          <span className="hidden sm:inline">View</span>
-                        </button>
                       </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-5 py-16 text-center">
+                  <td colSpan={6} className="px-6 py-16 text-center">
                     <div className="flex flex-col items-center">
-                      <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center mb-4">
-                        <Package className="h-8 w-8 text-[var(--text-tertiary)]" />
+                      <div className="w-16 h-16 bg-[var(--bg-tertiary)] rounded-full flex items-center justify-center mb-4">
+                        <Search className="h-8 w-8 text-[var(--text-tertiary)]" />
                       </div>
                       <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
-                        {searchTerm || statusFilters.length > 0 || hasActiveDateFilter ? 'No transactions found' : 'No transactions yet'}
+                        No transactions found
                       </h3>
-                      <p className="text-sm text-[var(--text-secondary)] mb-4">
-                        {searchTerm || statusFilters.length > 0 || hasActiveDateFilter
-                          ? 'Try adjusting your filters or search terms'
-                          : 'Get started by creating your first transaction'}
+                      <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto">
+                        We couldn't find any transactions matching your search filters.
                       </p>
-                      {!searchTerm && statusFilters.length === 0 && !hasActiveDateFilter && (
-                        <div className="relative group inline-block">
-                          <button
-                            onClick={() => user?.verified ? navigate('/transactions/create') : null}
-                            disabled={!user?.verified}
-                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${user?.verified
-                              ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] hover:bg-[var(--color-primary-hover)] cursor-pointer'
-                              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                              }`}
-                          >
-                            <Plus className="h-4 w-4" />
-                            Create Transaction
-                          </button>
-                          {!user?.verified && (
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
-                              Please verify your account in Settings to create transactions
-                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -709,46 +696,109 @@ const Transactions: React.FC = () => {
           </table>
         </div>
 
-        {
-          filteredTransactions.length > 0 && (
-            <div className="px-5 py-4 border-t border-[var(--border-default)]">
-              <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                <span>Showing {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length} entries</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 rounded-lg transition-colors ${currentPage === page
-                          ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                          : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
-                          }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+        {/* Mobile Card View */}
+        <div className="md:hidden flex-1 overflow-y-auto divide-y divide-[var(--border-default)]">
+          {paginatedTransactions.length > 0 ? (
+            paginatedTransactions.map((transaction) => {
+              const isSender = transaction.sender_id === user?.id;
+              return (
+                <div
+                  key={transaction.id}
+                  className="p-4 hover:bg-[var(--bg-tertiary)]/50 transition-colors active:bg-[var(--bg-tertiary)]"
+                  onClick={() => navigate(`/transactions/${transaction.transaction_id}`, { state: { transaction } })}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0 border border-[var(--border-default)]">
+                        <FileText className="h-5 w-5 text-[var(--text-secondary)]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-[var(--text-primary)]">{transaction.title}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs text-[var(--text-secondary)] font-mono">{transaction.transaction_id}</p>
+                          <button
+                            onClick={(e) => copyToClipboard(transaction.transaction_id, e)}
+                            className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors p-0.5 rounded hover:bg-[var(--bg-tertiary)]"
+                            title="Copy ID"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <span className={`text-sm font-semibold ${isSender ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}`}>
+                      ₵{maskAmount(transaction.amount)}
+                    </span>
                   </div>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {(() => {
+                        const statusConfig: Record<TransactionStatus, { label: string; color: string; bg: string }> = {
+                          [TransactionStatus.COMPLETED]: { label: 'Completed', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                          [TransactionStatus.PAID]: { label: 'Paid', color: 'text-blue-700 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                          [TransactionStatus.IN_TRANSIT]: { label: 'In Transit', color: 'text-indigo-700 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+                          [TransactionStatus.DELIVERED]: { label: 'Delivered', color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+                          [TransactionStatus.ACK_DELIVERY]: { label: 'Acknowledged', color: 'text-indigo-700 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
+                          [TransactionStatus.PENDING]: { label: 'Pending', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+                          [TransactionStatus.DISPUTED]: { label: 'Disputed', color: 'text-red-700 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20' },
+                          [TransactionStatus.DISPUTE_RESOLVED]: { label: 'Resolved', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                          [TransactionStatus.CANCELLED]: { label: 'Cancelled', color: 'text-gray-700 dark:text-gray-400', bg: 'bg-gray-50 dark:bg-gray-800' },
+                        };
+
+                        const status = statusConfig[transaction.status as TransactionStatus] || {
+                          label: String(transaction.status || 'Unknown').replace('_', ' '),
+                          color: 'text-neutral-700',
+                          bg: 'bg-neutral-50'
+                        };
+
+                        return (
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border ${status.bg} ${status.color} border-transparent`}>
+                            <span className={`w-1.5 h-1.5 rounded-full bg-current`} />
+                            {status.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <span className="text-xs text-[var(--text-secondary)]">
+                      {new Date(transaction.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              );
+            })
+          ) : (
+            <div className="p-8 text-center">
+              <p className="text-sm text-[var(--text-secondary)]">No transactions found</p>
             </div>
-          )
-        }
-      </div >
+          )}
+        </div>
+
+        {/* Pagination */}
+        {filteredTransactions.length > 0 && (
+          <div className="flex-none px-6 py-4 border-t border-[var(--border-default)] flex items-center justify-between bg-[var(--bg-card)]">
+            <div className="text-sm text-[var(--text-secondary)]">
+              Showing <span className="font-medium text-[var(--text-primary)]">{startIndex + 1}</span> to <span className="font-medium text-[var(--text-primary)]">{Math.min(endIndex, filteredTransactions.length)}</span> of <span className="font-medium text-[var(--text-primary)]">{filteredTransactions.length}</span> results
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {showToast && (
         <Toast
@@ -765,7 +815,7 @@ const Transactions: React.FC = () => {
         onClose={() => setShowExportModal(false)}
         transactions={filteredTransactions}
       />
-    </div >
+    </div>
   );
 };
 

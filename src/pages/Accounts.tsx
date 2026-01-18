@@ -172,7 +172,7 @@ const Accounts: React.FC = () => {
           {accounts.map((account) => {
             const isBank = account.type === AccountType.BANK;
             const isMTN = account.service_provider.toLowerCase().includes('mtn');
-            const isVodafone = account.service_provider.toLowerCase().includes('vodafone');
+            const isVodafone = account.service_provider.toLowerCase().includes('vodafone') || account.service_provider.toLowerCase().includes('telecel');
             const isAirtelTigo = account.service_provider.toLowerCase().includes('airtel');
 
             return (
@@ -271,50 +271,49 @@ const Accounts: React.FC = () => {
                         {isBank ? (
                           // Clarsix Logo
                           <div className="text-right">
-                            <div className="px-4 py-2 bg-white rounded-md">
-                              <div className="text-2xl font-black tracking-tight text-slate-900">
-                                CLARSIX
+                            <div className="px-2 py-1 bg-white rounded-md">
+                              <div className="text-lg font-black tracking-tight text-slate-900">
+                                CARD
                               </div>
                             </div>
                           </div>
                         ) : isMTN ? (
                           // MTN Logo
                           <div className="text-right">
-                            <div className="text-2xl font-black tracking-tight" style={{ color: '#000' }}>
+                            <div className="text-lg font-black tracking-tight" style={{ color: '#000' }}>
                               MTN
                             </div>
-                            <div className="text-xs font-bold -mt-1" style={{ color: '#000' }}>
+                            <div className="text-[10px] font-bold -mt-0.5" style={{ color: '#000' }}>
                               Mobile Money
                             </div>
                           </div>
                         ) : isVodafone ? (
-                          // Vodafone Logo
+                          // Vodafone/Telecel Logo
                           <div className="text-right">
                             <div className="flex items-center gap-1">
-                              <div className="w-6 h-6 rounded-full bg-white"></div>
-                              <div className="text-xl font-bold text-white">
-                                Vodafone
+                              <div className="text-lg font-bold text-white">
+                                {account.service_provider.toLowerCase().includes('telecel') ? 'Telecel' : 'Vodafone'}
                               </div>
                             </div>
-                            <div className="text-xs font-semibold text-white text-right">
+                            <div className="text-[10px] font-semibold text-white text-right">
                               Cash
                             </div>
                           </div>
                         ) : isAirtelTigo ? (
                           // AirtelTigo Logo
                           <div className="text-right">
-                            <div className="text-xl font-black text-white">
+                            <div className="text-lg font-black text-white">
                               AirtelTigo
                             </div>
-                            <div className="text-xs font-bold text-white">
+                            <div className="text-[10px] font-bold text-white">
                               Money
                             </div>
                           </div>
                         ) : (
                           // Generic Mobile Money
                           <div className="text-right">
-                            <Wallet className="h-8 w-8 text-white" />
-                            <div className="text-xs font-semibold text-white mt-1">
+                            <Wallet className="h-6 w-6 text-white" />
+                            <div className="text-[10px] font-semibold text-white mt-1">
                               Mobile Money
                             </div>
                           </div>
@@ -358,7 +357,7 @@ const Accounts: React.FC = () => {
             className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
           />
           {/* Modal Content */}
-          <div className="relative bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="relative bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)]">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">Add Payment Method</h2>
               <button
@@ -372,13 +371,13 @@ const Accounts: React.FC = () => {
             <form onSubmit={handleAddAccount} className="p-6">
               {/* Card Preview */}
               <div className="mb-6">
-                <div className="relative overflow-hidden rounded-2xl shadow-xl aspect-[1.586/1] max-w-md mx-auto">
+                <div className="relative overflow-hidden rounded-2xl shadow-xl aspect-[1.586/1] max-w-xs mx-auto">
                   {/* Background Gradient */}
                   {formData.type === AccountType.BANK ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black"></div>
                   ) : formData.service_provider.toLowerCase().includes('mtn') ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600"></div>
-                  ) : formData.service_provider.toLowerCase().includes('vodafone') ? (
+                  ) : (formData.service_provider.toLowerCase().includes('vodafone') || formData.service_provider.toLowerCase().includes('telecel')) ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-700 to-red-800"></div>
                   ) : formData.service_provider.toLowerCase().includes('airtel') ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-600 to-orange-600"></div>
@@ -444,33 +443,34 @@ const Accounts: React.FC = () => {
                       {/* Logo */}
                       <div className="flex items-center">
                         {formData.type === AccountType.BANK ? (
-                          <div className="px-4 py-2 bg-white rounded-md">
-                            <div className="text-xl font-black tracking-tight text-slate-900">
-                              CLARSIX
+                          <div className="px-2 py-1 bg-white rounded-md">
+                            <div className="text-lg font-black tracking-tight text-slate-900">
+                              CARD
                             </div>
                           </div>
                         ) : formData.service_provider.toLowerCase().includes('mtn') ? (
                           <div className="text-right">
-                            <div className="text-2xl font-black tracking-tight" style={{ color: '#000' }}>MTN</div>
-                            <div className="text-xs font-bold -mt-1" style={{ color: '#000' }}>Mobile Money</div>
+                            <div className="text-lg font-black tracking-tight" style={{ color: '#000' }}>MTN</div>
+                            <div className="text-[10px] font-bold -mt-0.5" style={{ color: '#000' }}>Mobile Money</div>
                           </div>
-                        ) : formData.service_provider.toLowerCase().includes('vodafone') ? (
+                        ) : (formData.service_provider.toLowerCase().includes('vodafone') || formData.service_provider.toLowerCase().includes('telecel')) ? (
                           <div className="text-right">
                             <div className="flex items-center gap-1">
-                              <div className="w-6 h-6 rounded-full bg-white"></div>
-                              <div className="text-xl font-bold text-white">Vodafone</div>
+                              <div className="text-lg font-bold text-white">
+                                {formData.service_provider.toLowerCase().includes('telecel') ? 'Telecel' : 'Vodafone'}
+                              </div>
                             </div>
-                            <div className="text-xs font-semibold text-white text-right">Cash</div>
+                            <div className="text-[10px] font-semibold text-white text-right">Cash</div>
                           </div>
                         ) : formData.service_provider.toLowerCase().includes('airtel') ? (
                           <div className="text-right">
-                            <div className="text-xl font-black text-white">AirtelTigo</div>
-                            <div className="text-xs font-bold text-white">Money</div>
+                            <div className="text-lg font-black text-white">AirtelTigo</div>
+                            <div className="text-[10px] font-bold text-white">Money</div>
                           </div>
                         ) : (
                           <div className="text-right">
-                            <Wallet className="h-8 w-8 text-white" />
-                            <div className="text-xs font-semibold text-white mt-1">Mobile Money</div>
+                            <Wallet className="h-6 w-6 text-white" />
+                            <div className="text-[10px] font-semibold text-white mt-1">Mobile Money</div>
                           </div>
                         )}
                       </div>
@@ -530,15 +530,30 @@ const Accounts: React.FC = () => {
                   <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Service Provider
                   </label>
-                  <input
-                    type="text"
-                    name="service_provider"
-                    value={formData.service_provider}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                    placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
-                  />
+                  {formData.type === AccountType.MOMO ? (
+                    <select
+                      name="service_provider"
+                      value={formData.service_provider}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    >
+                      <option value="">Select provider</option>
+                      <option value="MTN">MTN</option>
+                      <option value="Telecel">Telecel</option>
+                      <option value="AirtelTigo">AirtelTigo</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="service_provider"
+                      value={formData.service_provider}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                      placeholder="e.g., GTBank, Ecobank"
+                    />
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">
@@ -575,7 +590,7 @@ const Accounts: React.FC = () => {
             className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
           />
           {/* Modal Content */}
-          <div className="relative bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="relative bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)]">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">Edit Payment Method</h2>
               <button
@@ -589,13 +604,13 @@ const Accounts: React.FC = () => {
             <form onSubmit={handleEditAccount} className="p-6">
               {/* Card Preview */}
               <div className="mb-6">
-                <div className="relative overflow-hidden rounded-2xl shadow-xl aspect-[1.586/1] max-w-md mx-auto">
+                <div className="relative overflow-hidden rounded-2xl shadow-xl aspect-[1.586/1] max-w-xs mx-auto">
                   {/* Background Gradient */}
                   {formData.type === AccountType.BANK ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black"></div>
                   ) : formData.service_provider.toLowerCase().includes('mtn') ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600"></div>
-                  ) : formData.service_provider.toLowerCase().includes('vodafone') ? (
+                  ) : (formData.service_provider.toLowerCase().includes('vodafone') || formData.service_provider.toLowerCase().includes('telecel')) ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-700 to-red-800"></div>
                   ) : formData.service_provider.toLowerCase().includes('airtel') ? (
                     <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-600 to-orange-600"></div>
@@ -661,33 +676,34 @@ const Accounts: React.FC = () => {
                       {/* Logo */}
                       <div className="flex items-center">
                         {formData.type === AccountType.BANK ? (
-                          <div className="px-4 py-2 bg-white rounded-md">
-                            <div className="text-xl font-black tracking-tight text-slate-900">
-                              CLARSIX
+                          <div className="px-2 py-1 bg-white rounded-md">
+                            <div className="text-lg font-black tracking-tight text-slate-900">
+                              CARD
                             </div>
                           </div>
                         ) : formData.service_provider.toLowerCase().includes('mtn') ? (
                           <div className="text-right">
-                            <div className="text-2xl font-black tracking-tight" style={{ color: '#000' }}>MTN</div>
-                            <div className="text-xs font-bold -mt-1" style={{ color: '#000' }}>Mobile Money</div>
+                            <div className="text-lg font-black tracking-tight" style={{ color: '#000' }}>MTN</div>
+                            <div className="text-[10px] font-bold -mt-0.5" style={{ color: '#000' }}>Mobile Money</div>
                           </div>
-                        ) : formData.service_provider.toLowerCase().includes('vodafone') ? (
+                        ) : (formData.service_provider.toLowerCase().includes('vodafone') || formData.service_provider.toLowerCase().includes('telecel')) ? (
                           <div className="text-right">
                             <div className="flex items-center gap-1">
-                              <div className="w-6 h-6 rounded-full bg-white"></div>
-                              <div className="text-xl font-bold text-white">Vodafone</div>
+                              <div className="text-lg font-bold text-white">
+                                {formData.service_provider.toLowerCase().includes('telecel') ? 'Telecel' : 'Vodafone'}
+                              </div>
                             </div>
-                            <div className="text-xs font-semibold text-white text-right">Cash</div>
+                            <div className="text-[10px] font-semibold text-white text-right">Cash</div>
                           </div>
                         ) : formData.service_provider.toLowerCase().includes('airtel') ? (
                           <div className="text-right">
-                            <div className="text-xl font-black text-white">AirtelTigo</div>
-                            <div className="text-xs font-bold text-white">Money</div>
+                            <div className="text-lg font-black text-white">AirtelTigo</div>
+                            <div className="text-[10px] font-bold text-white">Money</div>
                           </div>
                         ) : (
                           <div className="text-right">
-                            <Wallet className="h-8 w-8 text-white" />
-                            <div className="text-xs font-semibold text-white mt-1">Mobile Money</div>
+                            <Wallet className="h-6 w-6 text-white" />
+                            <div className="text-[10px] font-semibold text-white mt-1">Mobile Money</div>
                           </div>
                         )}
                       </div>
@@ -747,15 +763,30 @@ const Accounts: React.FC = () => {
                   <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Service Provider
                   </label>
-                  <input
-                    type="text"
-                    name="service_provider"
-                    value={formData.service_provider}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
-                    placeholder={formData.type === AccountType.BANK ? "e.g., GTBank, Ecobank" : "e.g., MTN, Vodafone, AirtelTigo"}
-                  />
+                  {formData.type === AccountType.MOMO ? (
+                    <select
+                      name="service_provider"
+                      value={formData.service_provider}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                    >
+                      <option value="">Select provider</option>
+                      <option value="MTN">MTN</option>
+                      <option value="Telecel">Telecel</option>
+                      <option value="AirtelTigo">AirtelTigo</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="service_provider"
+                      value={formData.service_provider}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-card)] text-[var(--text-primary)]"
+                      placeholder="e.g., GTBank, Ecobank"
+                    />
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">

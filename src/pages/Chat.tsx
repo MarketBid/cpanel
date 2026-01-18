@@ -11,10 +11,11 @@ import {
     useRestoreTransaction,
     useMarkTransactionInTransit,
     useMarkTransactionDelivered,
-    useMarkTransactionReceived
+    useMarkTransactionReceived,
+    transactionKeys
 } from '../hooks/queries/useTransactions';
-import { Transaction, TransactionStatus } from '../types';
-import { Send, Plus, Smile, MessageSquare, DollarSign, ArrowRight, ArrowLeft, X, ChevronDown, ChevronRight, Zap, FileText, Search } from 'lucide-react';
+import { TransactionStatus } from '../types';
+import { Send, Paperclip, Smile, MessageSquare, DollarSign, ArrowRight, ArrowLeft, X, ChevronDown, ChevronRight, Zap, FileText, Search, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Types
@@ -77,6 +78,8 @@ const SystemMessage: React.FC<{ message: Message }> = ({ message }) => {
         </div>
     );
 };
+
+const CHAT_BACKGROUND_PATTERN = `data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpattern id='bg' x='0' y='0' width='400' height='400' patternUnits='userSpaceOnUse'%3E%3Cg fill='none' stroke='%234a5d66' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.15'%3E%3Cpath d='M72.2 165.7c-2.4-1.9-5.7-1.7-8 0.5 -2.3 2.2-2.3 5.8-0.1 8 5.6 5.5 14.6 5.5 20.2 0 2.2-2.2 2.2-5.7-0.1-8 -2.3-2.2-5.7-2.4-8-0.5' /%3E%3Ccircle cx='200' cy='200' r='10' /%3E%3Cpath d='M350 50 l-10 20 h20 z' /%3E%3Cpath d='M50 350 q10 -20 20 0 t 20 0' /%3E%3Crect x='100' y='50' width='20' height='15' rx='3' /%3E%3Cpath d='M300 300 l15 -15 m-15 0 l15 15' /%3E%3Ccircle cx='150' cy='150' r='5' /%3E%3Cpath d='M250 250 l10 10 l-10 10 l-10 -10 z' /%3E%3Cpath d='M80 80 a5 5 0 0 1 10 0 v5 h-10 z' /%3E%3Cpath d='M50 250 a10 10 0 0 1 10 -10 h10 a10 10 0 0 1 10 10' /%3E%3Cpath d='M350 150 l10 -5 l10 5 v10 l-10 5 l-10 -5 z' /%3E%3Cpath d='M200 50 c5 -10 15 -10 20 0 c5 10 -5 20 -10 25 c-5 -5 -15 -15 -10 -25' /%3E%3Cpath d='M30 300 l5 -15 l5 15 h-10' /%3E%3Cpath d='M150 350 c0 -10 10 -10 10 0 s -10 10 -10 0' /%3E%3Cpath d='M250 100 l15 0 l-5 10 l5 10 l-15 0' /%3E%3Cpath d='M320 200 a10 10 0 1 0 20 0 a10 10 0 1 0 -20 0' /%3E%3Cpath d='M120 280 l10 -20 l10 20' /%3E%3Cpath d='M380 380 l-10 -10 m10 0 l-10 10' /%3E%3C/g%3E%3C/pattern%3E%3Crect width='100%25' height='100%25' fill='url(%23bg)'/%3E%3C/svg%3E`;
 
 const Chat: React.FC = () => {
     const { user } = useAuth();
@@ -169,10 +172,26 @@ const Chat: React.FC = () => {
         queryKey: ['conversations'],
         queryFn: async () => {
             const response = await apiClient.get<Conversation[]>('/chat/conversations');
-            return response.data;
+            return response.data.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
         },
         refetchInterval: 30000,
     });
+
+    // Auto-select first conversation if none selected
+    useEffect(() => {
+        if (!selectedConversation && conversations.length > 0 && !loadingConversations) {
+            const conversationId = searchParams.get('conversationId');
+            if (conversationId) {
+                setSelectedConversation(conversationId);
+            } else {
+                // Auto-select the most recent conversation that has NO unread messages
+                const readConversations = conversations.filter(c => (c.unread_count || 0) === 0);
+                if (readConversations.length > 0) {
+                    setSelectedConversation(readConversations[0].id);
+                }
+            }
+        }
+    }, [conversations, selectedConversation, loadingConversations, searchParams]);
 
     const selectedConversationObj = conversations.find(c => c.id === selectedConversation);
     const transactionId = selectedConversationObj?.transaction_id;
@@ -626,6 +645,14 @@ const Chat: React.FC = () => {
         return groups;
     }, [filteredConversations, user?.id]);
 
+    const sortedGroups = React.useMemo(() => {
+        return Object.entries(groupedConversations).sort(([, groupA], [, groupB]) => {
+            const dateA = groupA.conversations[0]?.updated_at || '';
+            const dateB = groupB.conversations[0]?.updated_at || '';
+            return new Date(dateB).getTime() - new Date(dateA).getTime();
+        });
+    }, [groupedConversations]);
+
     const getDateLabel = (dateString: string) => {
         const date = new Date(dateString);
         const today = new Date();
@@ -646,10 +673,59 @@ const Chat: React.FC = () => {
         }
     };
 
-    const getConversationAvatar = (conversation: Conversation) => {
-        const title = getConversationTitle(conversation);
-        return title.charAt(0).toUpperCase();
+    const formatConversationDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (date.toDateString() === now.toDateString()) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday';
+        } else if (now.getTime() - date.getTime() < 7 * 24 * 60 * 60 * 1000) {
+            return date.toLocaleDateString([], { weekday: 'long' });
+        } else {
+            return date.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: 'numeric' });
+        }
     };
+
+    const getAvatarColor = (id: string) => {
+        const colors = [
+            { bg: 'bg-red-100', text: 'text-red-500' },
+            { bg: 'bg-orange-100', text: 'text-orange-500' },
+            { bg: 'bg-amber-100', text: 'text-amber-500' },
+            { bg: 'bg-green-100', text: 'text-green-500' },
+            { bg: 'bg-emerald-100', text: 'text-emerald-500' },
+            { bg: 'bg-teal-100', text: 'text-teal-500' },
+            { bg: 'bg-cyan-100', text: 'text-cyan-500' },
+            { bg: 'bg-blue-100', text: 'text-blue-500' },
+            { bg: 'bg-indigo-100', text: 'text-indigo-500' },
+            { bg: 'bg-violet-100', text: 'text-violet-500' },
+            { bg: 'bg-purple-100', text: 'text-purple-500' },
+            { bg: 'bg-fuchsia-100', text: 'text-fuchsia-500' },
+            { bg: 'bg-pink-100', text: 'text-pink-500' },
+            { bg: 'bg-rose-100', text: 'text-rose-500' }
+        ];
+        // Simple hash
+        let hash = 0;
+        for (let i = 0; i < id.length; i++) {
+            hash = id.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        return colors[Math.abs(hash) % colors.length];
+    };
+
+    // Helper component for the user avatar icon
+    const UserAvatarIcon = ({ className }: { className?: string }) => (
+        <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className={className}
+        >
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg>
+    );
 
     // Calculate unread conversation count
     const unreadConversationCount = React.useMemo(() => {
@@ -657,7 +733,7 @@ const Chat: React.FC = () => {
     }, [conversations]);
 
     return (
-        <div className="flex h-[calc(100vh-6rem)] bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden shadow-sm">
+        <div className="flex h-full w-full bg-[var(--bg-card)] overflow-hidden">
             {/* Sidebar */}
             <div className="w-80 border-r border-[var(--border-default)] flex flex-col bg-[var(--bg-secondary)]">
                 <div className="p-4 border-b border-[var(--border-default)] flex flex-col gap-4 bg-[var(--bg-card)]">
@@ -719,7 +795,7 @@ const Chat: React.FC = () => {
                             <p>No conversations yet</p>
                         </div>
                     ) : (
-                        Object.entries(groupedConversations).map(([userId, group]) => {
+                        sortedGroups.map(([userId, group]) => {
                             const isExpanded = expandedGroups.has(userId);
                             const hasMultiple = group.conversations.length > 1;
                             const singleConv = !hasMultiple ? group.conversations[0] : null;
@@ -738,8 +814,8 @@ const Chat: React.FC = () => {
                                         className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-[var(--bg-tertiary)] transition-colors ${!hasMultiple && singleConv && selectedConversation === singleConv.id ? 'bg-[var(--bg-tertiary)] border-l-2 border-[var(--color-primary)]' : ''
                                             }`}
                                     >
-                                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-white font-medium shrink-0">
-                                            {group.user.name.charAt(0).toUpperCase()}
+                                        <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${getAvatarColor(userId).bg} ${getAvatarColor(userId).text}`}>
+                                            <UserAvatarIcon className="h-6 w-6" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-baseline mb-1">
@@ -748,7 +824,7 @@ const Chat: React.FC = () => {
                                                 </h3>
                                                 {!hasMultiple && singleConv?.last_message && (
                                                     <span className="text-xs text-[var(--text-tertiary)] shrink-0 ml-2">
-                                                        {new Date(singleConv.last_message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        {formatConversationDate(singleConv.last_message.created_at)}
                                                     </span>
                                                 )}
                                             </div>
@@ -805,7 +881,7 @@ const Chat: React.FC = () => {
                                                             )}
                                                             {conv.last_message && (
                                                                 <span className="text-xs text-[var(--text-tertiary)] shrink-0 ml-auto">
-                                                                    {new Date(conv.last_message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                    {formatConversationDate(conv.last_message.created_at)}
                                                                 </span>
                                                             )}
                                                         </div>
@@ -838,11 +914,18 @@ const Chat: React.FC = () => {
                         {/* Header */}
                         <div className="p-4 border-b border-[var(--border-default)] flex justify-between items-center bg-[var(--bg-card)]">
                             <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-white font-medium">
-                                    {(() => {
-                                        const conv = conversations.find(c => c.id === selectedConversation);
-                                        return conv ? getConversationAvatar(conv) : '?';
-                                    })()}
+                                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${(() => {
+                                    const conv = conversations.find(c => c.id === selectedConversation);
+                                    if (conv) {
+                                        const other = conv.participant_details?.find(p => String(p.id) !== String(user?.id));
+                                        if (other) {
+                                            const colors = getAvatarColor(String(other.id));
+                                            return `${colors.bg} ${colors.text}`;
+                                        }
+                                    }
+                                    return 'bg-gray-100 text-gray-500';
+                                })()}`}>
+                                    <UserAvatarIcon className="h-6 w-6" />
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-[var(--text-primary)]">
@@ -976,84 +1059,130 @@ const Chat: React.FC = () => {
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--bg-secondary)]">
-                            {loadingMessages ? (
-                                <div className="flex justify-center items-center h-full">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
-                                </div>
-                            ) : (
-                                <>
-                                    {messages.map((msg, index) => {
-                                        const currentDateLabel = getDateLabel(msg.created_at);
-                                        const previousDateLabel = index > 0
-                                            ? getDateLabel(messages[index - 1].created_at)
-                                            : null;
+                        {/* Messages */}
+                        <div className="flex-1 relative bg-[#efe7dd] dark:bg-[#0b141a]">
+                            <div
+                                className="absolute inset-0 pointer-events-none"
+                                style={{
+                                    backgroundImage: `url("${CHAT_BACKGROUND_PATTERN}")`,
+                                    backgroundSize: '340px',
+                                    opacity: 0.6
+                                }}
+                            />
+                            <div className="absolute inset-0 overflow-y-auto p-4 space-y-2">
+                                {loadingMessages ? (
+                                    <div className="flex justify-center items-center h-full">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {messages.map((msg, index) => {
+                                            const currentDateLabel = getDateLabel(msg.created_at);
+                                            const previousDateLabel = index > 0
+                                                ? getDateLabel(messages[index - 1].created_at)
+                                                : null;
 
-                                        const showDateSeparator = currentDateLabel !== previousDateLabel;
+                                            const showDateSeparator = currentDateLabel !== previousDateLabel;
 
-                                        return (
-                                            <React.Fragment key={msg.id}>
-                                                {showDateSeparator && (
-                                                    <div className="flex justify-center my-6">
-                                                        <div className="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] text-[11px] font-medium px-3 py-1 rounded-full border border-[var(--border-light)] shadow-sm">
-                                                            {currentDateLabel}
+                                            // Check if next message is same sender and same day
+                                            const nextMsg = messages[index + 1];
+                                            const nextDateLabel = nextMsg ? getDateLabel(nextMsg.created_at) : null;
+                                            const isLastInGroup = !nextMsg ||
+                                                String(nextMsg.sender_id) !== String(msg.sender_id) ||
+                                                currentDateLabel !== nextDateLabel;
+
+                                            return (
+                                                <React.Fragment key={msg.id}>
+                                                    {showDateSeparator && (
+                                                        <div className="flex justify-center my-6">
+                                                            <div className="bg-[#f0f2f5] dark:bg-[#1f2c34] text-[#54656f] dark:text-[#8696a0] text-[11px] font-medium px-3 py-1.5 rounded-lg shadow-sm">
+                                                                {currentDateLabel}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
-                                                {msg.message_type === 'system' ? (
-                                                    <SystemMessage message={msg} />
-                                                ) : (
-                                                    (() => {
-                                                        const isMe = String(msg.sender_id) === String(user?.id);
-                                                        return (
-                                                            <motion.div
-                                                                initial={{ opacity: 0, y: 10 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-2`}
-                                                            >
-                                                                <div className={`flex max-w-[70%] min-w-0 ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end gap-2`}>
-                                                                    <div
-                                                                        className={`p-3 rounded-2xl min-w-0 ${isMe
-                                                                            ? 'bg-[var(--color-primary)] text-white rounded-br-none'
-                                                                            : 'bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-bl-none'
-                                                                            } shadow-sm`}
-                                                                        style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-                                                                    >
-                                                                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                                                        <p className={`text-[10px] mt-1 text-right ${isMe ? 'text-white/70' : 'text-[var(--text-secondary)]'}`}>
-                                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </motion.div>
-                                                        );
-                                                    })()
-                                                )}
-                                            </React.Fragment>
-                                        );
-                                    })}
+                                                    )}
+                                                    {msg.message_type === 'system' ? (
+                                                        <SystemMessage message={msg} />
+                                                    ) : (
+                                                        (() => {
+                                                            const isMe = String(msg.sender_id) === String(user?.id);
 
-                                    {typingUsers[selectedConversation] && (
-                                        <div className="flex justify-start mb-2">
-                                            <div className="bg-[var(--bg-card)] border border-[var(--border-default)] p-3 rounded-2xl rounded-bl-none shadow-sm">
-                                                <div className="flex gap-1">
-                                                    <span className="w-2 h-2 bg-[var(--text-tertiary)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                                                    <span className="w-2 h-2 bg-[var(--text-tertiary)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                                                    <span className="w-2 h-2 bg-[var(--text-tertiary)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                                            let borderRadiusClass = 'rounded-lg';
+                                                            if (isLastInGroup) {
+                                                                if (isMe) {
+                                                                    borderRadiusClass = 'rounded-lg rounded-br-none';
+                                                                } else {
+                                                                    borderRadiusClass = 'rounded-lg rounded-bl-none';
+                                                                }
+                                                            }
+
+                                                            const marginBottom = isLastInGroup ? 'mb-2' : 'mb-0.5';
+
+                                                            return (
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, y: 10 }}
+                                                                    animate={{ opacity: 1, y: 0 }}
+                                                                    className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${marginBottom}`}
+                                                                >
+                                                                    <div className={`flex max-w-[70%] min-w-0 ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end gap-1`}>
+                                                                        <div
+                                                                            className={`px-2 py-1.5 min-w-[4rem] relative shadow-sm ${borderRadiusClass} ${isMe
+                                                                                ? 'bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-[#e9edef]'
+                                                                                : 'bg-white dark:bg-[#202c33] text-[#111b21] dark:text-[#e9edef]'
+                                                                                }`}
+                                                                            style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                                                                        >
+                                                                            {isLastInGroup && (
+                                                                                <span className={`absolute bottom-0 w-2 h-3 ${isMe ? '-right-2 text-[#d9fdd3] dark:text-[#005c4b]' : '-left-2 text-white dark:text-[#202c33]'}`}>
+                                                                                    <svg
+                                                                                        viewBox="0 0 8 13"
+                                                                                        height="13"
+                                                                                        width="8"
+                                                                                        preserveAspectRatio="none"
+                                                                                        className="w-full h-full fill-current"
+                                                                                        style={{ transform: isMe ? 'scaleY(-1)' : 'scale(-1, -1)' }}
+                                                                                    >
+                                                                                        <path d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z" />
+                                                                                    </svg>
+                                                                                </span>
+                                                                            )}
+                                                                            <div className="flex flex-wrap items-end gap-x-2">
+                                                                                <span className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</span>
+                                                                                <span className={`text-[10px] ml-auto shrink-0 leading-none pb-0.5 ${isMe ? 'text-[#111b21]/60 dark:text-[#e9edef]/60' : 'text-[#667781] dark:text-[#8696a0]'}`}>
+                                                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </motion.div>
+                                                            );
+                                                        })()
+                                                    )}
+                                                </React.Fragment>
+                                            );
+                                        })}
+
+                                        {typingUsers[selectedConversation] && (
+                                            <div className="flex justify-start mb-2">
+                                                <div className="bg-white dark:bg-[#202c33] p-3 rounded-lg rounded-tl-none shadow-sm">
+                                                    <div className="flex gap-1">
+                                                        <span className="w-1.5 h-1.5 bg-[#8696a0] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                                        <span className="w-1.5 h-1.5 bg-[#8696a0] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                                        <span className="w-1.5 h-1.5 bg-[#8696a0] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                    <div ref={messagesEndRef} />
-                                </>
-                            )}
+                                        )}
+                                        <div ref={messagesEndRef} />
+                                    </>
+                                )}
+                            </div>
                         </div>
 
                         {/* Input */}
                         <div className="p-4 bg-[var(--bg-card)] border-t border-[var(--border-default)]">
                             <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                                 <button type="button" className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-full transition-colors">
-                                    <Plus className="h-5 w-5" />
+                                    <Paperclip className="h-5 w-5" />
                                 </button>
                                 <div className="flex-1 relative">
                                     <input

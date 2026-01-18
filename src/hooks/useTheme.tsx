@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark' | 'system';
+type ResolvedTheme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
+  resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
-  setForcedTheme: (theme: Theme | null) => void;
+  setForcedTheme: (theme: ResolvedTheme | null) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -15,56 +16,49 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [theme, setThemeState] = useState<Theme>(() => {
     // Check localStorage first
     const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme === 'light' || savedTheme === 'dark') {
+    if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system') {
       return savedTheme;
     }
-    // Check system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    return 'light';
+    // Default to system
+    return 'system';
   });
 
-  const [forcedTheme, setForcedTheme] = useState<Theme | null>(null);
+  const [forcedTheme, setForcedTheme] = useState<ResolvedTheme | null>(null);
+  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  // Compute the resolved theme
+  const resolvedTheme: ResolvedTheme = forcedTheme || (theme === 'system' ? systemTheme : theme);
 
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
+    root.classList.add(resolvedTheme);
 
-    const activeTheme = forcedTheme || theme;
-    root.classList.add(activeTheme);
-
-    // Only save to localStorage if it's the user's preference (not forced)
+    // Save to localStorage
     if (!forcedTheme) {
       localStorage.setItem('theme', theme);
     }
-  }, [theme, forcedTheme]);
+  }, [resolvedTheme, theme, forcedTheme]);
 
   useEffect(() => {
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
-      // Only auto-switch if user hasn't manually set a preference
-      if (!localStorage.getItem('theme')) {
-        setThemeState(e.matches ? 'dark' : 'light');
-      }
+      setSystemTheme(e.matches ? 'dark' : 'light');
     };
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  const toggleTheme = () => {
-    if (forcedTheme) return; // Disable toggling if theme is forced
-    setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
-
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, setForcedTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, setForcedTheme }}>
       {children}
     </ThemeContext.Provider>
   );

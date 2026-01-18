@@ -5,19 +5,14 @@ import {
   Package,
   Plus,
   Clock,
-  DollarSign,
   Truck,
   CheckCircle,
+  CheckCheck,
   AlertCircle,
+  ShieldCheck,
   XCircle,
-  ArrowRight,
   TrendingUp,
   TrendingDown,
-  Eye,
-  Copy,
-  Download,
-  Filter,
-  BarChart3,
   Activity,
   Send,
   Receipt,
@@ -26,13 +21,11 @@ import { TransactionStatus } from '../types';
 import { useAuth } from '../hooks/useAuth.tsx';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { useTransactions } from '../hooks/queries/useTransactions.ts';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Toast from '../components/ui/Toast';
 import RevenueForecastChart, { RevenueDataPoint } from '../components/ui/RevenueForecastChart';
-import Tabs, { Tab } from '../components/ui/Tabs';
-import ProgressBar from '../components/ui/ProgressBar';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
+import DonutChart from '../components/ui/DonutChart';
 
 const Dashboard: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
@@ -212,8 +205,10 @@ const Dashboard: React.FC = () => {
       [TransactionStatus.PAID]: transactions.filter(o => o.status === TransactionStatus.PAID).length,
       [TransactionStatus.IN_TRANSIT]: transactions.filter(o => o.status === TransactionStatus.IN_TRANSIT).length,
       [TransactionStatus.DELIVERED]: transactions.filter(o => o.status === TransactionStatus.DELIVERED).length,
+      [TransactionStatus.ACK_DELIVERY]: transactions.filter(o => o.status === TransactionStatus.ACK_DELIVERY).length,
       [TransactionStatus.COMPLETED]: transactions.filter(o => o.status === TransactionStatus.COMPLETED).length,
       [TransactionStatus.DISPUTED]: transactions.filter(o => o.status === TransactionStatus.DISPUTED).length,
+      [TransactionStatus.DISPUTE_RESOLVED]: transactions.filter(o => o.status === TransactionStatus.DISPUTE_RESOLVED).length,
       [TransactionStatus.CANCELLED]: transactions.filter(o => o.status === TransactionStatus.CANCELLED).length,
     };
   };
@@ -245,19 +240,6 @@ const Dashboard: React.FC = () => {
       .slice(0, 5);
   };
 
-  const copyToClipboard = async (text: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(text);
-      setShowToast(true);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const handleStatusClick = (status: TransactionStatus) => {
-    navigate('/transactions', { state: { filterStatus: status } });
-  };
 
   if (loading) {
     return (
@@ -413,7 +395,7 @@ const Dashboard: React.FC = () => {
 
       {/* Status Overview & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Transaction Status Breakdown */}
+        {/* Transaction Status Breakdown - Donut Chart */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -429,31 +411,70 @@ const Dashboard: React.FC = () => {
               View All
             </button>
           </div>
-          <div className="space-y-4">
-            {[
-              { status: TransactionStatus.PENDING, label: 'Pending', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
-              { status: TransactionStatus.PAID, label: 'Paid', icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20' },
-              { status: TransactionStatus.IN_TRANSIT, label: 'In Transit', icon: Truck, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-              { status: TransactionStatus.COMPLETED, label: 'Completed', icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-            ].map(({ status, label, icon: Icon, color, bg }) => {
-              const count = statusCounts[status];
-              const percentage = totalTransactions > 0 ? (count / totalTransactions) * 100 : 0;
-              return (
-                <div key={status} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-2 rounded-lg ${bg}`}>
-                        <Icon className={`h-4 w-4 ${color}`} />
-                      </div>
-                      <span className="text-sm font-medium text-[var(--text-primary)]">{label}</span>
-                    </div>
-                    <span className="text-sm font-semibold text-[var(--text-primary)]">{count}</span>
-                  </div>
-                  <ProgressBar value={percentage} size="sm" variant="default" />
-                </div>
-              );
-            })}
-          </div>
+          <DonutChart
+            segments={[
+              {
+                label: 'Pending',
+                value: statusCounts[TransactionStatus.PENDING],
+                color: '#b45309', // amber-700
+                icon: <Clock className="h-4 w-4" />,
+              },
+              {
+                label: 'Paid',
+                value: statusCounts[TransactionStatus.PAID],
+                color: '#1d4ed8', // blue-700
+                icon: <CheckCircle className="h-4 w-4" />,
+              },
+              {
+                label: 'In Transit',
+                value: statusCounts[TransactionStatus.IN_TRANSIT],
+                color: '#4338ca', // indigo-700
+                icon: <Truck className="h-4 w-4" />,
+              },
+              {
+                label: 'Delivered',
+                value: statusCounts[TransactionStatus.DELIVERED],
+                color: '#7e22ce', // purple-700
+                icon: <Package className="h-4 w-4" />,
+              },
+              {
+                label: 'Ack Delivery',
+                value: statusCounts[TransactionStatus.ACK_DELIVERY],
+                color: '#4338ca', // indigo-700
+                icon: <CheckCheck className="h-4 w-4" />,
+              },
+              {
+                label: 'Completed',
+                value: statusCounts[TransactionStatus.COMPLETED],
+                color: '#047857', // emerald-700
+                icon: <CheckCircle className="h-4 w-4" />,
+              },
+              {
+                label: 'Disputed',
+                value: statusCounts[TransactionStatus.DISPUTED],
+                color: '#b91c1c', // red-700
+                icon: <AlertCircle className="h-4 w-4" />,
+              },
+              {
+                label: 'Dispute Resolved',
+                value: statusCounts[TransactionStatus.DISPUTE_RESOLVED],
+                color: '#047857', // emerald-700
+                icon: <ShieldCheck className="h-4 w-4" />,
+              },
+              {
+                label: 'Cancelled',
+                value: statusCounts[TransactionStatus.CANCELLED],
+                color: '#374151', // gray-700
+                icon: <XCircle className="h-4 w-4" />,
+              },
+            ].filter(segment => segment.value > 0)} // Only show segments with values
+            size={240}
+            strokeWidth={35}
+            showLegend={true}
+            showCenter={true}
+            centerLabel="Transactions"
+            centerValue={totalTransactions}
+          />
         </motion.div>
 
         {/* Recent Activity */}

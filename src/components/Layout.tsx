@@ -1,23 +1,29 @@
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '../utils/api';
 import {
   LayoutGrid,
   Package,
-  CreditCard,
   Menu,
   LogOut,
   Users,
   Settings,
   X,
   ChevronRight,
+  ChevronLeft,
   Eye,
   EyeOff,
   Search,
   Command,
   MessageSquare,
+  Moon,
+  Sun,
+  Globe,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
+import { useTheme } from '../hooks/useTheme';
 import ScrollToTopButton from './ScrollToTopButton';
 
 import NotificationCenter, { Notification } from './NotificationCenter';
@@ -33,6 +39,14 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -62,9 +76,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ]);
   const { user, logout } = useAuth();
   const { isVisible, toggleVisibility } = useSensitiveInfo();
+  const { theme, setTheme } = useTheme();
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { data: transactions = [] } = useTransactions({ enabled: showCommandPalette });
+  const isChatPage = location.pathname.startsWith('/chats');
+  const isSettingsPage = location.pathname === '/settings';
+  const isTransactionsPage = location.pathname === '/transactions' || location.pathname === '/transactions/create';
+
+  // Fetch unread messages count
+  const { data: conversations = [] } = useQuery({
+    queryKey: ['conversations'],
+    queryFn: async () => {
+      const response = await apiClient.get<any[]>('/chat/conversations');
+      return response.data;
+    },
+    refetchInterval: 30000,
+  });
+
+  const unreadCount = React.useMemo(() => {
+    return conversations.reduce((acc, conv) => acc + (conv.unread_count || 0), 0);
+  }, [conversations]);
 
   // Lock body scroll when sidebar is open on mobile (Safari-compatible)
   React.useEffect(() => {
@@ -117,6 +150,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
   }, [toggleVisibility, showCommandPalette]);
 
+  // Close theme menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-theme-menu]')) {
+        setShowThemeMenu(false);
+      }
+    };
+
+    if (showThemeMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showThemeMenu]);
+
   // Notification handlers
   const handleMarkAsRead = (id: string) => {
     setNotifications(prev =>
@@ -141,7 +191,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Transactions', href: '/transactions', icon: Package },
     { name: 'Join Transaction', href: '/transactions/join', icon: Users },
     { name: 'Chats', href: '/chats', icon: MessageSquare },
-    { name: 'Users', href: '/users', icon: Users },
+    // { name: 'Users', href: '/users', icon: Users },
   ];
 
   const handleLogout = () => {
@@ -149,97 +199,140 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     navigate('/');
   };
 
-  const SidebarContent = () => (
-    <>
-      <div className="flex h-14 sm:h-16 shrink-0 items-center justify-between px-4 sm:px-6 border-b border-[var(--border-default)] bg-[var(--bg-sidebar)]/80 backdrop-blur-sm dark:bg-[var(--bg-sidebar)]/90">
-        <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
-          <Logo size={56} />
-          <h1 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">Clarsix</h1>
-        </Link>
-        <button
-          onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-2 hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
-          aria-label="Close sidebar"
-        >
-          <X className="h-5 w-5 text-[var(--text-secondary)]" />
-        </button>
-      </div>
+  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => {
+    const showText = isMobile || !isCollapsed;
 
-      <nav className="flex flex-1 flex-col p-3 sm:p-4">
-        <ul role="list" className="flex flex-1 flex-col gap-y-6 sm:gap-y-7">
-          <li>
-            <ul role="list" className="space-y-0.5 sm:space-y-1">
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                let isActive = false;
-                if (item.href === '/transactions') {
-                  isActive = location.pathname === '/transactions' || (location.pathname.startsWith('/transactions/') && !location.pathname.startsWith('/transactions/join'));
-                } else if (item.href === '/transactions/join') {
-                  isActive = location.pathname === '/transactions/join' || location.pathname.startsWith('/transactions/join/');
-                } else if (item.href === '/accounts' && location.pathname.startsWith('/payment/initiate-payment')) {
-                  isActive = true;
-                } else {
-                  isActive = location.pathname.startsWith(item.href);
-                }
+    return (
+      <>
+        <div className={`flex h-14 sm:h-16 shrink-0 items-center ${showText ? 'justify-between px-4 sm:px-6' : 'justify-center px-2'} border-b border-[var(--border-default)] bg-[var(--bg-sidebar)]/80 backdrop-blur-sm dark:bg-[var(--bg-sidebar)]/90 transition-all duration-300`}>
+          <Link to="/" className={`flex items-center ${showText ? 'gap-1.5 sm:gap-2' : 'justify-center'} hover:opacity-80 transition-opacity`}>
+            <Logo size={showText ? 56 : 40} />
+            {showText && <h1 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">Clarsix</h1>}
+          </Link>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
+            aria-label="Close sidebar"
+          >
+            <X className="h-5 w-5 text-[var(--text-secondary)]" />
+          </button>
+        </div>
 
-                return (
-                  <li key={item.name}>
-                    <Link
-                      to={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 ${isActive
-                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
-                        }`}
-                    >
-                      <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${isActive ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
-                      {item.name}
-                      {isActive && <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-auto" />}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </li>
+        <nav className={`flex flex-1 flex-col ${showText ? 'p-3 sm:p-4' : 'p-2'}`}>
+          <ul role="list" className="flex flex-1 flex-col gap-y-6 sm:gap-y-7">
+            <li>
+              <ul role="list" className="space-y-0.5 sm:space-y-1">
+                {navigation.map((item) => {
+                  const Icon = item.icon;
+                  let isActive = false;
+                  if (item.href === '/transactions') {
+                    isActive = location.pathname === '/transactions' || (location.pathname.startsWith('/transactions/') && !location.pathname.startsWith('/transactions/join'));
+                  } else if (item.href === '/transactions/join') {
+                    isActive = location.pathname === '/transactions/join' || location.pathname.startsWith('/transactions/join/');
+                  } else if (item.href === '/accounts' && location.pathname.startsWith('/payment/initiate-payment')) {
+                    isActive = true;
+                  } else {
+                    isActive = location.pathname.startsWith(item.href);
+                  }
 
-          <li className="mt-auto">
-            <Link
-              to="/settings"
-              onClick={() => setSidebarOpen(false)}
-              className={`group flex items-center gap-x-2 sm:gap-x-3 rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium transition-all touch-manipulation active:scale-95 mb-2 ${location.pathname === '/settings'
-                ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
-                }`}
-            >
-              <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/settings' ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
-              Settings
-            </Link>
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        to={item.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`group relative flex items-center ${showText ? 'gap-x-2 sm:gap-x-3 px-2.5 sm:px-3' : 'justify-center px-2'} py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium rounded-lg transition-all touch-manipulation active:scale-95 ${isActive
+                          ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
+                          }`}
+                      >
+                        <Icon className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${isActive ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
+                        {showText && item.name}
+                        {showText && item.name === 'Chats' && unreadCount > 0 && (
+                          <span className="ml-auto bg-[var(--color-primary)] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </span>
+                        )}
+                        {showText && isActive && item.name !== 'Chats' && <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-auto" />}
 
-            <div className="rounded-lg border border-[var(--border-default)] p-2.5 sm:p-3 bg-[var(--bg-card)]/90 backdrop-blur-sm">
-              <div className="flex items-center gap-x-2 sm:gap-x-3 mb-2 sm:mb-3">
-                <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center">
-                  <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="truncate font-medium text-[var(--text-primary)] text-[11px] sm:text-xs">{user?.name}</p>
-                  <p className="truncate text-[10px] sm:text-[11px] text-[var(--text-secondary)]">{user?.email}</p>
-                </div>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-lg transition-all touch-manipulation active:scale-95"
+                        {!showText && (
+                          <>
+                            {item.name === 'Chats' && unreadCount > 0 && (
+                              <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-[var(--color-primary)] rounded-full border-2 border-[var(--bg-sidebar)]" />
+                            )}
+                            <div className="absolute left-full ml-2 px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl border border-gray-700 dark:border-gray-300">
+                              {item.name}
+                              {item.name === 'Chats' && unreadCount > 0 && ` (${unreadCount})`}
+                            </div>
+                          </>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+
+            <li className="mt-auto">
+              <Link
+                to="/settings"
+                onClick={() => setSidebarOpen(false)}
+                className={`group relative flex items-center ${showText ? 'gap-x-2 sm:gap-x-3 px-2.5 sm:px-3' : 'justify-center px-2'} py-2 sm:py-2.5 text-xs sm:text-[13px] font-medium rounded-lg transition-all touch-manipulation active:scale-95 mb-2 ${location.pathname === '/settings'
+                  ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)]'
+                  }`}
               >
-                <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                Log Out
-              </button>
-            </div>
-          </li>
-        </ul>
-      </nav>
-    </>
-  );
+                <Settings className={`h-4 w-4 sm:h-[18px] sm:w-[18px] shrink-0 ${location.pathname === '/settings' ? 'text-[var(--color-primary-text)]' : 'text-[var(--text-tertiary)]'}`} />
+                {showText && 'Settings'}
+
+                {!showText && (
+                  <div className="absolute left-full ml-2 px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl border border-gray-700 dark:border-gray-300">
+                    Settings
+                  </div>
+                )}
+              </Link>
+
+              <div className={`rounded-lg border border-[var(--border-default)] ${showText ? 'p-2.5 sm:p-3' : 'p-2'} bg-[var(--bg-card)]/90 backdrop-blur-sm`}>
+                <div className={`flex items-center ${showText ? 'gap-x-2 sm:gap-x-3 mb-2 sm:mb-3' : 'justify-center mb-2'}`}>
+                  <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center shrink-0">
+                    <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  {showText && (
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate font-medium text-[var(--text-primary)] text-[11px] sm:text-xs">{user?.name}</p>
+                      <p className="truncate text-[10px] sm:text-[11px] text-[var(--text-secondary)]">{user?.email}</p>
+                    </div>
+                  )}
+                </div>
+                {showText ? (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-lg transition-all touch-manipulation active:scale-95"
+                  >
+                    <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    Log Out
+                  </button>
+                ) : (
+                  <div className="relative group w-full flex justify-center">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-center p-1.5 text-[var(--text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </button>
+                    <div className="absolute left-full ml-2 px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 top-1/2 -translate-y-1/2 shadow-xl border border-gray-700 dark:border-gray-300">
+                      Log Out
+                    </div>
+                  </div>
+                )}
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg-secondary)]">
@@ -288,22 +381,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               overscrollBehavior: 'contain'
             }}
           >
-            <SidebarContent />
+            <SidebarContent isMobile={true} />
           </div>
         </div>
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-56 xl:lg:w-64 lg:flex-col">
-        <div className="flex grow flex-col overflow-y-auto bg-[var(--bg-sidebar)]/95 backdrop-blur-md border-r border-[var(--border-default)] shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+      <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-56 xl:w-64'}`}>
+        <div className={`relative flex grow flex-col ${isCollapsed ? 'overflow-visible' : 'overflow-y-auto'} bg-[var(--bg-sidebar)]/95 backdrop-blur-md border-r border-[var(--border-default)] shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]`}>
           <SidebarContent />
         </div>
+
+        {/* Toggle Button */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -right-3.5 top-6 z-50 flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all hover:scale-110"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-56 xl:lg:pl-64 pt-14 sm:pt-16">
+      <div className={`transition-all duration-300 pt-14 sm:pt-16 ${isCollapsed ? 'lg:pl-20' : 'lg:pl-56 xl:lg:pl-64'}`}>
         {/* Top bar */}
-        <div className="fixed top-0 left-0 right-0 lg:left-56 xl:lg:left-64 z-50 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm">
+        <div className={`fixed top-0 left-0 right-0 z-50 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/90 backdrop-blur-md px-3 sm:px-4 lg:px-8 shadow-sm transition-all duration-300 ${isCollapsed ? 'lg:left-20' : 'lg:left-56 xl:lg:left-64'}`}>
           <button
             type="button"
             className="p-2 text-[var(--text-primary)] lg:hidden hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
@@ -357,6 +459,49 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </button>
+
+            {/* Theme Switcher */}
+            <div className="relative" data-theme-menu>
+              <button
+                onClick={() => setShowThemeMenu(!showThemeMenu)}
+                className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] active:bg-[var(--border-light)] rounded-lg transition-colors touch-manipulation"
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? (
+                  <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
+                ) : theme === 'light' ? (
+                  <Sun className="h-4 w-4 sm:h-5 sm:w-5" />
+                ) : (
+                  <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
+                )}
+              </button>
+
+              {showThemeMenu && (
+                <div className="absolute right-0 top-full mt-2 w-36 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-1">
+                  <button
+                    onClick={() => { setTheme('light'); setShowThemeMenu(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${theme === 'light' ? 'bg-[var(--color-primary)] text-white' : 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'}`}
+                  >
+                    <Sun className="h-4 w-4" />
+                    <span>Light</span>
+                  </button>
+                  <button
+                    onClick={() => { setTheme('dark'); setShowThemeMenu(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${theme === 'dark' ? 'bg-[var(--color-primary)] text-white' : 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'}`}
+                  >
+                    <Moon className="h-4 w-4" />
+                    <span>Dark</span>
+                  </button>
+                  <button
+                    onClick={() => { setTheme('system'); setShowThemeMenu(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${theme === 'system' ? 'bg-[var(--color-primary)] text-white' : 'text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'}`}
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span>System</span>
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-secondary-light)] transition-colors">
               <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
                 {user?.name?.charAt(0).toUpperCase()}
@@ -365,8 +510,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <main className="py-4 sm:py-6 lg:py-8">
-          <div className="px-3 sm:px-4 lg:px-8 max-w-[1400px] mx-auto">
+        <main className={(isChatPage || isSettingsPage || isTransactionsPage) ? "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-hidden" : "py-4 sm:py-6 lg:py-8"}>
+          <div className={
+            isChatPage
+              ? "h-full w-full"
+              : (isSettingsPage || (isTransactionsPage && location.pathname !== '/transactions/create'))
+                ? "h-full w-full px-3 sm:px-4 lg:px-8 max-w-[1400px] mx-auto"
+                : (location.pathname === '/transactions/create')
+                  ? "h-full w-full p-0"
+                  : "px-3 sm:px-4 lg:px-8 max-w-[1400px] mx-auto"
+          }>
             {children}
           </div>
         </main>

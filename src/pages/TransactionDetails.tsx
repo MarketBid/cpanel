@@ -632,18 +632,96 @@ const TransactionDetails: React.FC = () => {
               <p className="text-sm sm:text-base text-[var(--text-secondary)]">Track and manage your transaction</p>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* View Contract Button */}
-              <button
-                onClick={() => generateContractPDF(transaction)}
-                className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm hover:shadow-md"
-              >
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">View Contract</span>
-                <span className="sm:hidden">Contract</span>
-              </button>
+            <div className="flex items-center gap-3 flex-wrap justify-end">
+              {/* Payment Action */}
+              {normalizeStatus(transaction.status) === TransactionStatus.PENDING && isSender && (
+                <div className="relative group">
+                  <button
+                    onClick={handlePayment}
+                    disabled={updating}
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors shadow-sm hover:shadow-md disabled:opacity-70"
+                  >
+                    {updating ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <DollarSign className="h-4 w-4" />
+                    )}
+                    <span className="hidden sm:inline">Pay Now</span>
+                  </button>
+                  <div className="absolute top-full right-0 mt-2 w-48 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl border border-gray-700 dark:border-gray-300">
+                    Secure your transaction with Clarsix escrow protection
+                  </div>
+                </div>
+              )}
 
-              {/* Real-time indicator */}
+              {/* Share Payment Link */}
+              {isReceiver && transaction.payment_link && normalizeStatus(transaction.status) === TransactionStatus.PENDING && (
+                <div className="relative group">
+                  <button
+                    onClick={() => {
+                      copyToClipboard(transaction.payment_link!);
+                      setToastMessage('Payment link copied to clipboard!');
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors shadow-sm hover:shadow-md"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    <span className="hidden sm:inline">Copy Link</span>
+                  </button>
+                  <div className="absolute top-full right-0 mt-2 w-48 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl border border-gray-700 dark:border-gray-300">
+                    Copy and share this payment link with the sender
+                  </div>
+                </div>
+              )}
+
+              {/* Chat Action */}
+              {(linkedConversation || (transaction.sender_id && transaction.receiver_id)) && (
+                <div className="relative group">
+                  <button
+                    onClick={handleOpenChat}
+                    disabled={updating}
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition-colors shadow-sm hover:shadow-md"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="hidden sm:inline">Chat</span>
+                  </button>
+                  <div className="absolute top-full right-0 mt-2 w-48 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl border border-gray-700 dark:border-gray-300">
+                    {linkedConversation ? 'View conversation' : 'Start a conversation with the other party'}
+                  </div>
+                </div>
+              )}
+
+              {/* Quick Actions */}
+              {availableActions.map((action, index) => (
+                <div key={index} className="relative group">
+                  <button
+                    onClick={action.onClick}
+                    disabled={updating}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors shadow-sm hover:shadow-md disabled:opacity-70 ${action.color}`}
+                  >
+                    {updating ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Zap className="h-4 w-4" />
+                    )}
+                    <span className="hidden sm:inline">{action.label}</span>
+                  </button>
+                </div>
+              ))}
+
+              {/* View Contract Button */}
+              <div className="relative group">
+                <button
+                  onClick={() => generateContractPDF(transaction)}
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm hover:shadow-md"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span className="hidden sm:inline">View Contract</span>
+                  <span className="sm:hidden">Contract</span>
+                </button>
+                <div className="absolute top-full right-0 mt-2 w-32 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl border border-gray-700 dark:border-gray-300">
+                  Download PDF Contract
+                </div>
+              </div>
 
             </div>
           </div>
@@ -806,121 +884,14 @@ const TransactionDetails: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Payment Card */}
-            {normalizeStatus(transaction.status) === TransactionStatus.PENDING && isSender && (
-              <div className="bg-gradient-to-br from-emerald-600 to-green-600 rounded-2xl shadow-lg p-6 text-white">
-                <h3 className="text-lg font-bold mb-2">Ready to Pay?</h3>
-                <p className="text-sm text-white/80 mb-4">Secure your transaction with Clarsix escrow protection</p>
-                <button
-                  onClick={handlePayment}
-                  disabled={updating}
-                  className="w-full py-3 px-4 rounded-xl bg-white text-emerald-600 font-bold hover:bg-white/90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 disabled:hover:scale-100 disabled:cursor-not-allowed"
-                >
-                  {updating ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                      Processing...
-                    </span>
-                  ) : (
-                    <>
-                      <DollarSign className="h-5 w-5" />
-                      Proceed to Payment
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* Payment Link Card for Receivers */}
-            {isReceiver && transaction.payment_link && normalizeStatus(transaction.status) === TransactionStatus.PENDING && (
-              <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl shadow-lg p-6 text-white">
-                <h3 className="text-lg font-bold mb-2">Share Payment Link</h3>
-                <p className="text-sm text-white/80 mb-4">Copy and share this payment link with the sender</p>
-                <button
-                  onClick={() => {
-                    copyToClipboard(transaction.payment_link!);
-                    setToastMessage('Payment link copied to clipboard!');
-                  }}
-                  className="w-full py-3 px-4 rounded-xl bg-white text-green-600 font-bold hover:bg-white/90 transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg"
-                >
-                  <CreditCard className="h-5 w-5" />
-                  Copy Payment Link
-                </button>
-              </div>
-            )}
-
-            {/* Open Conversation Option */}
-            {transaction.sender_id && transaction.receiver_id && !linkedConversation && (
-              <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6">
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-[var(--color-primary)]" />
-                  Communication
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)] mb-4">
-                  Start a conversation with the other party regarding this transaction.
-                </p>
-                <button
-                  onClick={handleOpenChat}
-                  disabled={updating}
-                  className="w-full py-2.5 px-4 rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-primary)] font-medium hover:bg-[var(--bg-tertiary-hover)] border border-[var(--border-default)] transition-all flex items-center justify-center gap-2"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  Start Conversation
-                </button>
-              </div>
-            )}
-
-            {/* Linked Conversation Option */}
-            {linkedConversation && (
-              <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6 cursor-pointer hover:shadow-md transition-shadow" onClick={handleOpenChat}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center text-[var(--color-primary)]">
-                      <MessageSquare className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[var(--text-primary)]">Transaction Chat</h3>
-                      <p className="text-xs text-[var(--text-secondary)]">View conversation</p>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-[var(--text-tertiary)]" />
-                </div>
-              </div>
-            )}
-
-            {/* Quick Actions */}
-            {availableActions.length > 0 && (
-              <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-6">
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-[var(--status-pending-text)]" />
-                  Quick Actions
-                </h3>
-                <div className="space-y-3">
-                  {availableActions.map((action, index) => (
-                    <button
-                      key={index}
-                      onClick={action.onClick}
-                      disabled={updating}
-                      className={`w-full py-3 px-4 rounded-xl text-white font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 shadow-md ${action.color}`}
-                    >
-                      {updating ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Updating...
-                        </span>
-                      ) : action.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Timeline Card */}
 
             {/* Timeline Card */}
-            <div className={`rounded-2xl shadow-sm border p-6 ${normalizeStatus(transaction.status) === TransactionStatus.COMPLETED
-              ? 'bg-[var(--status-completed-bg)] border-[var(--status-completed-border)]'
+            <div className={`rounded-2xl shadow-sm p-6 bg-[var(--bg-card)] ${normalizeStatus(transaction.status) === TransactionStatus.COMPLETED
+              ? 'border-2 border-[var(--status-completed-text)]'
               : normalizeStatus(transaction.status) === TransactionStatus.DISPUTED
-                ? 'bg-[var(--status-disputed-bg)] border-[var(--status-disputed-border)]'
-                : 'bg-[var(--bg-card)] border-[var(--border-default)]'
+                ? 'border-2 border-[var(--status-disputed-text)]'
+                : 'border border-[var(--border-default)]'
               }`}>
               <h2 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
                 <Clock className="h-5 w-5 text-[var(--text-primary)]" />
@@ -938,12 +909,15 @@ const TransactionDetails: React.FC = () => {
                   return (
                     <div key={step.key} className="flex gap-4">
                       <div className="flex flex-col items-center">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isError
-                          ? 'bg-[var(--status-disputed-text)] shadow-lg'
-                          : isComplete
-                            ? 'bg-[var(--status-completed-text)] shadow-lg'
-                            : 'bg-[var(--bg-tertiary)]'
-                          }`}>
+                        <div
+                          className={`w-10 h-10 min-w-[2.5rem] shrink-0 rounded-full flex items-center justify-center transition-all ${isError
+                            ? 'bg-[var(--status-disputed-text)] shadow-lg'
+                            : isComplete
+                              ? 'bg-[var(--status-completed-text)] shadow-lg'
+                              : 'bg-[var(--bg-tertiary)]'
+                            }`}
+                          style={{ width: '2.5rem', height: '2.5rem' }}
+                        >
                           <Icon className={`h-5 w-5 ${isError
                             ? 'text-[var(--status-disputed-bg)]'
                             : isComplete
