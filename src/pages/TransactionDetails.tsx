@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Package, Users, DollarSign, Clock, CheckCircle, AlertCircle, CreditCard, Truck, ShoppingCart, Lock, MoveRight, Zap, FileText, MessageSquare, ArrowRight } from 'lucide-react';
-import { generateContractPDF } from '../utils/pdfGenerator';
+import { ArrowLeft, Package, Users, DollarSign, Clock, CheckCircle, AlertCircle, CreditCard, Truck, ShoppingCart, Lock, MoveRight, Zap, FileText, MessageSquare } from 'lucide-react';
+import ContractViewModal from '../components/ContractViewModal';
 import { Transaction, TransactionStatus, ContractType } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
@@ -18,6 +18,7 @@ const TransactionDetails: React.FC = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState('');
   const [showWaitModal, setShowWaitModal] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const navigate = useNavigate();
@@ -711,7 +712,7 @@ const TransactionDetails: React.FC = () => {
               {/* View Contract Button */}
               <div className="relative group">
                 <button
-                  onClick={() => generateContractPDF(transaction)}
+                  onClick={() => setShowContractModal(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm hover:shadow-md"
                 >
                   <FileText className="h-4 w-4" />
@@ -719,7 +720,7 @@ const TransactionDetails: React.FC = () => {
                   <span className="sm:hidden">Contract</span>
                 </button>
                 <div className="absolute top-full right-0 mt-2 w-32 p-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl border border-gray-700 dark:border-gray-300">
-                  Download PDF Contract
+                  View Contract Details
                 </div>
               </div>
 
@@ -779,34 +780,124 @@ const TransactionDetails: React.FC = () => {
                   <h3 className="font-bold text-base sm:text-lg text-[var(--text-primary)] mb-2">{transaction.title}</h3>
                   <p className="text-sm sm:text-base text-[var(--text-secondary)] mb-3">{transaction.description}</p>
                 </div>
-                <div className="text-center sm:text-right">
-                  <div className="text-xs sm:text-sm text-[var(--text-secondary)] mb-1">Total Amount</div>
-                  <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
-                    {formatAmount(transaction.amount)}
-                  </div>
-                </div>
+
               </div>
 
               <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
-                <div className="space-y-3">
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>Subtotal</span>
-                    <span className="font-medium">{formatAmount(transaction.amount)}</span>
-                  </div>
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>Shipping</span>
-                    <span className="font-medium">₵0.00</span>
-                  </div>
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>Tax</span>
-                    <span className="font-medium">₵0.00</span>
-                  </div>
-                  <div className="flex justify-between text-xl font-bold text-[var(--text-primary)] pt-3 border-t border-[var(--border-default)]">
-                    <span>Total</span>
-                    <span className="text-[var(--text-primary)]">
-                      {formatAmount(transaction.amount)}
-                    </span>
-                  </div>
+                <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Payment Structure</h3>
+                <div className="space-y-4">
+
+                  {(() => {
+                    const feePayer = transaction.fee_config?.fee_payer || 'split';
+                    const feePercentage = transaction.fee_config?.processing_fee_percentage || 3;
+                    const amount = transaction.amount || 0;
+
+                    if (feePayer === 'sender') {
+                      return (
+                        <>
+                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
+                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Sender Pays</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
+                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[var(--text-secondary)]">Processing Fee ({feePercentage}%):</span>
+                                <span className="font-medium text-[var(--text-primary)]">₵{(amount * (feePercentage / 100)).toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
+                                <span className="text-[var(--text-primary)]">Total to Pay:</span>
+                                <span className="text-[var(--text-primary)]">₵{(amount * (1 + feePercentage / 100)).toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
+                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Receiver Gets</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-base font-bold">
+                                <span className="text-[var(--text-primary)]">Amount Received:</span>
+                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    } else if (feePayer === 'receiver') {
+                      return (
+                        <>
+                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
+                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Sender Pays</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-base font-bold">
+                                <span className="text-[var(--text-primary)]">Total to Pay:</span>
+                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
+                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Receiver Gets</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
+                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                                <span>Processing Fee ({feePercentage}%):</span>
+                                <span>₵{(amount * (feePercentage / 100)).toFixed(2)} (Paid Upfront)</span>
+                              </div>
+                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
+                                <span className="text-[var(--text-primary)]">Total Receivable:</span>
+                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    } else {
+                      // Split
+                      const splitFeePercentage = (feePercentage / 2).toFixed(2).replace(/[.,]00$/, "");
+                      const splitFee = amount * ((feePercentage / 2) / 100);
+                      return (
+                        <>
+                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
+                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Sender Pays</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
+                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[var(--text-secondary)]">Processing Fee ({splitFeePercentage}%):</span>
+                                <span className="font-medium text-[var(--text-primary)]">₵{splitFee.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
+                                <span className="text-[var(--text-primary)]">Total to Pay:</span>
+                                <span className="text-[var(--text-primary)]">₵{(amount + splitFee).toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
+                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Receiver Gets</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
+                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                                <span>Processing Fee ({splitFeePercentage}%):</span>
+                                <span>₵{splitFee.toFixed(2)} (Paid Upfront)</span>
+                              </div>
+                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
+                                <span className="text-[var(--text-primary)]">Total Receivable:</span>
+                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    }
+                  })()}
                 </div>
               </div>
             </div>
@@ -992,67 +1083,84 @@ const TransactionDetails: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div >
 
         {/* Modals */}
-        {showWaitModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm">
-            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-8 max-w-sm w-full mx-4 shadow-2xl">
-              <div className="w-16 h-16 bg-[var(--status-pending-bg)] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-[var(--status-pending-text)]" />
+        {
+          showWaitModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm">
+              <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-8 max-w-sm w-full mx-4 shadow-2xl">
+                <div className="w-16 h-16 bg-[var(--status-pending-bg)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Clock className="h-8 w-8 text-[var(--status-pending-text)]" />
+                </div>
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 text-center">Please Wait</h3>
+                <p className="text-[var(--text-secondary)] mb-6 text-center">Wait for the receiver to acknowledge the transaction is delivered before marking as received.</p>
+                <button
+                  onClick={() => setShowWaitModal(false)}
+                  className="w-full py-3 px-4 rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] font-medium hover:bg-[var(--color-primary-hover)] transition-all"
+                >
+                  OK
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 text-center">Please Wait</h3>
-              <p className="text-[var(--text-secondary)] mb-6 text-center">Wait for the receiver to acknowledge the transaction is delivered before marking as received.</p>
-              <button
-                onClick={() => setShowWaitModal(false)}
-                className="w-full py-3 px-4 rounded-xl bg-[var(--color-primary)] text-[var(--color-primary-text)] font-medium hover:bg-[var(--color-primary-hover)] transition-all"
-              >
-                OK
-              </button>
             </div>
-          </div>
-        )}
+          )
+        }
 
-        {showToast && (
-          <Toast
-            message={toastMessage || "Copied to clipboard!"}
-            onClose={() => {
-              setShowToast(false);
-              setToastMessage('');
-            }}
-          />
-        )}
+        {
+          showToast && (
+            <Toast
+              message={toastMessage || "Copied to clipboard!"}
+              onClose={() => {
+                setShowToast(false);
+                setToastMessage('');
+              }}
+            />
+          )
+        }
         {/* Chat Confirmation Modal */}
-        {showChatConfirmation && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
-            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full overflow-hidden animate-fade-in p-6">
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Start Conversation</h3>
-              <p className="text-[var(--text-secondary)] mb-6">
-                Are you sure you want to start a new conversation linked to this transaction? This will allow you to discuss details directly.
-              </p>
+        {
+          showChatConfirmation && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--text-inverse)]/60 backdrop-blur-sm p-4">
+              <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] max-w-md w-full overflow-hidden animate-fade-in p-6">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Start Conversation</h3>
+                <p className="text-[var(--text-secondary)] mb-6">
+                  Are you sure you want to start a new conversation linked to this transaction? This will allow you to discuss details directly.
+                </p>
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => setShowChatConfirmation(false)}
-                  variant="secondary"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={executeOpenChat}
-                  className="flex-1"
-                  leftIcon={<MessageSquare className="h-4 w-4" />}
-                  disabled={updating}
-                >
-                  {updating ? 'Creating...' : 'Start Chat'}
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setShowChatConfirmation(false)}
+                    variant="secondary"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={executeOpenChat}
+                    className="flex-1"
+                    leftIcon={<MessageSquare className="h-4 w-4" />}
+                    disabled={updating}
+                  >
+                    {updating ? 'Creating...' : 'Start Chat'}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          )
+        }
+
+        {/* Contract View Modal */}
+        {
+          showContractModal && transaction && (
+            <ContractViewModal
+              isOpen={showContractModal}
+              onClose={() => setShowContractModal(false)}
+              transaction={transaction}
+            />
+          )
+        }
+      </div >
+    </div >
   );
 };
 

@@ -5,7 +5,6 @@ import { authService } from '../utils/auth';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Card, CardContent } from '../components/ui/Card';
-import ThemeToggle from '../components/ThemeToggle';
 import Logo from '../components/Logo';
 
 const ForgotPassword: React.FC = () => {
@@ -44,9 +43,7 @@ const ForgotPassword: React.FC = () => {
                     <span className="hidden sm:inline">Back to Login</span>
                 </Link>
             </div>
-            <div className="absolute top-4 right-4">
-                <ThemeToggle />
-            </div>
+
 
             <div className="w-full max-w-md">
                 <Card className="border-2 border-[var(--color-primary-light)]">

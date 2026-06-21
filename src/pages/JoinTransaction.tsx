@@ -4,7 +4,7 @@ import { Copy, FileText } from 'lucide-react';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
 import { apiClient } from '../utils/api';
 import { useTransaction } from '../hooks/queries/useTransactions';
-import { generateContractPDF } from '../utils/pdfGenerator';
+import ContractViewModal from '../components/ContractViewModal';
 import Toast from '../components/ui/Toast';
 import { getTransactionTypeStyles } from '../utils/statusUtils';
 
@@ -16,6 +16,7 @@ const JoinTransaction: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
   const errorTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const { maskAmount } = useSensitiveInfo();
   const navigate = useNavigate();
@@ -335,7 +336,7 @@ const JoinTransaction: React.FC = () => {
                 <div className="mt-6 pt-6 border-t border-[var(--border-default)] flex justify-end">
                   <button
                     type="button"
-                    onClick={() => generateContractPDF(transaction)}
+                    onClick={() => setShowContractModal(true)}
                     className="flex items-center gap-2 px-4 py-2 text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] rounded-lg text-sm font-medium transition-colors"
                   >
                     <FileText className="h-4 w-4" />
@@ -411,6 +412,14 @@ const JoinTransaction: React.FC = () => {
           onClose={() => {
             setShowToast(false);
           }}
+        />
+      )}
+      {/* Contract View Modal */}
+      {showContractModal && transaction && (
+        <ContractViewModal
+          isOpen={showContractModal}
+          onClose={() => setShowContractModal(false)}
+          transaction={transaction}
         />
       )}
     </div>

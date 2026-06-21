@@ -13,7 +13,7 @@ import {
   ArrowRight,
   FileText
 } from 'lucide-react';
-import { generateContractPDF } from '../utils/pdfGenerator';
+import ContractViewModal from '../components/ContractViewModal';
 import { TransactionStatus } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
@@ -28,6 +28,7 @@ const InitiatePayment: React.FC = () => {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
+  const [showContractModal, setShowContractModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { maskAmount } = useSensitiveInfo();
@@ -160,7 +161,7 @@ const InitiatePayment: React.FC = () => {
             )}
           </div>
           <button
-            onClick={() => generateContractPDF(transaction)}
+            onClick={() => setShowContractModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition-colors border border-[var(--border-default)]"
           >
             <FileText className="h-4 w-4" />
@@ -345,6 +346,15 @@ const InitiatePayment: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Contract View Modal */}
+      {showContractModal && transaction && (
+        <ContractViewModal
+          isOpen={showContractModal}
+          onClose={() => setShowContractModal(false)}
+          transaction={transaction}
+        />
+      )}
     </div>
   );
 };
