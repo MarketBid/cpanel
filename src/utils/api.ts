@@ -1,7 +1,6 @@
 import { AuthTokens, ApiResponse } from '../types';
 
-// export const API_BASE_URL = "https://clarsix.fastapicloud.dev"
-export const API_BASE_URL = "http://localhost:8000"
+export const API_BASE_URL = "https://clarsix.fastapicloud.dev"
 
 class ApiClient {
   private baseURL: string;
