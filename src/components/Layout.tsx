@@ -30,7 +30,6 @@ import NotificationCenter, { Notification } from './NotificationCenter';
 import CommandPalette from './CommandPalette';
 import { useTransactions } from '../hooks/queries/useTransactions';
 
-import Logo from './Logo';
 import GlobalChatListener from './GlobalChatListener';
 
 interface LayoutProps {
@@ -205,9 +204,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
       <>
         <div className={`flex h-14 sm:h-16 shrink-0 items-center ${showText ? 'justify-between px-4 sm:px-6' : 'justify-center px-2'} border-b border-[var(--border-default)] bg-[var(--bg-sidebar)]/80 backdrop-blur-sm dark:bg-[var(--bg-sidebar)]/90 transition-all duration-300`}>
-          <Link to="/" className={`flex items-center ${showText ? 'gap-1.5 sm:gap-2' : 'justify-center'} hover:opacity-80 transition-opacity`}>
-            <Logo size={showText ? 56 : 40} />
-            {showText && <h1 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">Clarsix</h1>}
+          <Link to="/" className={`flex items-center ${showText ? 'gap-2.5' : 'justify-center'} hover:opacity-80 transition-opacity`}>
+            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-sm">C</span>
+            </div>
+            {showText && <h1 className="text-base font-bold text-[var(--text-primary)]">Clarsix</h1>}
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -291,26 +292,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 )}
               </Link>
 
-              <div className={`rounded-lg border border-[var(--border-default)] ${showText ? 'p-2.5 sm:p-3' : 'p-2'} bg-[var(--bg-card)]/90 backdrop-blur-sm`}>
-                <div className={`flex items-center ${showText ? 'gap-x-2 sm:gap-x-3 mb-2 sm:mb-3' : 'justify-center mb-2'}`}>
-                  <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-[var(--color-secondary)] flex items-center justify-center shrink-0">
-                    <span className="text-[var(--text-inverse)] font-semibold text-xs sm:text-sm">
+              <div className={`${showText ? 'px-1' : 'px-0'}`}>
+                <div className={`flex items-center ${showText ? 'gap-x-2.5 mb-3' : 'justify-center mb-2'}`}>
+                  <div className="h-9 w-9 rounded-full bg-[var(--color-secondary)] flex items-center justify-center shrink-0">
+                    <span className="text-white font-bold text-sm">
                       {user?.name?.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   {showText && (
                     <div className="flex-1 min-w-0">
-                      <p className="truncate font-medium text-[var(--text-primary)] text-[11px] sm:text-xs">{user?.name}</p>
-                      <p className="truncate text-[10px] sm:text-[11px] text-[var(--text-secondary)]">{user?.email}</p>
+                      <p className="truncate font-bold text-[var(--text-primary)] text-[13px]">{user?.name}</p>
+                      <p className="truncate text-[11px] text-[var(--text-tertiary)]">{user?.email}</p>
                     </div>
                   )}
                 </div>
                 {showText ? (
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-lg transition-all touch-manipulation active:scale-95"
+                    className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-semibold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] active:bg-[var(--color-primary-dark)] rounded-xl transition-all touch-manipulation active:scale-95"
                   >
-                    <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    <LogOut className="h-3.5 w-3.5" />
                     Log Out
                   </button>
                 ) : (
@@ -510,11 +511,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
-        <main className={(isChatPage || isSettingsPage || isTransactionsPage) ? "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-hidden" : "py-4 sm:py-6 lg:py-8"}>
+        <main className={isChatPage || isTransactionsPage ? "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-hidden" : isSettingsPage ? "py-4 sm:py-6 lg:py-8" : "py-4 sm:py-6 lg:py-8"}>
           <div className={
             isChatPage
               ? "h-full w-full"
-              : (isSettingsPage || (isTransactionsPage && location.pathname !== '/transactions/create'))
+              : (isTransactionsPage && location.pathname !== '/transactions/create')
                 ? "h-full w-full px-3 sm:px-4 lg:px-8 max-w-[1400px] mx-auto"
                 : (location.pathname === '/transactions/create')
                   ? "h-full w-full p-0"

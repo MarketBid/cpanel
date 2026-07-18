@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Download, FileText, Shield } from 'lucide-react';
-import Button from './ui/Button';
+import { Download } from 'lucide-react';
 import { Transaction, ContractType, RefundPolicyType } from '../types';
 import { generateContractPDF } from '../utils/pdfGenerator';
 
@@ -22,244 +21,102 @@ const ContractViewModal: React.FC<ContractViewModalProps> = ({
 
     if (!isOpen) return null;
 
+    const senderName = transaction.sender?.name || '[Sender]';
+    const receiverName = transaction.receiver?.name || '[Receiver]';
+    const amount = transaction.amount || 0;
+    const feePercentage = transaction.fee_config?.processing_fee_percentage || 3;
+    const feePayer = transaction.fee_config?.fee_payer || 'split';
+    const feeAmount = amount * (feePercentage / 100);
+    const senderTotal = feePayer === 'receiver' ? amount : feePayer === 'split' ? amount + feeAmount / 2 : amount + feeAmount;
+    const receiverNet = feePayer === 'sender' ? amount : feePayer === 'split' ? amount - feeAmount / 2 : amount - feeAmount;
+    const typeLabel = transaction.type.replace(/_/g, ' ').toLowerCase();
+    const bufferHours = transaction.time_based_config?.auto_completion_buffer_hours ?? 24;
+
+    const refundLabel = (() => {
+        if (!transaction.refund_policy) return 'standard Clarsix refund policy';
+        switch (transaction.refund_policy.type) {
+            case RefundPolicyType.FULL_REFUND: return 'a full refund';
+            case RefundPolicyType.NO_REFUND: return 'no refund';
+            case RefundPolicyType.PARTIAL_FIXED: return `a ${transaction.refund_policy.refund_percentage ?? 0}% partial refund`;
+            case RefundPolicyType.CONDITIONAL_REFUND: return 'a conditional refund';
+            case RefundPolicyType.CUSTOM_TERMS: return transaction.refund_policy.description || 'custom refund terms';
+            default: return 'standard Clarsix refund policy';
+        }
+    })();
+
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                {/* Backdrop */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={onClose}
-                    className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm m-0 p-0"
-                />
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: 'rgba(22,36,31,.55)' }}>
+                <div className="fixed inset-0" onClick={onClose} />
 
-                {/* Modal */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
                     transition={{ duration: 0.2 }}
-                    className="relative w-full max-w-4xl max-h-[90vh] bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+                    className="relative w-full flex flex-col"
+                    style={{ background: '#fff', borderRadius: '18px', maxWidth: '640px', maxHeight: '82vh' }}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-[var(--border-default)] bg-[var(--bg-tertiary)]">
+                    <div className="flex items-center justify-between" style={{ padding: '22px 26px', borderBottom: '1px solid #e6ebe8' }}>
                         <div>
-                            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Contract Summary</h2>
-                            <p className="text-sm text-[var(--text-secondary)] mt-1">
-                                Transaction ID: {transaction.transaction_id}
-                            </p>
+                            <div style={{ fontWeight: 800, fontSize: '17px' }}>Transaction Agreement</div>
+                            <div style={{ fontSize: '12.5px', color: '#8a958f' }}>{transaction.transaction_id}</div>
                         </div>
-                        <button
+                        <span
                             onClick={onClose}
-                            className="p-2 hover:bg-[var(--bg-card)] rounded-lg transition-colors"
+                            style={{ cursor: 'pointer', fontSize: '20px', color: '#8a958f', lineHeight: 1 }}
                         >
-                            <X className="h-5 w-5 text-[var(--text-secondary)]" />
-                        </button>
+                            ×
+                        </span>
                     </div>
 
-                    {/* Content - Scrollable */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                        {/* Service Information */}
-                        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
-                            <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
-                                <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                                    <FileText className="h-4 w-4" /> Service Details
-                                </h3>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                <div>
-                                    <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Title</span>
-                                    <p className="font-semibold text-[var(--text-primary)]">{transaction.title}</p>
-                                </div>
-                                <div>
-                                    <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Description</span>
-                                    <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap">{transaction.description}</p>
-                                </div>
-                                <div>
-                                    <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Category</span>
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary-light)] text-[var(--color-primary-dark)]">
-                                        {transaction.type.replace('_', ' ')}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Contract Specifics */}
-                        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
-                            <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
-                                <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                                    <FileText className="h-4 w-4" /> Contract Terms
-                                </h3>
-                            </div>
-                            <div className="p-4">
-                                {/* Time Based View */}
-                                {transaction.contract_type === ContractType.TIME_BASED && transaction.time_based_config && (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Completion Date</span>
-                                            <p className="font-medium text-[var(--text-primary)]">{transaction.time_based_config.completion_date}</p>
-                                        </div>
-                                        <div>
-                                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Completion Time</span>
-                                            <p className="font-medium text-[var(--text-primary)]">{transaction.time_based_config.completion_time}</p>
-                                        </div>
-                                        <div className="col-span-2">
-                                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Auto-Release Buffer</span>
-                                            <p className="text-sm text-[var(--text-primary)]">{transaction.time_based_config.auto_completion_buffer_hours} Hours after delivery</p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Milestone View */}
-                                {transaction.contract_type === ContractType.MILESTONE_BASED && transaction.milestones && (
-                                    <div className="space-y-3">
-                                        {transaction.milestones.map((m, i) => (
-                                            <div key={i} className="flex justify-between items-center p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
-                                                <div>
-                                                    <p className="font-bold text-[var(--text-primary)]">{m.description}</p>
-                                                    <p className="text-xs text-[var(--text-secondary)]">Due: {m.due_date} • {m.completion_condition}</p>
-                                                </div>
-                                                <div className="font-bold text-[var(--text-primary)]">{m.amount_percentage}%</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Financial & Protection */}
-                        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
-                            <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
-                                <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                                    <Shield className="h-4 w-4" /> Payment & Protection
-                                </h3>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                <div className="flex justify-between items-center pb-4 border-b border-[var(--border-light)]">
-                                    <span className="text-sm font-medium text-[var(--text-secondary)]">Total Amount</span>
-                                    <span className="text-2xl font-bold text-[var(--text-primary)]">₵{transaction.amount?.toFixed(2)}</span>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Refund Policy</span>
-                                        <p className="font-medium text-[var(--text-primary)] capitalize">{transaction.refund_policy?.type.replace('_', ' ').toLowerCase()}</p>
-
-                                        {transaction.refund_policy?.type === RefundPolicyType.PARTIAL_FIXED && transaction.refund_policy.refund_percentage && (
-                                            <p className="text-xs text-[var(--text-secondary)] mt-1">{transaction.refund_policy.refund_percentage}% Refund on cancellation/dispute</p>
-                                        )}
-
-                                        {transaction.refund_policy?.type === RefundPolicyType.CONDITIONAL_REFUND && transaction.refund_policy.conditions && (
-                                            <ul className="text-xs text-[var(--text-secondary)] list-disc ml-4 mt-1">
-                                                {transaction.refund_policy.conditions.map(c => <li key={c}>{c}</li>)}
-                                            </ul>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Parties</span>
-                                        <div className="text-sm">
-                                            <p><span className="text-[var(--text-tertiary)]">Sender:</span> {transaction.sender?.name || 'Pending'}</p>
-                                            <p><span className="text-[var(--text-tertiary)]">Receiver:</span> {transaction.receiver?.name || 'Pending'}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="md:col-span-2 pt-4 border-t border-[var(--border-light)] grid grid-cols-2 gap-4">
-                                        <div>
-                                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Fee Configuration</span>
-                                            <div className="text-sm space-y-1">
-                                                <p><span className="text-[var(--text-tertiary)]">Processing Fee:</span> {transaction.fee_config?.processing_fee_percentage || 3}%</p>
-                                                <p><span className="text-[var(--text-tertiary)]">Fee Payer:</span> <span className="capitalize">{transaction.fee_config?.fee_payer || 'split'}</span></p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Payment Structure</span>
-                                            <div className="text-sm space-y-1">
-                                                {(() => {
-                                                    const feePayer = transaction.fee_config?.fee_payer || 'split';
-                                                    const feePercentage = transaction.fee_config?.processing_fee_percentage || 3;
-                                                    const amount = transaction.amount || 0;
-
-                                                    if (feePayer === 'sender') {
-                                                        return (
-                                                            <div className="space-y-2">
-                                                                <div>
-                                                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
-                                                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Amount:</span> <span>₵{amount.toFixed(2)}</span></div>
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({feePercentage}%):</span> <span>₵{(amount * (feePercentage / 100)).toFixed(2)}</span></div>
-                                                                        <div className="flex justify-between font-bold pt-1 border-t border-[var(--border-light)] mt-1"><span className="text-[var(--text-primary)]">Total:</span> <span>₵{(amount * (1 + feePercentage / 100)).toFixed(2)}</span></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    } else if (feePayer === 'receiver') {
-                                                        return (
-                                                            <div className="space-y-2">
-                                                                <div>
-                                                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
-                                                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Total Payment:</span> <span>₵{amount.toFixed(2)}</span></div>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Receiver</p>
-                                                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Total Receivable:</span> <span>₵{amount.toFixed(2)}</span></div>
-                                                                        <div className="flex justify-between text-xs text-[var(--text-secondary)] mt-1"><span>Fee ({feePercentage}%):</span> <span>₵{(amount * (feePercentage / 100)).toFixed(2)} (Paid Upfront)</span></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    } else {
-                                                        // Split
-                                                        const splitFeePercentage = (feePercentage / 2).toFixed(2).replace(/[.,]00$/, "");
-                                                        return (
-                                                            <div className="space-y-2">
-                                                                <div>
-                                                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
-                                                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Amount:</span> <span>₵{amount.toFixed(2)}</span></div>
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({splitFeePercentage}%):</span> <span>₵{(amount * ((feePercentage / 2) / 100)).toFixed(2)}</span></div>
-                                                                        <div className="flex justify-between font-bold pt-1 border-t border-[var(--border-light)] mt-1"><span className="text-[var(--text-primary)]">Total:</span> <span>₵{(amount * (1 + (feePercentage / 2) / 100)).toFixed(2)}</span></div>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Receiver</p>
-                                                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                                                        <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Total Receivable:</span> <span>₵{amount.toFixed(2)}</span></div>
-                                                                        <div className="flex justify-between text-xs text-[var(--text-secondary)] mt-1"><span>Fee ({splitFeePercentage}%):</span> <span>₵{(amount * ((feePercentage / 2) / 100)).toFixed(2)} (Paid Upfront)</span></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    }
-                                                })()}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    {/* Content */}
+                    <div className="overflow-y-auto flex-1 space-y-3" style={{ padding: '26px', fontSize: '13.5px', lineHeight: 1.7, color: '#3a453f' }}>
+                        <p>
+                            <strong>1. Parties.</strong> This agreement is entered into between <strong>{senderName}</strong> (Sender) and <strong>{receiverName}</strong> (Receiver) for the {typeLabel} transaction titled <em>"{transaction.title}"</em>, facilitated and mediated by Clarsix.
+                        </p>
+                        <p>
+                            <strong>2. Scope of Work.</strong> {transaction.description}
+                            {transaction.contract_type === ContractType.MILESTONE_BASED && transaction.milestones && transaction.milestones.length > 0 && (
+                                <> Delivery is structured across {transaction.milestones.length} milestone{transaction.milestones.length > 1 ? 's' : ''}: {transaction.milestones.map((m, i) => `(${i + 1}) ${m.description} — ${m.amount_percentage}% due by ${m.due_date}`).join('; ')}.</>
+                            )}
+                        </p>
+                        <p>
+                            <strong>3. Payment Terms.</strong> The agreed transaction amount is <strong>₵{amount.toFixed(2)}</strong>. A processing fee of {feePercentage}% is applied and borne by the {feePayer === 'split' ? 'both parties equally' : feePayer}. The Sender will deposit <strong>₵{senderTotal.toFixed(2)}</strong> into the Clarsix Trust Vault; upon successful delivery, the Receiver will receive <strong>₵{receiverNet.toFixed(2)}</strong>. Funds remain held in escrow until delivery is confirmed.
+                        </p>
+                        <p>
+                            <strong>4. Delivery &amp; Acceptance.</strong>{' '}
+                            {transaction.contract_type === ContractType.TIME_BASED && transaction.time_based_config ? (
+                                <>Delivery is expected by <strong>{transaction.time_based_config.completion_date}</strong> at {transaction.time_based_config.completion_time}. The Sender has <strong>{bufferHours} hours</strong> after the Receiver marks delivery to raise a dispute; if no dispute is raised within this window, funds are automatically released.</>
+                            ) : (
+                                <>Upon each milestone delivery, the Sender has <strong>{bufferHours} hours</strong> to raise a dispute; if no dispute is raised, the corresponding milestone funds are automatically released.</>
+                            )}
+                        </p>
+                        <p>
+                            <strong>5. Dispute Resolution.</strong> Either party may open a dispute through Clarsix support, which will review evidence from both sides before releasing or refunding funds. In the event of a confirmed dispute, the applicable refund policy is <strong>{refundLabel}</strong>.
+                            {transaction.refund_policy?.type === RefundPolicyType.CONDITIONAL_REFUND && transaction.refund_policy.conditions && transaction.refund_policy.conditions.length > 0 && (
+                                <> Conditions for refund eligibility: {transaction.refund_policy.conditions.join('; ')}.</>
+                            )}
+                        </p>
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-end gap-3 p-6 border-t border-[var(--border-default)] bg-[var(--bg-tertiary)]/50">
-                        <Button
-                            variant="outline"
+                    <div className="flex items-center justify-end" style={{ padding: '20px 26px', borderTop: '1px solid #e6ebe8', gap: '12px' }}>
+                        <button
                             onClick={onClose}
+                            style={{ background: '#fff', border: '1px solid #e6ebe8', borderRadius: '10px', padding: '11px 20px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer' }}
                         >
                             Close
-                        </Button>
-                        <Button
-                            variant="primary"
+                        </button>
+                        <button
                             onClick={handleDownloadPDF}
-                            leftIcon={<Download className="h-4 w-4" />}
+                            className="flex items-center gap-2"
+                            style={{ background: '#318A6E', color: '#fff', border: 'none', borderRadius: '10px', padding: '11px 20px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer' }}
                         >
-                            Download as PDF
-                        </Button>
+                            <Download className="h-4 w-4" />
+                            Download PDF
+                        </button>
                     </div>
                 </motion.div>
             </div>

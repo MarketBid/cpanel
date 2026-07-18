@@ -64,12 +64,12 @@ const SystemMessage: React.FC<{ message: Message }> = ({ message }) => {
     };
 
     return (
-        <div className="flex flex-col items-center my-5 px-4 py-3 bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--bg-secondary)] rounded-xl border border-[var(--border-default)] max-w-[80%] mx-auto">
-            <div className="flex items-center gap-2.5 text-[var(--text-secondary)] text-sm text-center leading-relaxed">
-                <span className="text-xl shrink-0">{getIcon()}</span>
-                <span className="font-medium">{message.content}</span>
+        <div className="flex flex-col items-center my-4">
+            <div className="bg-[var(--color-primary-light)] text-[var(--color-primary)] rounded-full px-4 py-1.5 text-xs font-medium text-center max-w-[80%]">
+                <span className="mr-1">{getIcon()}</span>
+                {message.content}
             </div>
-            <div className="text-[10px] text-[var(--text-tertiary)] mt-1.5">
+            <div className="text-[10px] text-[var(--text-tertiary)] mt-1">
                 {new Date(message.created_at).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -716,13 +716,31 @@ const Chat: React.FC = () => {
         return colors[Math.abs(hash) % colors.length];
     };
 
-    // Helper component for the user avatar icon
-    const UserAvatarIcon = ({ className }: { className?: string }) => (
-        <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className={className}
+    const getNameInitial = (name: string) => name ? name.charAt(0).toUpperCase() : '?';
+
+    const AVATAR_COLORS = [
+        '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6',
+        '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#ec4899',
+        '#64748b', '#6366f1', '#84cc16', '#f59e0b',
+    ];
+    const getAvatarBgColor = (id: string) => {
+        let hash = 0;
+        for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+        return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+    };
+
+    const UserAvatar = ({ name, id }: { name: string; id?: string }) => (
+        <div
+            className="h-10 w-10 rounded-full text-white flex items-center justify-center shrink-0 font-bold text-sm"
+            style={{ backgroundColor: id ? getAvatarBgColor(id) : 'var(--color-primary)' }}
         >
+            {getNameInitial(name)}
+        </div>
+    );
+
+    // Helper component for the user avatar icon (kept for fallback)
+    const UserAvatarIcon = ({ className }: { className?: string }) => (
+        <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
     );
@@ -733,56 +751,52 @@ const Chat: React.FC = () => {
     }, [conversations]);
 
     return (
-        <div className="flex h-full w-full bg-[var(--bg-card)] overflow-hidden">
+        <div className="grid grid-cols-[300px_1fr] bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden h-full">
             {/* Sidebar */}
-            <div className="w-80 border-r border-[var(--border-default)] flex flex-col bg-[var(--bg-secondary)]">
-                <div className="p-4 border-b border-[var(--border-default)] flex flex-col gap-4 bg-[var(--bg-card)]">
-                    <div className="flex justify-between items-center">
-                        <h2 className="font-semibold text-[var(--text-primary)]">Messages</h2>
+            <div className="border-r border-[var(--border-default)] flex flex-col">
+                <div className="p-4 border-b border-[var(--border-default)] flex flex-col gap-3">
+                    <h2 className="text-[18px] font-extrabold text-[var(--text-primary)]">Messages</h2>
+
+                    {/* Search */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-tertiary)]" />
+                        <input
+                            type="text"
+                            placeholder="Search messages..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg text-sm focus:ring-1 focus:ring-[var(--color-primary)] placeholder-[var(--text-tertiary)] outline-none"
+                        />
                     </div>
 
-                    {/* Search and Filter */}
-                    <div className="flex flex-col gap-3">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-tertiary)]" />
-                            <input
-                                type="text"
-                                placeholder="Search messages..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-[var(--bg-tertiary)] border-none rounded-lg text-sm focus:ring-1 focus:ring-[var(--color-primary)] placeholder-[var(--text-tertiary)]"
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setFilter('all')}
-                                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${filter === 'all'
-                                    ? 'bg-[var(--color-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-                                    }`}
-                            >
-                                All
-                            </button>
-                            <button
-                                onClick={() => setFilter('unread')}
-                                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${filter === 'unread'
-                                    ? 'bg-[var(--color-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-                                    }`}
-                            >
-                                <span className="flex items-center justify-center gap-1.5">
-                                    Unread
-                                    {unreadConversationCount > 0 && (
-                                        <span className={`h-4 min-w-[1rem] px-1 rounded-full text-[10px] font-medium flex items-center justify-center ${filter === 'unread'
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-[var(--color-primary)] text-white'
-                                            }`}>
-                                            {unreadConversationCount}
-                                        </span>
-                                    )}
+                    {/* Filter Pills */}
+                    <div className="flex gap-3 items-center">
+                        <button
+                            onClick={() => setFilter('all')}
+                            className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${filter === 'all'
+                                ? 'bg-[var(--color-primary)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                                }`}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setFilter('unread')}
+                            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full transition-colors ${filter === 'unread'
+                                ? 'bg-[var(--color-primary)] text-white'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                                }`}
+                        >
+                            Unread
+                            {unreadConversationCount > 0 && (
+                                <span className={`h-4 min-w-[1rem] px-1 rounded-full text-[10px] font-medium flex items-center justify-center ${filter === 'unread'
+                                    ? 'bg-white/20 text-white'
+                                    : 'bg-[var(--color-primary)] text-white'
+                                    }`}>
+                                    {unreadConversationCount}
                                 </span>
-                            </button>
-                        </div>
+                            )}
+                        </button>
                     </div>
                 </div>
 
@@ -811,12 +825,10 @@ const Chat: React.FC = () => {
                                                 setSelectedConversation(singleConv.id);
                                             }
                                         }}
-                                        className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-[var(--bg-tertiary)] transition-colors ${!hasMultiple && singleConv && selectedConversation === singleConv.id ? 'bg-[var(--bg-tertiary)] border-l-2 border-[var(--color-primary)]' : ''
+                                        className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-[var(--color-primary-light)] transition-colors ${!hasMultiple && singleConv && selectedConversation === singleConv.id ? 'bg-[var(--color-primary-light)] border-l-[3px] border-[var(--color-primary)]' : ''
                                             }`}
                                     >
-                                        <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${getAvatarColor(userId).bg} ${getAvatarColor(userId).text}`}>
-                                            <UserAvatarIcon className="h-6 w-6" />
-                                        </div>
+                                        <UserAvatar name={group.user.name} id={group.user.id} />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-baseline mb-1">
                                                 <h3 className="font-medium text-[var(--text-primary)] truncate">
@@ -859,7 +871,7 @@ const Chat: React.FC = () => {
                                                 <div
                                                     key={conv.id}
                                                     onClick={() => setSelectedConversation(conv.id)}
-                                                    className={`flex items-center gap-3 p-3 pl-16 cursor-pointer transition-colors hover:bg-[var(--bg-tertiary)] ${selectedConversation === conv.id ? 'bg-[var(--bg-tertiary)] border-l-2 border-[var(--color-primary)]' : ''
+                                                    className={`flex items-center gap-3 p-3 pl-16 cursor-pointer transition-colors hover:bg-[var(--color-primary-light)] ${selectedConversation === conv.id ? 'bg-[var(--color-primary-light)] border-l-[3px] border-[var(--color-primary)]' : ''
                                                         }`}
                                                 >
                                                     <div className="flex-1 min-w-0">
@@ -914,19 +926,11 @@ const Chat: React.FC = () => {
                         {/* Header */}
                         <div className="p-4 border-b border-[var(--border-default)] flex justify-between items-center bg-[var(--bg-card)]">
                             <div className="flex items-center gap-3">
-                                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${(() => {
+                                {(() => {
                                     const conv = conversations.find(c => c.id === selectedConversation);
-                                    if (conv) {
-                                        const other = conv.participant_details?.find(p => String(p.id) !== String(user?.id));
-                                        if (other) {
-                                            const colors = getAvatarColor(String(other.id));
-                                            return `${colors.bg} ${colors.text}`;
-                                        }
-                                    }
-                                    return 'bg-gray-100 text-gray-500';
-                                })()}`}>
-                                    <UserAvatarIcon className="h-6 w-6" />
-                                </div>
+                                    const other = conv?.participant_details?.find(p => String(p.id) !== String(user?.id));
+                                    return <UserAvatar name={other?.name || '?'} id={other?.id} />;
+                                })()}
                                 <div>
                                     <h3 className="font-semibold text-[var(--text-primary)]">
                                         {(() => {
@@ -1060,15 +1064,7 @@ const Chat: React.FC = () => {
 
                         {/* Messages */}
                         {/* Messages */}
-                        <div className="flex-1 relative bg-[#efe7dd] dark:bg-[#0b141a]">
-                            <div
-                                className="absolute inset-0 pointer-events-none"
-                                style={{
-                                    backgroundImage: `url("${CHAT_BACKGROUND_PATTERN}")`,
-                                    backgroundSize: '340px',
-                                    opacity: 0.6
-                                }}
-                            />
+                        <div className="flex-1 relative bg-[var(--bg-secondary)]">
                             <div className="absolute inset-0 overflow-y-auto p-4 space-y-2">
                                 {loadingMessages ? (
                                     <div className="flex justify-center items-center h-full">
@@ -1094,8 +1090,8 @@ const Chat: React.FC = () => {
                                             return (
                                                 <React.Fragment key={msg.id}>
                                                     {showDateSeparator && (
-                                                        <div className="flex justify-center my-6">
-                                                            <div className="bg-[#f0f2f5] dark:bg-[#1f2c34] text-[#54656f] dark:text-[#8696a0] text-[11px] font-medium px-3 py-1.5 rounded-lg shadow-sm">
+                                                        <div className="flex justify-center my-5">
+                                                            <div className="bg-[var(--color-primary-light)] text-[var(--color-primary)] text-xs font-semibold px-4 py-1.5 rounded-full">
                                                                 {currentDateLabel}
                                                             </div>
                                                         </div>
@@ -1106,14 +1102,9 @@ const Chat: React.FC = () => {
                                                         (() => {
                                                             const isMe = String(msg.sender_id) === String(user?.id);
 
-                                                            let borderRadiusClass = 'rounded-lg';
-                                                            if (isLastInGroup) {
-                                                                if (isMe) {
-                                                                    borderRadiusClass = 'rounded-lg rounded-br-none';
-                                                                } else {
-                                                                    borderRadiusClass = 'rounded-lg rounded-bl-none';
-                                                                }
-                                                            }
+                                                                            const borderRadiusClass = isLastInGroup
+                                                                ? (isMe ? 'rounded-[16px_16px_4px_16px]' : 'rounded-[16px_16px_16px_4px]')
+                                                                : 'rounded-2xl';
 
                                                             const marginBottom = isLastInGroup ? 'mb-2' : 'mb-0.5';
 
@@ -1125,29 +1116,15 @@ const Chat: React.FC = () => {
                                                                 >
                                                                     <div className={`flex max-w-[70%] min-w-0 ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end gap-1`}>
                                                                         <div
-                                                                            className={`px-2 py-1.5 min-w-[4rem] relative shadow-sm ${borderRadiusClass} ${isMe
-                                                                                ? 'bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-[#e9edef]'
-                                                                                : 'bg-white dark:bg-[#202c33] text-[#111b21] dark:text-[#e9edef]'
+                                                                            className={`px-3.5 py-2.5 min-w-[4rem] ${borderRadiusClass} ${isMe
+                                                                                ? 'bg-[var(--color-primary)] text-white'
+                                                                                : 'bg-[var(--bg-secondary)] border border-[var(--border-default)] text-[var(--text-primary)]'
                                                                                 }`}
                                                                             style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
                                                                         >
-                                                                            {isLastInGroup && (
-                                                                                <span className={`absolute bottom-0 w-2 h-3 ${isMe ? '-right-2 text-[#d9fdd3] dark:text-[#005c4b]' : '-left-2 text-white dark:text-[#202c33]'}`}>
-                                                                                    <svg
-                                                                                        viewBox="0 0 8 13"
-                                                                                        height="13"
-                                                                                        width="8"
-                                                                                        preserveAspectRatio="none"
-                                                                                        className="w-full h-full fill-current"
-                                                                                        style={{ transform: isMe ? 'scaleY(-1)' : 'scale(-1, -1)' }}
-                                                                                    >
-                                                                                        <path d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z" />
-                                                                                    </svg>
-                                                                                </span>
-                                                                            )}
                                                                             <div className="flex flex-wrap items-end gap-x-2">
                                                                                 <span className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</span>
-                                                                                <span className={`text-[10px] ml-auto shrink-0 leading-none pb-0.5 ${isMe ? 'text-[#111b21]/60 dark:text-[#e9edef]/60' : 'text-[#667781] dark:text-[#8696a0]'}`}>
+                                                                                <span className={`text-[10px] ml-auto shrink-0 leading-none pb-0.5 ${isMe ? 'text-white/70' : 'text-[var(--text-tertiary)]'}`}>
                                                                                     {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                                                 </span>
                                                                             </div>
@@ -1163,7 +1140,7 @@ const Chat: React.FC = () => {
 
                                         {typingUsers[selectedConversation] && (
                                             <div className="flex justify-start mb-2">
-                                                <div className="bg-white dark:bg-[#202c33] p-3 rounded-lg rounded-tl-none shadow-sm">
+                                                <div className="bg-[var(--bg-card)] border border-[var(--border-default)] p-3 rounded-lg rounded-tl-none shadow-sm">
                                                     <div className="flex gap-1">
                                                         <span className="w-1.5 h-1.5 bg-[#8696a0] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
                                                         <span className="w-1.5 h-1.5 bg-[#8696a0] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
@@ -1180,34 +1157,32 @@ const Chat: React.FC = () => {
 
                         {/* Input */}
                         <div className="p-4 bg-[var(--bg-card)] border-t border-[var(--border-default)]">
-                            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                                <button type="button" className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-full transition-colors">
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-2 rounded-3xl border border-[var(--border-default)] px-3 py-2">
+                                <button type="button" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0">
                                     <Paperclip className="h-5 w-5" />
                                 </button>
-                                <div className="flex-1 relative">
-                                    <input
-                                        type="text"
-                                        value={messageInput}
-                                        onChange={(e) => {
-                                            setMessageInput(e.target.value);
-                                            handleTyping();
-                                        }}
-                                        placeholder="Type a message..."
-                                        className="w-full pl-4 pr-10 py-2.5 rounded-full border border-[var(--border-medium)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
-                                    />
-                                    <button type="button" className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 text-[var(--text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-                                        <Smile className="h-5 w-5" />
-                                    </button>
-                                </div>
+                                <input
+                                    type="text"
+                                    value={messageInput}
+                                    onChange={(e) => {
+                                        setMessageInput(e.target.value);
+                                        handleTyping();
+                                    }}
+                                    placeholder="Type a message..."
+                                    className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)]"
+                                />
+                                <button type="button" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--color-primary)] transition-colors shrink-0">
+                                    <Smile className="h-5 w-5" />
+                                </button>
                                 <button
                                     type="submit"
                                     disabled={!messageInput.trim()}
-                                    className={`p-2.5 rounded-full transition-all ${messageInput.trim()
-                                        ? 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-md'
+                                    className={`p-2 rounded-full transition-all shrink-0 ${messageInput.trim()
+                                        ? 'bg-[var(--color-primary)] text-white hover:opacity-90'
                                         : 'bg-[var(--bg-tertiary)] text-[var(--text-disabled)] cursor-not-allowed'
                                         }`}
                                 >
-                                    <Send className="h-5 w-5" />
+                                    <Send className="h-4 w-4" />
                                 </button>
                             </form>
                         </div>

@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
+import { FaWhatsapp, FaInstagram, FaTiktok, FaFacebook, FaTwitter, FaUserCircle, FaLock, FaBell, FaPalette, FaCreditCard } from 'react-icons/fa';
+
+const SocialIcon = ({ name }: { name: string }) => {
+  const n = name.toLowerCase();
+  if (n.includes('whatsapp')) return <FaWhatsapp size={16} color="#25D366" />;
+  if (n.includes('instagram')) return <FaInstagram size={16} color="#E1306C" />;
+  if (n.includes('tiktok')) return <FaTiktok size={16} color="#000" />;
+  if (n.includes('facebook')) return <FaFacebook size={16} color="#1877F2" />;
+  if (n.includes('twitter')) return <FaTwitter size={16} color="#1DA1F2" />;
+  return <Globe className="h-4 w-4 text-[var(--text-tertiary)]" />;
+};
 import {
-  User,
-  Shield,
   Bell,
   Moon,
   Sun,
   Mail,
-  Phone,
   X,
   Smartphone,
   MapPin,
   Calendar,
   ShieldCheck,
   Globe,
-  Wallet,
-  UploadCloud
+  UploadCloud,
+  Star
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { apiClient } from '../utils/api';
-import { BUSINESS_CATEGORIES, TransactionStatus } from '../types';
+import { BUSINESS_CATEGORIES } from '../types';
 
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -69,7 +77,7 @@ const SOCIAL_MEDIA_OPTIONS = [
 
 const ProfileSection = () => {
   const { user, updateUser } = useAuth();
-  const { data: transactions = [] } = useTransactions();
+  useTransactions();
   const [loading, setLoading] = useState(false);
   const [convertingToBusiness, setConvertingToBusiness] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -246,120 +254,178 @@ const ProfileSection = () => {
 
         {/* Name */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
-          <label className="text-sm font-medium text-[var(--text-primary)] pt-2">Name</label>
+          <label htmlFor="profile-name" className="text-sm font-medium text-[var(--text-primary)] pt-2">Name</label>
           <div className="md:col-span-2">
-            <Input name="name" value={formData.name} onChange={handleInputChange} disabled={!isEditing} className="bg-white dark:bg-[var(--bg-card)]" />
+            <Input id="profile-name" name="name" value={formData.name} onChange={handleInputChange} disabled={!isEditing} className="bg-white dark:bg-[var(--bg-card)]" />
           </div>
         </div>
 
         {/* Email */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
-          <label className="text-sm font-medium text-[var(--text-primary)] pt-2">Email address</label>
+          <label htmlFor="profile-email" className="text-sm font-medium text-[var(--text-primary)] pt-2">Email address</label>
           <div className="md:col-span-2">
-            <Input name="email" type="email" value={formData.email} onChange={handleInputChange} disabled={!isEditing} leftIcon={<Mail className="h-4 w-4" />} className="bg-white dark:bg-[var(--bg-card)]" />
+            <Input id="profile-email" name="email" type="email" value={formData.email} onChange={handleInputChange} disabled={!isEditing} leftIcon={<Mail className="h-4 w-4" />} className="bg-white dark:bg-[var(--bg-card)]" />
           </div>
         </div>
 
         {/* Phone */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
-          <label className="text-sm font-medium text-[var(--text-primary)] pt-2">Phone</label>
+          <label htmlFor="profile-contact" className="text-sm font-medium text-[var(--text-primary)] pt-2">Phone</label>
           <div className="md:col-span-2">
-            <Input name="contact" type="tel" value={formData.contact} onChange={handleInputChange} disabled={!isEditing} className="bg-white dark:bg-[var(--bg-card)]" />
+            <Input id="profile-contact" name="contact" type="tel" value={formData.contact} onChange={handleInputChange} disabled={!isEditing} className="bg-white dark:bg-[var(--bg-card)]" />
           </div>
         </div>
 
-        {/* Bio (Visual) */}
+        {/* Date of Birth */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
+          <label htmlFor="profile-dob" className="text-sm font-medium text-[var(--text-primary)] pt-2">Date of Birth</label>
+          <div className="md:col-span-2">
+            <Input id="profile-dob" name="date_of_birth" type="date" value={formData.date_of_birth} onChange={handleInputChange} disabled={!isEditing} leftIcon={<Calendar className="h-4 w-4" />} className="bg-white dark:bg-[var(--bg-card)]" />
+          </div>
+        </div>
+
+        {/* Bio */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-[var(--text-primary)]">Bio</label>
+            <label htmlFor="profile-bio" className="text-sm font-medium text-[var(--text-primary)]">Bio</label>
             <p className="text-xs text-[var(--text-secondary)]">Write a short introduction.</p>
           </div>
           <div className="md:col-span-2">
-            <textarea
-              name="bio"
-              className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all resize-none min-h-[120px] disabled:opacity-60 disabled:cursor-not-allowed"
-              placeholder="I'm a UI/UX Designer based in..."
-              value={formData.bio}
-              onChange={handleInputChange}
-              disabled={!isEditing}
-            />
+            {isEditing ? (
+              <textarea
+                id="profile-bio"
+                name="bio"
+                className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all resize-none min-h-[120px]"
+                placeholder="I'm a UI/UX Designer based in..."
+                value={formData.bio}
+                onChange={handleInputChange}
+              />
+            ) : (
+              <p className="text-base text-[var(--text-primary)]">{formData.bio || 'Not specified'}</p>
+            )}
           </div>
         </div>
 
         {/* Location */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
-          <label className="text-sm font-medium text-[var(--text-primary)] pt-2">Location</label>
-          <div className="md:col-span-2">
-            <Input name="location" value={formData.location} onChange={handleInputChange} disabled={!isEditing} leftIcon={<MapPin className="h-4 w-4" />} placeholder="City, Country" className="bg-white dark:bg-[var(--bg-card)]" />
+          <label htmlFor="profile-location" className="text-sm font-medium text-[var(--text-primary)] pt-2">Location</label>
+          <div className="md:col-span-2 pt-2">
+            {isEditing ? (
+              <Input id="profile-location" name="location" value={formData.location} onChange={handleInputChange} leftIcon={<MapPin className="h-4 w-4" />} placeholder="City, Country" className="bg-white dark:bg-[var(--bg-card)]" />
+            ) : (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-[var(--text-tertiary)]" />
+                <p className="text-base text-[var(--text-primary)]">{user.location || 'Not specified'}</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Business Info */}
-        {user.is_business && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
-            <label className="text-sm font-medium text-[var(--text-primary)] pt-2">Business Category</label>
-            <div className="md:col-span-2">
+        {/* Business Category */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
+          <label htmlFor="profile-business-category" className="text-sm font-medium text-[var(--text-primary)] pt-2">Business Category</label>
+          <div className="md:col-span-2 pt-2">
+            {isEditing ? (
               <select
+                id="profile-business-category"
                 name="business_category"
                 value={formData.business_category}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2.5 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] disabled:opacity-60 disabled:cursor-not-allowed"
-                disabled={!isEditing}
+                className="w-full px-4 py-2.5 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)]"
               >
                 <option value="">Select category</option>
                 {BUSINESS_CATEGORIES.map((category) => (
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
-            </div>
+            ) : (
+              <p className="text-base text-[var(--text-primary)]">{user.business_category || 'Not specified'}</p>
+            )}
           </div>
-        )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start pb-8 border-b border-[var(--border-default)]">
+          <label className="text-sm font-medium text-[var(--text-primary)] pt-2">Rating</label>
+          <div className="md:col-span-2 flex items-center gap-2 pt-2">
+            <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+            <span className="text-base font-semibold text-[var(--text-primary)]">{(user.rating ?? 0).toFixed(1)}</span>
+            <span className="text-sm text-[var(--text-secondary)]">({user.total_ratings ?? 0} reviews)</span>
+          </div>
+        </div>
 
         {/* Social Links */}
-        {user.is_business && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-[var(--text-primary)]">Social Profiles</label>
-            </div>
-            <div className="md:col-span-2 space-y-4">
-              {formData.social_media_links.map((link, index) => (
-                <div key={index} className="flex gap-3 items-start">
-                  <div className="flex-1 grid grid-cols-2 gap-3">
-                    <select
-                      value={link.name}
-                      onChange={(e) => handleSocialLinkChange(index, 'name', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] text-sm disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {SOCIAL_MEDIA_OPTIONS.map((option) => (
-                        <option key={option} value={option}>{option.charAt(0).toUpperCase() + option.slice(1)}</option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      value={link.value}
-                      onChange={(e) => handleSocialLinkChange(index, 'value', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] text-sm disabled:opacity-60 disabled:cursor-not-allowed"
-                      placeholder={link.name === 'whatsapp' ? 'Phone' : 'Username/URL'}
-                    />
-                  </div>
-                  {isEditing && (
-                    <button type="button" onClick={() => removeSocialLink(index)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-[var(--text-primary)]">Social Profiles</label>
+          </div>
+          <div className="md:col-span-2 space-y-4">
+            {isEditing ? (
+              <>
+                {formData.social_media_links.map((link, index) => (
+                  <div key={index} className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <label htmlFor={`social-platform-${index}`} className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Platform</label>
+                      <select
+                        id={`social-platform-${index}`}
+                        value={link.name}
+                        onChange={(e) => handleSocialLinkChange(index, 'name', e.target.value)}
+                        className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] text-sm"
+                      >
+                        {SOCIAL_MEDIA_OPTIONS.map((option) => (
+                          <option key={option} value={option}>{option.charAt(0).toUpperCase() + option.slice(1)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {link.name === 'other' && (
+                      <div className="flex-1">
+                        <label htmlFor={`social-custom-${index}`} className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Custom Name</label>
+                        <input
+                          id={`social-custom-${index}`}
+                          type="text"
+                          value={link.customName || ''}
+                          onChange={(e) => handleSocialLinkChange(index, 'customName', e.target.value)}
+                          className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] text-sm"
+                          placeholder="Platform name"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <label htmlFor={`social-value-${index}`} className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">{link.name === 'whatsapp' ? 'Phone Number' : 'URL/Username'}</label>
+                      <input
+                        id={`social-value-${index}`}
+                        type="text"
+                        value={link.value}
+                        onChange={(e) => handleSocialLinkChange(index, 'value', e.target.value)}
+                        className="w-full px-3 py-2 border border-[var(--border-default)] rounded-lg bg-white dark:bg-[var(--bg-card)] text-[var(--text-primary)] text-sm"
+                        placeholder={link.name === 'whatsapp' ? '+233...' : 'https://...'}
+                      />
+                    </div>
+                    <button type="button" onClick={() => removeSocialLink(index)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg mb-0.5">
                       <X className="h-4 w-4" />
                     </button>
-                  )}
-                </div>
-              ))}
-              {isEditing && (
+                  </div>
+                ))}
                 <Button type="button" variant="outline" size="sm" onClick={addSocialLink}>Add Profile</Button>
-              )}
-              {formData.social_media_links.length === 0 && !isEditing && (
-                <p className="text-sm text-[var(--text-tertiary)] italic">No social profiles added.</p>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                {user.social_links && user.social_links.length > 0 ? (
+                  user.social_links.map((link, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <SocialIcon name={link.name} />
+                      <div>
+                        <span className="block text-xs font-medium text-[var(--text-secondary)] capitalize">{link.name}</span>
+                        <span className="block text-sm text-[var(--text-primary)]">{link.value}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-base text-[var(--text-primary)]">No social profiles added.</p>
+                )}
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Convert to Business Option */}
@@ -561,57 +627,54 @@ const Settings: React.FC = () => {
   }
 
   const tabs = [
-    { id: 'profile', label: 'My Profile', icon: User },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'appearance', label: 'Appearance', icon: Moon },
-    { id: 'payments', label: 'Payments', icon: Wallet },
+    { id: 'profile', label: 'My Profile', icon: FaUserCircle },
+    { id: 'security', label: 'Security', icon: FaLock },
+    { id: 'notifications', label: 'Notifications', icon: FaBell },
+    { id: 'appearance', label: 'Appearance', icon: FaPalette },
+    { id: 'payments', label: 'Payments', icon: FaCreditCard },
   ];
 
   return (
-    <div className="h-full flex flex-col animate-fade-in">
-      <div className="flex-none pt-4 sm:pt-6 lg:pt-8 bg-[var(--bg-secondary)] z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-[var(--text-primary)]">Account Settings</h1>
+    <div className="animate-fade-in pt-6 pb-12">
+        <div className="mb-7">
+          <h1 className="text-3xl font-extrabold text-[var(--text-primary)]">Settings</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">Manage your account, security and preferences</p>
+        </div>
+
+        <div className="grid grid-cols-[240px_1fr] gap-7 items-start">
+          {/* Left: Vertical tab sidebar */}
+          <div className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl p-2.5 sticky top-20 self-start">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`
+                    flex items-center gap-2.5 w-full px-3.5 py-3 rounded-xl text-sm transition-colors text-left mb-0.5
+                    ${isActive
+                      ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)] font-bold'
+                      : 'text-[var(--text-secondary)] font-medium hover:bg-[var(--bg-tertiary)]'
+                    }
+                  `}
+                >
+                  <Icon size={16} style={{ flexShrink: 0 }} />
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Horizontal Tabs */}
-          <div className="border-b border-[var(--border-default)] mb-8">
-            <nav className="flex gap-8 overflow-x-auto no-scrollbar">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
-                    className={`
-                      flex items-center gap-2 pb-4 text-sm font-medium transition-all duration-200 border-b-2 whitespace-nowrap
-                      ${isActive
-                        ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
-                        : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-default)]'
-                      }
-                    `}
-                  >
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
+          {/* Right: Content panel */}
+          <div>
+            {activeTab === 'profile' && <ProfileSection />}
+            {activeTab === 'security' && <SecuritySection />}
+            {activeTab === 'notifications' && <NotificationsSection />}
+            {activeTab === 'appearance' && <AppearanceSection />}
+            {activeTab === 'payments' && <Accounts />}
           </div>
         </div>
-      </div>
-
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto min-w-0 pb-12">
-        <div className="max-w-6xl mx-auto">
-          {activeTab === 'profile' && <ProfileSection />}
-          {activeTab === 'security' && <SecuritySection />}
-          {activeTab === 'notifications' && <NotificationsSection />}
-          {activeTab === 'appearance' && <AppearanceSection />}
-          {activeTab === 'payments' && <Accounts />}
-        </div>
-      </div>
     </div>
   );
 };

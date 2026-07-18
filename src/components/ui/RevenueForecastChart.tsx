@@ -1,14 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts';
 import { motion } from 'motion/react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -53,7 +51,7 @@ const CustomTooltip = ({ active, payload, label, maskAmount }: any) => {
       {receivedThis && (
         <div className="mb-3">
           <div className="flex items-center gap-2 mb-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-purple-600" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#318A6E]" />
             <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Amount Received</span>
           </div>
           <div className="text-base font-bold text-gray-900 dark:text-white">
@@ -65,7 +63,7 @@ const CustomTooltip = ({ active, payload, label, maskAmount }: any) => {
       {sentThis && (
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+            <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
             <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Amount Sent</span>
           </div>
           <div className="text-base font-bold text-gray-900 dark:text-white">
@@ -89,8 +87,6 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
   receivedChangePercent,
   maskAmount = (amount) => amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
 }) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
   const chartData = useMemo(() => {
     return data.map((point) => ({
       label: point.label,
@@ -101,15 +97,11 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
   }, [data]);
 
   const formatYAxis = (value: number) => {
-    // Check if sensitive info is hidden by testing maskAmount
     const masked = maskAmount(value);
-    if (masked === '••••••') {
-      // Return abbreviated masked value for Y-axis
-      return '•••';
-    }
-    // Otherwise format normally with abbreviations
+    if (masked === '••••••') return '•••';
     if (value >= 1000) {
-      return `₵${(value / 1000).toFixed(0)}K`;
+      const k = value / 1000;
+      return `₵${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}K`;
     }
     return `₵${value.toFixed(0)}`;
   };
@@ -117,19 +109,19 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
   const totalAmount = totalSent + totalReceived;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 shadow-sm">
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Amount Sent & Received</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-1">Amount Sent & Received</h2>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => onPeriodChange('weekly')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               period === 'weekly'
-                ? 'bg-purple-600 text-white'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                ? 'bg-[var(--color-primary)] text-white'
+                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
             }`}
           >
             Week
@@ -138,8 +130,8 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
             onClick={() => onPeriodChange('monthly')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               period === 'monthly'
-                ? 'bg-purple-600 text-white'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                ? 'bg-[var(--color-primary)] text-white'
+                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
             }`}
           >
             Month
@@ -148,8 +140,8 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
             onClick={() => onPeriodChange('yearly')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               period === 'yearly'
-                ? 'bg-purple-600 text-white'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                ? 'bg-[var(--color-primary)] text-white'
+                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
             }`}
           >
             Year
@@ -159,29 +151,21 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
 
       {/* Total Display */}
       <div className="mb-6">
-        <div className="text-4xl font-bold text-gray-900 dark:text-white">
+        <div className="text-4xl font-bold text-[var(--text-primary)]">
           ₵{maskAmount(totalAmount)}
         </div>
       </div>
 
       {/* Chart */}
       <div className="relative">
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
             data={chartData}
             margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
-            onMouseMove={(state) => {
-              if (state?.activeTooltipIndex !== undefined) {
-                setHoveredIndex(state.activeTooltipIndex);
-              }
-            }}
-            onMouseLeave={() => setHoveredIndex(null)}
+            barGap={2}
+            barCategoryGap="30%"
           >
-            <CartesianGrid 
-              strokeDasharray="4 4" 
-              stroke="#D1D5DB" 
-              opacity={0.6}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
             <XAxis
               dataKey="label"
               stroke="#9CA3AF"
@@ -195,52 +179,24 @@ const RevenueForecastChart: React.FC<RevenueForecastChartProps> = ({
               tickLine={false}
               axisLine={false}
               tickFormatter={formatYAxis}
+              width={65}
+              allowDecimals={false}
+              domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.15)]}
             />
             <Tooltip content={<CustomTooltip maskAmount={maskAmount} />} />
-            
-            {/* Vertical reference line on hover */}
-            {hoveredIndex !== null && chartData[hoveredIndex] && (
-              <ReferenceLine
-                x={chartData[hoveredIndex].label}
-                stroke="#9CA3AF"
-                strokeDasharray="4 4"
-                strokeWidth={1}
-                opacity={0.5}
-              />
-            )}
-
-            {/* Amount Received */}
-            <Line
-              type="monotone"
-              dataKey="receivedThisPeriod"
-              stroke="#9333EA"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 6, fill: '#9333EA' }}
-              name="Amount Received"
-            />
-
-            {/* Amount Sent */}
-            <Line
-              type="monotone"
-              dataKey="sentThisPeriod"
-              stroke="#3B82F6"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 6, fill: '#3B82F6' }}
-              name="Amount Sent"
-            />
-          </LineChart>
+            <Bar dataKey="receivedThisPeriod" fill="#318A6E" radius={[4, 4, 0, 0]} name="Amount Received" />
+            <Bar dataKey="sentThisPeriod" fill="#D1D5DB" radius={[4, 4, 0, 0]} name="Amount Sent" />
+          </BarChart>
         </ResponsiveContainer>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mt-6 flex-wrap">
+        <div className="flex items-center justify-center gap-6 mt-4 flex-wrap">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-purple-600" />
+            <div className="w-3 h-3 rounded-full bg-[#318A6E]" />
             <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Amount Received</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-600" />
+            <div className="w-3 h-3 rounded-full bg-gray-300" />
             <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Amount Sent</span>
           </div>
         </div>

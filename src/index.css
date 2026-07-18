@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,21 +7,21 @@
 @layer base {
   :root {
     /* Light Theme Colors - Primary */
-    --color-primary: #0F9D7E;
-    --color-primary-hover: #0D8A6E;
-    --color-primary-light: #E6F7F3;
-    --color-primary-dark: #0A7A5E;
+    --color-primary: #318A6E;
+    --color-primary-hover: #256b56;
+    --color-primary-light: #eaf4f0;
+    --color-primary-dark: #256b56;
     --color-primary-text: #FFFFFF;
 
     /* Light Theme Colors - Secondary */
-    --color-secondary: #2C3E50;
-    --color-secondary-light: #34495E;
-    --color-secondary-dark: #1A252F;
+    --color-secondary: #16241f;
+    --color-secondary-light: #2c3e36;
+    --color-secondary-dark: #0e1914;
 
     /* Light Theme Colors - Background */
     --bg-primary: #FFFFFF;
-    --bg-secondary: #F8F9FA;
-    --bg-tertiary: #F3F4F6;
+    --bg-secondary: #fbfcfb;
+    --bg-tertiary: #f1f3f2;
     --bg-sidebar: #FFFFFF;
     --bg-card: #FFFFFF;
 
@@ -31,17 +31,17 @@
     --surface-overlay: rgba(0, 0, 0, 0.05);
 
     /* Light Theme Colors - Text */
-    --text-primary: #1F2937;
-    --text-secondary: #6B7280;
-    --text-tertiary: #9CA3AF;
-    --text-disabled: #D1D5DB;
+    --text-primary: #16241f;
+    --text-secondary: #55635c;
+    --text-tertiary: #8a958f;
+    --text-disabled: #c3ccc9;
     --text-inverse: #FFFFFF;
 
     /* Light Theme Colors - Border */
-    --border-default: #E5E7EB;
-    --border-light: #F3F4F6;
-    --border-medium: #D1D5DB;
-    --border-strong: #9CA3AF;
+    --border-default: #e6ebe8;
+    --border-light: #f1f3f2;
+    --border-medium: #cfd8d4;
+    --border-strong: #8a958f;
 
     /* Light Theme Colors - Status */
     --status-pending-bg: #FEF3E2;
@@ -192,7 +192,7 @@
     padding: 0;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
@@ -214,7 +214,7 @@
   h5,
   h6 {
     @apply font-semibold tracking-tight;
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--text-primary);
   }
 

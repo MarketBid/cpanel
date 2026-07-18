@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Package, Users, DollarSign, Clock, CheckCircle, AlertCircle, CreditCard, Truck, ShoppingCart, Lock, MoveRight, Zap, FileText, MessageSquare } from 'lucide-react';
+import { Package, Users, DollarSign, Clock, CheckCircle, AlertCircle, CreditCard, Truck, Lock, MoveRight, Zap, FileText, MessageSquare } from 'lucide-react';
 import ContractViewModal from '../components/ContractViewModal';
 import { Transaction, TransactionStatus, ContractType } from '../types';
 import { useAuth } from '../hooks/useAuth';
@@ -615,22 +615,20 @@ const TransactionDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-secondary)]">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {/* Header with Breadcrumb */}
-        <div className="mb-8">
+    <div className="pt-6 pb-12">
+        {/* Header */}
+        <div className="mb-6">
           <button
             onClick={() => navigate('/transactions')}
-            className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4 group"
+            className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-3"
           >
-            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-medium">Back to Transactions</span>
+            ← Back to Transactions
           </button>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-2">Transaction Details</h1>
-              <p className="text-sm sm:text-base text-[var(--text-secondary)]">Track and manage your transaction</p>
+              <h1 className="text-[26px] font-extrabold text-[var(--text-primary)] mb-1">Transaction Details</h1>
+              <p className="text-sm text-[var(--text-secondary)]">Track and manage your transaction</p>
             </div>
 
             <div className="flex items-center gap-3 flex-wrap justify-end">
@@ -680,7 +678,7 @@ const TransactionDetails: React.FC = () => {
                   <button
                     onClick={handleOpenChat}
                     disabled={updating}
-                    className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-lg text-sm font-medium hover:bg-[var(--bg-tertiary)] transition-colors shadow-sm hover:shadow-md"
+                    className="flex items-center gap-2 px-[18px] py-[10px] bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-[10px] text-sm font-semibold hover:bg-[var(--bg-tertiary)] transition-colors"
                   >
                     <MessageSquare className="h-4 w-4" />
                     <span className="hidden sm:inline">Chat</span>
@@ -713,7 +711,7 @@ const TransactionDetails: React.FC = () => {
               <div className="relative group">
                 <button
                   onClick={() => setShowContractModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm hover:shadow-md"
+                  className="flex items-center gap-2 px-[18px] py-[10px] bg-[var(--color-primary)] text-white rounded-[10px] text-sm font-semibold hover:opacity-90 transition-opacity"
                 >
                   <FileText className="h-4 w-4" />
                   <span className="hidden sm:inline">View Contract</span>
@@ -736,26 +734,26 @@ const TransactionDetails: React.FC = () => {
 
 
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+        {/* Main Content Grid — details left, timeline right */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-5 mb-8 items-start">
+
+          {/* LEFT: Transaction Details */}
+          <div className="space-y-4">
+
             {/* Service Details Card */}
-            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-4 sm:p-6 hover:shadow-md transition-shadow">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+            <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-5">
+              {/* Card header row */}
+              <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5 text-[var(--text-primary)]" />
-                    Transaction Details
-                  </h2>
-                  <span className="text-sm text-[var(--text-secondary)]">#{transaction.transaction_id}</span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(normalizeStatus(transaction.status))}`}>
+                  <h2 className="text-[16px] font-bold text-[var(--text-primary)]">Transaction Details</h2>
+                  <span className="text-xs text-[var(--text-tertiary)]">#{transaction.transaction_id}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${getStatusColor(normalizeStatus(transaction.status))}`}>
                     {normalizeStatus(transaction.status).replace('_', ' ')}
                   </span>
                   {(() => {
                     const typeStyles = getTransactionTypeStyles(transaction.type);
                     return (
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
+                      <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold border ${typeStyles.bg} ${typeStyles.text} ${typeStyles.border}`}>
                         {typeStyles.label}
                       </span>
                     );
@@ -764,136 +762,95 @@ const TransactionDetails: React.FC = () => {
                 {(isSender || (user?.id === transaction.receiver_id)) && normalizeStatus(transaction.status) === TransactionStatus.PENDING && (
                   <button
                     onClick={() => navigate('/transactions/edit', { state: { editingTransaction: transaction } })}
-                    className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-primary)] text-white rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shrink-0"
                   >
-                    <CreditCard className="h-4 w-4" />
-                    <span>Edit Transaction</span>
+                    <CreditCard className="h-3.5 w-3.5" />
+                    Edit
                   </button>
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)]">
-                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[var(--bg-tertiary)] rounded-2xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-                  <Package className="h-8 w-8 sm:h-12 sm:w-12 text-[var(--text-primary)]" />
+              {/* Title + description */}
+              <div className="flex gap-3 p-3.5 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-default)] mb-4">
+                <div className="w-10 h-10 bg-[var(--bg-tertiary)] rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Package className="h-5 w-5 text-[var(--text-secondary)]" />
                 </div>
-                <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-bold text-base sm:text-lg text-[var(--text-primary)] mb-2">{transaction.title}</h3>
-                  <p className="text-sm sm:text-base text-[var(--text-secondary)] mb-3">{transaction.description}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-sm text-[var(--text-primary)] mb-0.5">{transaction.title}</h3>
+                  <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{transaction.description}</p>
                 </div>
-
               </div>
 
-              <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
-                <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Payment Structure</h3>
-                <div className="space-y-4">
-
+              {/* Payment Structure */}
+              <div className="pt-4 border-t border-[var(--border-default)]">
+                <p className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3">Payment Structure</p>
+                <div className="space-y-2">
                   {(() => {
                     const feePayer = transaction.fee_config?.fee_payer || 'split';
                     const feePercentage = transaction.fee_config?.processing_fee_percentage || 3;
                     const amount = transaction.amount || 0;
 
+                    const SenderBox = ({ children }: { children: React.ReactNode }) => (
+                      <div className="bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl p-3.5">
+                        <p className="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Sender Pays</p>
+                        {children}
+                      </div>
+                    );
+                    const ReceiverBox = ({ children }: { children: React.ReactNode }) => (
+                      <div className="bg-[var(--color-primary-light)] rounded-xl p-3.5">
+                        <p className="text-[11px] font-bold text-[var(--color-primary)] uppercase tracking-wider mb-2">Receiver Gets</p>
+                        {children}
+                      </div>
+                    );
+                    const Row = ({ label, value, bold }: { label: string; value: string; bold?: boolean }) => (
+                      <div className={`flex justify-between text-[13px] ${bold ? 'font-bold pt-2 border-t border-[var(--border-default)] mt-1.5' : ''}`}>
+                        <span className={bold ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}>{label}</span>
+                        <span className="text-[var(--text-primary)]">{value}</span>
+                      </div>
+                    );
+
                     if (feePayer === 'sender') {
                       return (
                         <>
-                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
-                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Sender Pays</p>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
-                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text-secondary)]">Processing Fee ({feePercentage}%):</span>
-                                <span className="font-medium text-[var(--text-primary)]">₵{(amount * (feePercentage / 100)).toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
-                                <span className="text-[var(--text-primary)]">Total to Pay:</span>
-                                <span className="text-[var(--text-primary)]">₵{(amount * (1 + feePercentage / 100)).toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
-                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Receiver Gets</p>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-base font-bold">
-                                <span className="text-[var(--text-primary)]">Amount Received:</span>
-                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
+                          <SenderBox>
+                            <Row label="Transaction Amount:" value={`₵${amount.toFixed(2)}`} />
+                            <Row label={`Processing Fee (${feePercentage}%):`} value={`₵${(amount * feePercentage / 100).toFixed(2)}`} />
+                            <Row label="Total to Pay:" value={`₵${(amount * (1 + feePercentage / 100)).toFixed(2)}`} bold />
+                          </SenderBox>
+                          <ReceiverBox>
+                            <Row label="Amount Received:" value={`₵${amount.toFixed(2)}`} bold />
+                          </ReceiverBox>
                         </>
                       );
                     } else if (feePayer === 'receiver') {
                       return (
                         <>
-                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
-                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Sender Pays</p>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-base font-bold">
-                                <span className="text-[var(--text-primary)]">Total to Pay:</span>
-                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
-                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Receiver Gets</p>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
-                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
-                                <span>Processing Fee ({feePercentage}%):</span>
-                                <span>₵{(amount * (feePercentage / 100)).toFixed(2)} (Paid Upfront)</span>
-                              </div>
-                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
-                                <span className="text-[var(--text-primary)]">Total Receivable:</span>
-                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
+                          <SenderBox>
+                            <Row label="Total to Pay:" value={`₵${amount.toFixed(2)}`} bold />
+                          </SenderBox>
+                          <ReceiverBox>
+                            <Row label="Transaction Amount:" value={`₵${amount.toFixed(2)}`} />
+                            <Row label={`Processing Fee (${feePercentage}%):`} value={`₵${(amount * feePercentage / 100).toFixed(2)} (Upfront)`} />
+                            <Row label="Total Receivable:" value={`₵${amount.toFixed(2)}`} bold />
+                          </ReceiverBox>
                         </>
                       );
                     } else {
-                      // Split
-                      const splitFeePercentage = (feePercentage / 2).toFixed(2).replace(/[.,]00$/, "");
-                      const splitFee = amount * ((feePercentage / 2) / 100);
+                      const splitPct = feePercentage / 2;
+                      const splitFee = amount * splitPct / 100;
+                      const splitLabel = splitPct.toFixed(2).replace(/\.00$/, '');
                       return (
                         <>
-                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
-                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Sender Pays</p>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
-                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text-secondary)]">Processing Fee ({splitFeePercentage}%):</span>
-                                <span className="font-medium text-[var(--text-primary)]">₵{splitFee.toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
-                                <span className="text-[var(--text-primary)]">Total to Pay:</span>
-                                <span className="text-[var(--text-primary)]">₵{(amount + splitFee).toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4">
-                            <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Receiver Gets</p>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[var(--text-secondary)]">Transaction Amount:</span>
-                                <span className="font-medium text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
-                                <span>Processing Fee ({splitFeePercentage}%):</span>
-                                <span>₵{splitFee.toFixed(2)} (Paid Upfront)</span>
-                              </div>
-                              <div className="flex justify-between text-base font-bold pt-2 border-t border-[var(--border-default)]">
-                                <span className="text-[var(--text-primary)]">Total Receivable:</span>
-                                <span className="text-[var(--text-primary)]">₵{amount.toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
+                          <SenderBox>
+                            <Row label="Transaction Amount:" value={`₵${amount.toFixed(2)}`} />
+                            <Row label={`Processing Fee (${splitLabel}%):`} value={`₵${splitFee.toFixed(2)}`} />
+                            <Row label="Total to Pay:" value={`₵${(amount + splitFee).toFixed(2)}`} bold />
+                          </SenderBox>
+                          <ReceiverBox>
+                            <Row label="Transaction Amount:" value={`₵${amount.toFixed(2)}`} />
+                            <Row label={`Processing Fee (${splitLabel}%):`} value={`₵${splitFee.toFixed(2)} (Upfront)`} />
+                            <Row label="Total Receivable:" value={`₵${amount.toFixed(2)}`} bold />
+                          </ReceiverBox>
                         </>
                       );
                     }
@@ -903,131 +860,97 @@ const TransactionDetails: React.FC = () => {
             </div>
 
             {/* Participants Card */}
-            <div className="bg-[var(--bg-card)] rounded-2xl shadow-sm border border-[var(--border-default)] p-4 sm:p-6 hover:shadow-md transition-shadow">
-              <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-4 sm:mb-6 flex items-center gap-2">
-                <Users className="h-5 w-5 text-[var(--text-primary)]" />
+            <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] p-5">
+              <h2 className="text-[15px] font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
+                <Users className="h-4 w-4" />
                 Participants
               </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                {/* Sender */}
-                <div className="p-4 sm:p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)]">
-                  <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--color-secondary)] rounded-xl flex items-center justify-center text-[var(--text-inverse)] font-bold text-base sm:text-lg shadow-lg">
-                      {transaction.sender?.name?.charAt(0).toUpperCase() || 'S'}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-sm sm:text-base text-[var(--text-primary)]">Sender</h3>
-                        {user?.id === transaction.sender_id && (
-                          <span className="text-xs bg-[var(--color-secondary)] text-[var(--text-inverse)] px-2 py-1 rounded-full font-medium">
-                            You
-                          </span>
-                        )}
-                      </div>
-                    </div>
+              <div className="divide-y divide-[var(--border-default)]">
+                {/* Sender row */}
+                <div className="flex items-center gap-3 py-2.5">
+                  <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    {transaction.sender?.name?.charAt(0).toUpperCase() || 'S'}
                   </div>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">{transaction.sender?.name}</p>
-                      <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{transaction.sender?.email}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[13px] font-semibold text-[var(--text-primary)] truncate">{transaction.sender?.name || '—'}</span>
+                      {user?.id === transaction.sender_id && (
+                        <span className="text-[10px] bg-[var(--color-primary-light)] text-[var(--color-primary)] px-1.5 py-0.5 rounded-full font-semibold shrink-0">You</span>
+                      )}
                     </div>
-                    <div>
-                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Contact</div>
-                      <div className="text-[var(--text-primary)]">{transaction.sender?.contact || 'N/A'}</div>
-                    </div>
-
+                    <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.sender?.email || '—'}</p>
                   </div>
+                  <span className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide shrink-0">Sender</span>
                 </div>
 
-                {/* Receiver */}
-                <div className="p-4 sm:p-6 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-default)]">
-                  <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--color-secondary-light)] rounded-xl flex items-center justify-center text-[var(--text-inverse)] font-bold text-base sm:text-lg shadow-lg">
-                      {transaction.receiver?.name?.charAt(0).toUpperCase() || 'R'}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-sm sm:text-base text-[var(--text-primary)]">Receiver</h3>
-                        {user?.id === transaction.receiver_id && (
-                          <span className="text-xs bg-[var(--color-secondary-light)] text-[var(--text-inverse)] px-2 py-1 rounded-full font-medium">
-                            You
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                {/* Receiver row */}
+                <div className="flex items-center gap-3 py-2.5">
+                  <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    {transaction.receiver?.name?.charAt(0).toUpperCase() || 'R'}
                   </div>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">{transaction.receiver?.name}</p>
-                      <p className="text-xs sm:text-sm text-[var(--text-secondary)]">{transaction.receiver?.email}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[13px] font-semibold text-[var(--text-primary)] truncate">{transaction.receiver?.name || 'Pending'}</span>
+                      {user?.id === transaction.receiver_id && (
+                        <span className="text-[10px] bg-[var(--color-primary-light)] text-[var(--color-primary)] px-1.5 py-0.5 rounded-full font-semibold shrink-0">You</span>
+                      )}
                     </div>
-                    <div>
-                      <div className="text-xs font-medium text-[var(--text-secondary)] mb-1">Contact</div>
-                      <div className="text-[var(--text-primary)]">{transaction.receiver?.contact || 'N/A'}</div>
-                    </div>
-
+                    <p className="text-xs text-[var(--text-secondary)] truncate">{transaction.receiver?.email || '—'}</p>
                   </div>
+                  <span className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wide shrink-0">Receiver</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Timeline Card */}
-
-            {/* Timeline Card */}
-            <div className={`rounded-2xl shadow-sm p-6 bg-[var(--bg-card)] ${normalizeStatus(transaction.status) === TransactionStatus.COMPLETED
+          {/* RIGHT: Activity Timeline */}
+          <div className="sticky top-6">
+            <div className={`rounded-xl p-5 bg-[var(--bg-card)] ${normalizeStatus(transaction.status) === TransactionStatus.COMPLETED
               ? 'border-2 border-[var(--status-completed-text)]'
               : normalizeStatus(transaction.status) === TransactionStatus.DISPUTED
                 ? 'border-2 border-[var(--status-disputed-text)]'
                 : 'border border-[var(--border-default)]'
               }`}>
-              <h2 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
-                <Clock className="h-5 w-5 text-[var(--text-primary)]" />
+              <h2 className="text-[15px] font-bold text-[var(--text-primary)] mb-5 flex items-center gap-2">
+                <Clock className="h-4 w-4" />
                 Activity Timeline
               </h2>
 
-              <div className="space-y-6">
+              <div className="space-y-0">
                 {activityTimeline.map((step, index) => {
                   const Icon = step.icon;
                   const isComplete = step.isComplete;
                   const isDisputed = step.key === 'disputed';
                   const isCancelled = step.key === 'cancelled';
                   const isError = isDisputed || isCancelled;
+                  const isLast = index === activityTimeline.length - 1;
 
                   return (
-                    <div key={step.key} className="flex gap-4">
+                    <div key={step.key} className="flex gap-3">
                       <div className="flex flex-col items-center">
-                        <div
-                          className={`w-10 h-10 min-w-[2.5rem] shrink-0 rounded-full flex items-center justify-center transition-all ${isError
-                            ? 'bg-[var(--status-disputed-text)] shadow-lg'
+                        <div className={`w-7 h-7 shrink-0 rounded-full flex items-center justify-center ${isError
+                          ? 'bg-[var(--status-disputed-text)]'
+                          : isComplete
+                            ? 'bg-[var(--status-completed-text)]'
+                            : 'bg-[var(--bg-tertiary)] border border-[var(--border-default)]'
+                          }`}>
+                          <Icon className={`h-3.5 w-3.5 ${isError
+                            ? 'text-white'
                             : isComplete
-                              ? 'bg-[var(--status-completed-text)] shadow-lg'
-                              : 'bg-[var(--bg-tertiary)]'
-                            }`}
-                          style={{ width: '2.5rem', height: '2.5rem' }}
-                        >
-                          <Icon className={`h-5 w-5 ${isError
-                            ? 'text-[var(--status-disputed-bg)]'
-                            : isComplete
-                              ? 'text-[var(--status-completed-bg)]'
+                              ? 'text-white'
                               : 'text-[var(--text-tertiary)]'
                             }`} />
                         </div>
-                        {index < activityTimeline.length - 1 && (
-                          <div className={`w-0.5 h-full mt-2 ${isError
-                            ? 'bg-[var(--status-disputed-text)]'
-                            : isComplete
-                              ? 'bg-[var(--status-completed-text)]'
-                              : 'bg-[var(--border-default)]'
-                            }`}></div>
+                        {!isLast && (
+                          <div className={`w-0.5 flex-1 mt-1 mb-1 min-h-[20px] ${isComplete
+                            ? 'bg-[var(--status-completed-text)]'
+                            : 'bg-[var(--border-default)]'
+                            }`} />
                         )}
                       </div>
 
-                      <div className="flex-1 pb-8">
-                        <h3 className={`font-semibold mb-1 ${isError
+                      <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-4'}`}>
+                        <h3 className={`text-sm font-semibold leading-none mb-1 ${isError
                           ? 'text-[var(--status-disputed-text)]'
                           : isComplete
                             ? 'text-[var(--text-primary)]'
@@ -1035,39 +958,34 @@ const TransactionDetails: React.FC = () => {
                           }`}>
                           {step.label}
                         </h3>
-                        <p className="text-sm text-[var(--text-secondary)]">{step.description}</p>
+                        <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{step.description}</p>
 
                         {/* Milestones List */}
                         {step.key === 'delivered' && transaction?.contract_type === ContractType.MILESTONE_BASED && transaction.milestones && (
-                          <div className="mt-4 space-y-3">
+                          <div className="mt-3 space-y-2">
                             {transaction.milestones.map((milestone, mIndex) => {
                               const isMilestoneComplete = milestone.status === 'completed' || milestone.status === 'paid';
                               const fundsReleased = (transaction.amount * milestone.amount_percentage) / 100;
-
                               return (
-                                <div key={milestone.id} className="bg-[var(--bg-tertiary)] rounded-lg p-3 border border-[var(--border-default)]">
-                                  <div className="flex justify-between items-start mb-2">
+                                <div key={milestone.id} className="bg-[var(--bg-secondary)] rounded-lg p-2.5 border border-[var(--border-default)]">
+                                  <div className="flex justify-between items-start mb-1.5">
                                     <div>
-                                      <h4 className="text-sm font-medium text-[var(--text-primary)]">Milestone {mIndex + 1}: {milestone.description}</h4>
-                                      <p className="text-xs text-[var(--text-secondary)] mt-1">Due: {milestone.due_date}</p>
+                                      <h4 className="text-xs font-semibold text-[var(--text-primary)]">M{mIndex + 1}: {milestone.description}</h4>
+                                      <p className="text-[10px] text-[var(--text-tertiary)]">Due: {milestone.due_date}</p>
                                     </div>
-                                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${isMilestoneComplete ? 'bg-[var(--status-completed-bg)] text-[var(--status-completed-text)]' : 'bg-[var(--status-pending-bg)] text-[var(--status-pending-text)]'}`}>
-                                      {isMilestoneComplete ? 'Completed' : 'Pending'}
+                                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${isMilestoneComplete ? 'bg-[var(--status-completed-bg)] text-[var(--status-completed-text)]' : 'bg-[var(--status-pending-bg)] text-[var(--status-pending-text)]'}`}>
+                                      {isMilestoneComplete ? 'Done' : 'Pending'}
                                     </span>
                                   </div>
-
-                                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-[var(--border-default)]">
-                                    <div className="text-xs text-[var(--text-secondary)]">
-                                      Funds to release: <span className="font-medium text-[var(--text-primary)]">{formatAmount(fundsReleased)}</span>
-                                    </div>
-
+                                  <div className="flex items-center justify-between pt-1.5 border-t border-[var(--border-default)]">
+                                    <span className="text-[10px] text-[var(--text-tertiary)]">Release: <span className="font-semibold text-[var(--text-primary)]">{formatAmount(fundsReleased)}</span></span>
                                     {!isMilestoneComplete && isReceiver && (
                                       <button
                                         onClick={() => markMilestoneComplete(milestone.id)}
                                         disabled={updating}
-                                        className="text-xs bg-[var(--color-primary)] text-[var(--color-primary-text)] px-3 py-1.5 rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-50"
+                                        className="text-[10px] bg-[var(--color-primary)] text-white px-2 py-1 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
                                       >
-                                        {updating ? 'Updating...' : 'Mark Complete'}
+                                        {updating ? '...' : 'Mark Done'}
                                       </button>
                                     )}
                                   </div>
@@ -1083,7 +1001,7 @@ const TransactionDetails: React.FC = () => {
               </div>
             </div>
           </div>
-        </div >
+        </div>
 
         {/* Modals */}
         {
@@ -1159,8 +1077,7 @@ const TransactionDetails: React.FC = () => {
             />
           )
         }
-      </div >
-    </div >
+      </div>
   );
 };
 

@@ -4,18 +4,10 @@ import { motion } from 'motion/react';
 import {
   Package,
   Plus,
-  Clock,
-  Truck,
-  CheckCircle,
-  CheckCheck,
-  AlertCircle,
-  ShieldCheck,
-  XCircle,
   TrendingUp,
-  TrendingDown,
+  ArrowUpRight,
+  Layers,
   Activity,
-  Send,
-  Receipt,
 } from 'lucide-react';
 import { TransactionStatus } from '../types';
 import { useAuth } from '../hooks/useAuth.tsx';
@@ -25,7 +17,6 @@ import Toast from '../components/ui/Toast';
 import RevenueForecastChart, { RevenueDataPoint } from '../components/ui/RevenueForecastChart';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
-import DonutChart from '../components/ui/DonutChart';
 
 const Dashboard: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
@@ -304,72 +295,51 @@ const Dashboard: React.FC = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {/* Amount Received */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
-          <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/80">Amount Received</span>
-              <TrendingUp className="h-4 w-4 text-white/90" />
-            </div>
-            <div className="text-2xl font-bold mb-1">₵{maskAmount(received)}</div>
-            <div className="flex items-center gap-1 text-xs text-white/80">
-              <TrendingUp className="h-3 w-3" />
-              <span>+{analytics.revenuePercentage}% vs last week</span>
-            </div>
+        <div className="rounded-2xl bg-[var(--color-primary-light)] border border-[var(--color-primary)]/20 p-5 hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-[var(--color-primary)]">Amount Received</span>
+            <TrendingUp className="h-4 w-4 text-[var(--color-primary)]" />
+          </div>
+          <div className="text-3xl font-bold text-[var(--text-primary)] mb-1">₵{maskAmount(received)}</div>
+          <div className="flex items-center gap-1 text-xs text-[var(--color-primary)] font-medium">
+            <TrendingUp className="h-3 w-3" />
+            <span>+{analytics.revenuePercentage}% vs last week</span>
           </div>
         </div>
 
         {/* Amount Sent */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12" />
-          <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/80">Amount Sent</span>
-              <Send className="h-4 w-4 text-white/90" />
-            </div>
-            <div className="text-2xl font-bold mb-1">₵{maskAmount(sent)}</div>
-            <div className="text-xs text-white/70">Total payments made</div>
+        <div className="rounded-2xl bg-blue-500/[0.08] border border-blue-500/20 p-5 hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-blue-500">Amount Sent</span>
+            <ArrowUpRight className="h-4 w-4 text-blue-500" />
           </div>
+          <div className="text-3xl font-bold text-[var(--text-primary)] mb-1">₵{maskAmount(sent)}</div>
+          <div className="text-xs text-blue-500/70">Total payments made</div>
         </div>
 
         {/* Total Transactions */}
-        <div className={`relative overflow-hidden rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-shadow ${analytics.transactionCountChange >= 0
-          ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
-          : 'bg-gradient-to-br from-orange-500 to-red-600'
-          }`}>
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
-          <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/80">Total Transactions</span>
-              <Package className="h-4 w-4 text-white/90" />
-            </div>
-            <div className="text-2xl font-bold mb-1">{totalTransactions}</div>
-            <div className="flex items-center gap-1 text-xs text-white/80">
-              {analytics.transactionCountChange >= 0 ? (
-                <TrendingUp className="h-3 w-3" />
-              ) : (
-                <TrendingDown className="h-3 w-3" />
-              )}
-              <span>
-                {analytics.transactionCountChange >= 0 ? '+' : ''}{analytics.transactionCountPercentage}% vs last week
-              </span>
-            </div>
+        <div className="rounded-2xl bg-violet-500/[0.08] border border-violet-500/20 p-5 hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-violet-500">Total Transactions</span>
+            <Layers className="h-4 w-4 text-violet-500" />
+          </div>
+          <div className="text-3xl font-bold text-[var(--text-primary)] mb-1">{totalTransactions}</div>
+          <div className="flex items-center gap-1 text-xs text-violet-500 font-medium">
+            <TrendingUp className="h-3 w-3" />
+            <span>+{analytics.transactionCountChange} vs last month</span>
           </div>
         </div>
 
         {/* Active Transactions */}
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12" />
-          <div className="relative">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/80">Active</span>
-              <Activity className="h-4 w-4 text-white/90" />
-            </div>
-            <div className="text-2xl font-bold mb-1">
-              {statusCounts[TransactionStatus.PENDING] + statusCounts[TransactionStatus.PAID] + statusCounts[TransactionStatus.IN_TRANSIT]}
-            </div>
-            <div className="text-xs text-white/70">Pending, Paid & in-transit</div>
+        <div className="rounded-2xl bg-amber-500/[0.08] border border-amber-500/20 p-5 hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-amber-500">Active</span>
+            <Activity className="h-4 w-4 text-amber-500" />
           </div>
+          <div className="text-3xl font-bold text-[var(--text-primary)] mb-1">
+            {statusCounts[TransactionStatus.PENDING] + statusCounts[TransactionStatus.PAID] + statusCounts[TransactionStatus.IN_TRANSIT]}
+          </div>
+          <div className="text-xs text-amber-500/70">Pending, paid & in-transit</div>
         </div>
       </motion.div>
 
@@ -411,70 +381,22 @@ const Dashboard: React.FC = () => {
               View All
             </button>
           </div>
-          <DonutChart
-            segments={[
-              {
-                label: 'Pending',
-                value: statusCounts[TransactionStatus.PENDING],
-                color: '#b45309', // amber-700
-                icon: <Clock className="h-4 w-4" />,
-              },
-              {
-                label: 'Paid',
-                value: statusCounts[TransactionStatus.PAID],
-                color: '#1d4ed8', // blue-700
-                icon: <CheckCircle className="h-4 w-4" />,
-              },
-              {
-                label: 'In Transit',
-                value: statusCounts[TransactionStatus.IN_TRANSIT],
-                color: '#4338ca', // indigo-700
-                icon: <Truck className="h-4 w-4" />,
-              },
-              {
-                label: 'Delivered',
-                value: statusCounts[TransactionStatus.DELIVERED],
-                color: '#7e22ce', // purple-700
-                icon: <Package className="h-4 w-4" />,
-              },
-              {
-                label: 'Ack Delivery',
-                value: statusCounts[TransactionStatus.ACK_DELIVERY],
-                color: '#4338ca', // indigo-700
-                icon: <CheckCheck className="h-4 w-4" />,
-              },
-              {
-                label: 'Completed',
-                value: statusCounts[TransactionStatus.COMPLETED],
-                color: '#047857', // emerald-700
-                icon: <CheckCircle className="h-4 w-4" />,
-              },
-              {
-                label: 'Disputed',
-                value: statusCounts[TransactionStatus.DISPUTED],
-                color: '#b91c1c', // red-700
-                icon: <AlertCircle className="h-4 w-4" />,
-              },
-              {
-                label: 'Dispute Resolved',
-                value: statusCounts[TransactionStatus.DISPUTE_RESOLVED],
-                color: '#047857', // emerald-700
-                icon: <ShieldCheck className="h-4 w-4" />,
-              },
-              {
-                label: 'Cancelled',
-                value: statusCounts[TransactionStatus.CANCELLED],
-                color: '#374151', // gray-700
-                icon: <XCircle className="h-4 w-4" />,
-              },
-            ].filter(segment => segment.value > 0)} // Only show segments with values
-            size={240}
-            strokeWidth={35}
-            showLegend={true}
-            showCenter={true}
-            centerLabel="Transactions"
-            centerValue={totalTransactions}
-          />
+          <div className="space-y-4">
+            {[
+              { label: 'Pending', count: statusCounts[TransactionStatus.PENDING], dot: 'bg-gray-400' },
+              { label: 'In Transit', count: statusCounts[TransactionStatus.IN_TRANSIT], dot: 'bg-blue-500' },
+              { label: 'Completed', count: statusCounts[TransactionStatus.COMPLETED], dot: 'bg-[var(--color-primary)]' },
+              { label: 'Acknowledged', count: statusCounts[TransactionStatus.ACK_DELIVERY], dot: 'bg-blue-400' },
+            ].map(item => (
+              <div key={item.label} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2.5 h-2.5 rounded-full ${item.dot}`} />
+                  <span className="text-sm text-[var(--text-secondary)]">{item.label}</span>
+                </div>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">{item.count}</span>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Recent Activity */}
@@ -493,39 +415,68 @@ const Dashboard: React.FC = () => {
               View All
             </button>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-1">
             {recentActivity.map((transaction) => {
-              const isSender = transaction.sender_id === user?.id;
+              const normalizedStatus = (() => {
+                const s = transaction.status?.toString().toLowerCase();
+                if (s === 'ack_delivery' || s === 'ack-delivery') return TransactionStatus.ACK_DELIVERY;
+                if (s === 'in_transit' || s === 'intransit') return TransactionStatus.IN_TRANSIT;
+                if (s === 'completed') return TransactionStatus.COMPLETED;
+                if (s === 'delivered') return TransactionStatus.DELIVERED;
+                if (s === 'paid') return TransactionStatus.PAID;
+                if (s === 'disputed') return TransactionStatus.DISPUTED;
+                if (s === 'cancelled' || s === 'canceled') return TransactionStatus.CANCELLED;
+                return TransactionStatus.PENDING;
+              })();
+
+              const dotColor =
+                normalizedStatus === TransactionStatus.COMPLETED || normalizedStatus === TransactionStatus.ACK_DELIVERY || normalizedStatus === TransactionStatus.DELIVERED
+                  ? 'bg-[var(--color-primary)]'
+                  : normalizedStatus === TransactionStatus.IN_TRANSIT || normalizedStatus === TransactionStatus.PAID
+                    ? 'bg-blue-500'
+                    : normalizedStatus === TransactionStatus.DISPUTED
+                      ? 'bg-red-500'
+                      : 'bg-gray-400';
+
+              const otherPartyName = transaction.sender_id === user?.id
+                ? (transaction.receiver?.name || 'Counterparty')
+                : (transaction.sender?.name || 'Counterparty');
+
+              const activityText = (() => {
+                switch (normalizedStatus) {
+                  case TransactionStatus.ACK_DELIVERY: return `${otherPartyName} acknowledged delivery on ${transaction.title}`;
+                  case TransactionStatus.COMPLETED: return `Payment received for ${transaction.title}`;
+                  case TransactionStatus.IN_TRANSIT: return `${transaction.title} marked In Transit`;
+                  case TransactionStatus.DELIVERED: return `${transaction.title} has been delivered`;
+                  case TransactionStatus.PAID: return `Payment secured for ${transaction.title}`;
+                  case TransactionStatus.DISPUTED: return `Dispute raised on ${transaction.title}`;
+                  case TransactionStatus.CANCELLED: return `${transaction.title} was cancelled`;
+                  default: return `New transaction created: ${transaction.title}`;
+                }
+              })();
+
+              const relativeTime = (() => {
+                const diffMs = Date.now() - new Date(transaction.created_at).getTime();
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffHours / 24);
+                if (diffHours < 1) return 'Just now';
+                if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                if (diffDays === 1) return 'Yesterday';
+                return `${diffDays} days ago`;
+              })();
+
               return (
                 <div
                   key={transaction.id}
                   onClick={() => navigate(`/transactions/${transaction.transaction_id}`)}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer"
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer"
                 >
-                  <div className={`p-2 rounded-lg ${isSender ? 'bg-red-50 dark:bg-red-900/20' : 'bg-green-50 dark:bg-green-900/20'}`}>
-                    {isSender ? (
-                      <Send className={`h-4 w-4 ${isSender ? 'text-red-600' : 'text-green-600'}`} />
-                    ) : (
-                      <Receipt className="h-4 w-4 text-green-600" />
-                    )}
-                  </div>
+                  <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${dotColor}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                      {transaction.title}
+                    <p className="text-sm font-medium text-[var(--text-primary)] leading-snug">
+                      {activityText}
                     </p>
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      {new Date(transaction.created_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-sm font-semibold ${isSender ? 'text-red-600' : 'text-green-600'}`}>
-                      {isSender ? '-' : '+'}₵{maskAmount(transaction.amount)}
-                    </p>
+                    <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{relativeTime}</p>
                   </div>
                 </div>
               );

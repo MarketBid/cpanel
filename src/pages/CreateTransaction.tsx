@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Package, DollarSign, User, FileText, ArrowLeft, Shield, Info, Plus, X, Check } from 'lucide-react';
+import { Package, DollarSign, User, FileText, Shield, Info, Plus, X, Check } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 import { ContractType, Milestone, RefundPolicyType, RefundPolicy, FeeConfig, TransactionType } from '../types';
@@ -9,7 +9,6 @@ import { useCreateTransaction } from '../hooks/queries/useTransactions';
 import { useUsers } from '../hooks/queries/useUsers';
 import { apiClient } from '../utils/api';
 
-import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
 interface CreateTransactionForm {
@@ -31,11 +30,11 @@ interface CreateTransactionForm {
 
 
 const STEPS = [
-  { id: 1, title: 'Role & Counterparty', description: 'Define your role and who you\'re transacting with' },
-  { id: 2, title: 'Service Details', description: 'What is being provided?' },
-  { id: 3, title: 'Terms & Milestones', description: 'Set deadlines and conditions' },
-  { id: 4, title: 'Payment & Protection', description: 'Amounts and safety measures' },
-  { id: 5, title: 'Review & Create', description: 'Review details and create transaction' },
+  { id: 1, title: 'Role & Counterparty', shortLabel: 'Role', description: 'Define your role and who you\'re transacting with' },
+  { id: 2, title: 'Service Details', shortLabel: 'Details', description: 'What is being provided?' },
+  { id: 3, title: 'Terms & Milestones', shortLabel: 'Terms', description: 'Set deadlines and conditions' },
+  { id: 4, title: 'Payment & Protection', shortLabel: 'Payment', description: 'Amounts and safety measures' },
+  { id: 5, title: 'Review & Create', shortLabel: 'Review', description: 'Review details and create transaction' },
 ];
 
 const DRAFT_KEY = 'clarsix_transaction_draft';
@@ -364,241 +363,186 @@ const CreateTransaction: React.FC = () => {
 
 
   return (
-    <div className="flex bg-[var(--bg-secondary)] h-full overflow-hidden">
-      {/* Sidebar - Stepper */}
-      <div className="w-80 hidden lg:flex flex-col bg-[var(--bg-sidebar)] border-r border-[var(--border-light)] overflow-y-auto">
-        <div className="p-6 mb-6">
-          {/* Branding or Back Button */}
-          <div
-            className="flex items-center gap-2 mb-6 cursor-pointer text-[var(--color-primary)] font-bold hover:opacity-80 transition-opacity"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span>Back</span>
-          </div>
+    <div className="h-full overflow-y-auto bg-[var(--bg-secondary)]">
+      <div className="max-w-[680px] mx-auto py-5 px-6">
 
-          {/* Steps */}
-          <div className="space-y-8 relative">
-            {/* Vertical Line */}
-            <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-[var(--border-light)] -z-10" />
-
-            {STEPS.map((step) => {
-              const isCompleted = furthestStep > step.id;
-              const isCurrent = currentStep === step.id;
-
-              return (
+        {/* Horizontal Stepper */}
+        <div className="flex items-center justify-center mb-5">
+          {STEPS.map((step, idx) => {
+            const isCompleted = furthestStep > step.id;
+            const isCurrent = currentStep === step.id;
+            return (
+              <div key={step.id} className="flex items-center">
                 <div
-                  key={step.id}
-                  className={`flex items-center gap-4 ${isCompleted ? 'cursor-pointer' : ''}`}
+                  className={`flex flex-col items-center gap-1 ${isCompleted ? 'cursor-pointer' : ''}`}
                   onClick={() => isCompleted && handleStepClick(step.id)}
                 >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all duration-300 z-10 ${isCompleted
-                      ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white'
-                      : isCurrent
-                        ? 'bg-[var(--bg-card)] border-[var(--color-primary)] text-[var(--color-primary)]'
-                        : 'bg-[var(--bg-card)] border-[var(--border-medium)] text-[var(--text-tertiary)]'
-                      }`}
-                  >
-                    {isCompleted ? <Check className="h-4 w-4" /> : step.id}
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 transition-colors
+                    ${isCompleted || isCurrent
+                      ? 'bg-[var(--color-primary)] text-white'
+                      : 'bg-[var(--bg-card)] border-[1.5px] border-[var(--border-default)] text-[var(--text-tertiary)]'
+                    }`}>
+                    {isCompleted ? <Check className="h-3 w-3" /> : step.id}
                   </div>
-                  <div className={`transition-opacity duration-300 ${isCurrent || isCompleted ? 'opacity-100' : 'opacity-50'}`}>
-                    <h3 className={`text-xs font-bold uppercase tracking-wider ${isCurrent ? 'text-[var(--color-primary)]' : 'text-[var(--text-primary)]'}`}>
-                      {step.title}
-                    </h3>
-                  </div>
+                  <span className={`text-[11px] whitespace-nowrap ${isCurrent ? 'font-bold text-[var(--text-primary)]' : 'font-medium text-[var(--text-tertiary)]'}`}>
+                    {step.shortLabel}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+                {idx < STEPS.length - 1 && (
+                  <div className={`w-10 h-0.5 mx-1.5 mb-4 ${isCompleted ? 'bg-[var(--color-primary)]' : 'bg-[var(--border-default)]'}`} />
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 h-full overflow-y-auto">
-        <div className="max-w-3xl mx-auto p-6 pt-8 flex flex-col min-h-full">
+        {/* Validation Error Display */}
+        {error && (
+          <div className="bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] rounded-xl p-3 mb-4 flex items-center gap-2.5">
+            <Info className="h-4 w-4 text-[var(--alert-error-text)] flex-shrink-0" />
+            <p className="text-[var(--alert-error-text)] text-xs font-medium">{error}</p>
+          </div>
+        )}
 
-          {/* Validation Error Display */}
-          {error && (
-            <div className="bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)] rounded-xl p-4 mb-6 flex items-center gap-3 animate-slide-down">
-              <Info className="h-5 w-5 text-[var(--alert-error-text)] flex-shrink-0" />
-              <p className="text-[var(--alert-error-text)] text-sm font-medium">{error}</p>
-            </div>
-          )}
+        {/* Step Content Card */}
+        <div className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-[18px] px-8 py-7">
+          <h2 className="text-[17px] font-bold text-[var(--text-primary)] mb-1">{STEPS[currentStep - 1].title}</h2>
+          <p className="text-sm text-[var(--text-secondary)] mb-5">{STEPS[currentStep - 1].description}</p>
 
-          {/* Step Content */}
-          <div className="">
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{STEPS[currentStep - 1].title}</h2>
-            <p className="text-[var(--text-secondary)] mb-6 text-base">{STEPS[currentStep - 1].description}</p>
-
-            <form className="space-y-6 animate-fade-in" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-4 animate-fade-in" onSubmit={(e) => e.preventDefault()}>
 
               {/* STEP 1: ROLE & COUNTERPARTY */}
               {currentStep === 1 && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Role Selection */}
-                  <div className="grid gap-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <button
-                        type="button"
-                        onClick={() => setRole('receiver')}
-                        className={`p-6 rounded-2xl border-2 text-left transition-all duration-200 ${role === 'receiver'
-                          ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] ring-1 ring-[var(--color-primary)]'
-                          : 'border-[var(--border-light)] bg-[var(--bg-card)] hover:border-[var(--border-medium)]'
-                          }`}
-                      >
-                        <div className="w-12 h-12 rounded-full bg-[var(--bg-card)] flex items-center justify-center mb-4 shadow-sm text-[var(--color-primary)]">
-                          <DollarSign className="h-6 w-6" />
-                        </div>
-                        <h3 className="font-bold text-lg text-[var(--text-primary)] mb-1">I am Receiving Payment</h3>
-                        <p className="text-sm text-[var(--text-secondary)]">You are the service provider or seller.</p>
-                      </button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setRole('receiver')}
+                      className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${role === 'receiver'
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+                        : 'border-[var(--border-light)] bg-[var(--bg-secondary)] hover:border-[var(--border-medium)]'
+                        }`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[var(--bg-card)] flex items-center justify-center mb-2.5 text-[var(--color-primary)]">
+                        <DollarSign className="h-4 w-4" />
+                      </div>
+                      <h3 className="font-semibold text-[13px] text-[var(--text-primary)] mb-0.5">Receiving Payment</h3>
+                      <p className="text-xs text-[var(--text-secondary)]">Service provider or seller</p>
+                    </button>
 
-                      <button
-                        type="button"
-                        onClick={() => setRole('sender')}
-                        className={`p-6 rounded-2xl border-2 text-left transition-all duration-200 ${role === 'sender'
-                          ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] ring-1 ring-[var(--color-primary)]'
-                          : 'border-[var(--border-light)] bg-[var(--bg-card)] hover:border-[var(--border-medium)]'
-                          }`}
-                      >
-                        <div className="w-12 h-12 rounded-full bg-[var(--bg-card)] flex items-center justify-center mb-4 shadow-sm text-[var(--color-primary)]">
-                          <User className="h-6 w-6" />
-                        </div>
-                        <h3 className="font-bold text-lg text-[var(--text-primary)] mb-1">I am Sending Payment</h3>
-                        <p className="text-sm text-[var(--text-secondary)]">You are purchasing a service or goods.</p>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRole('sender')}
+                      className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${role === 'sender'
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+                        : 'border-[var(--border-light)] bg-[var(--bg-secondary)] hover:border-[var(--border-medium)]'
+                        }`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[var(--bg-card)] flex items-center justify-center mb-2.5 text-[var(--color-primary)]">
+                        <User className="h-4 w-4" />
+                      </div>
+                      <h3 className="font-semibold text-[13px] text-[var(--text-primary)] mb-0.5">Sending Payment</h3>
+                      <p className="text-xs text-[var(--text-secondary)]">Purchasing a service or goods</p>
+                    </button>
                   </div>
 
-                  {/* Counterparty Details */}
-                  <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm space-y-6">
-                    <div className="flex items-center gap-4 p-4 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-light)]">
-                      <div className="w-12 h-12 bg-[var(--bg-card)] rounded-full flex items-center justify-center text-xl font-bold text-[var(--color-primary)] shadow-sm">
-                        {user?.name?.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Your Account</p>
-                        <p className="text-base font-bold text-[var(--text-primary)]">{user?.name}</p>
-                        <p className="text-sm text-[var(--text-secondary)]">{user?.email}</p>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-[var(--border-light)]">
-                      <h3 className="font-bold text-[var(--text-primary)] mb-4">Counterparty Details</h3>
-                      {role === 'receiver' && (
-                        <Input
-                          label="Sender Email (Optional)"
-                          name="manual_sender_email"
-                          type="email"
-                          value={manualSenderEmail}
-                          onChange={e => setManualSenderEmail(e.target.value)}
-                          placeholder="e.g. client@example.com"
-                          helperText="Leave empty to generate a shareable link later."
-                        />
-                      )}
-
-                      {role === 'sender' && (
-                        <Input
-                          label="Receiver Email (Optional)"
-                          name="manual_receiver_email"
-                          type="email"
-                          value={manualReceiverEmail}
-                          onChange={e => setManualReceiverEmail(e.target.value)}
-                          placeholder="e.g. provider@example.com"
-                          helperText="Leave empty to generate a shareable link later."
-                        />
-                      )}
-                    </div>
-                  </div>
+                  {/* Counterparty Email */}
+                  <Input
+                    label="Counterparty Email (Optional)"
+                    name={role === 'receiver' ? 'manual_sender_email' : 'manual_receiver_email'}
+                    type="email"
+                    value={role === 'receiver' ? manualSenderEmail : manualReceiverEmail}
+                    onChange={e => role === 'receiver' ? setManualSenderEmail(e.target.value) : setManualReceiverEmail(e.target.value)}
+                    placeholder="e.g. client@example.com"
+                    helperText="Leave empty to generate a shareable link later."
+                  />
                 </div>
               )}
 
               {/* STEP 2: SERVICE DETAILS */}
               {currentStep === 2 && (
-                <div className="space-y-6">
-                  <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm space-y-6">
-                    <div>
-                      <label className="block text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Transaction Type</label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {[
-                          { id: TransactionType.PHYSICAL_GOODS, label: 'Physical Goods', icon: <Package className="h-5 w-5" /> },
-                          { id: TransactionType.DIGITAL_GOODS, label: 'Digital Goods', icon: <FileText className="h-5 w-5" /> },
-                          { id: TransactionType.SERVICE, label: 'Service', icon: <User className="h-5 w-5" /> }
-                        ].map((t) => (
-                          <button
-                            key={t.id}
-                            type="button"
-                            onClick={() => setFormData(prev => ({ ...prev, type: t.id }))}
-                            className={`p-4 rounded-xl font-medium transition-all duration-150 flex items-center gap-3 border ${formData.type === t.id
-                              ? 'bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] border-[var(--color-primary)]'
-                              : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border-transparent hover:bg-[var(--border-light)]'
-                              }`}
-                          >
-                            {t.icon}
-                            {t.label}
-                          </button>
-                        ))}
-                      </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Transaction Type</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: TransactionType.PHYSICAL_GOODS, label: 'Physical Goods', icon: <Package className="h-4 w-4" /> },
+                        { id: TransactionType.DIGITAL_GOODS, label: 'Digital Goods', icon: <FileText className="h-4 w-4" /> },
+                        { id: TransactionType.SERVICE, label: 'Service', icon: <User className="h-4 w-4" /> }
+                      ].map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, type: t.id }))}
+                          className={`py-2.5 px-3 rounded-lg text-[13px] font-medium transition-all duration-150 flex items-center gap-2 border ${formData.type === t.id
+                            ? 'bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] border-[var(--color-primary)]'
+                            : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border-[var(--border-light)] hover:border-[var(--border-medium)]'
+                            }`}
+                        >
+                          {t.icon}
+                          {t.label}
+                        </button>
+                      ))}
                     </div>
+                  </div>
 
-                    <Input
-                      label="Title"
-                      name="title"
-                      type="text"
+                  <Input
+                    label="Title"
+                    name="title"
+                    type="text"
+                    required
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="e.g. Web Development Project"
+                  />
+
+                  <div>
+                    <label className="block text-xs font-medium text-[var(--text-primary)] mb-1.5">
+                      Description <span className="text-[var(--alert-error-text)]">*</span>
+                    </label>
+                    <textarea
+                      name="description"
                       required
-                      value={formData.title}
+                      rows={4}
+                      value={formData.description}
                       onChange={handleInputChange}
-                      placeholder="e.g. Web Development Project"
+                      className="input-field resize-none w-full"
+                      placeholder="Provide a detailed description of the agreement..."
                     />
-
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                        Description <span className="text-[var(--alert-error-text)]">*</span>
-                      </label>
-                      <textarea
-                        name="description"
-                        required
-                        rows={6}
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        className="input-field resize-none w-full"
-                        placeholder="Provide a detailed description of the agreement..."
-                      />
-                    </div>
                   </div>
                 </div>
               )}
 
               {/* STEP 3: TERMS & MILESTONES */}
               {currentStep === 3 && (
-                <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm space-y-6">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
+                    <label className="block text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">
                       Contract Type
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                    <div className="grid grid-cols-2 gap-2 mb-4">
                       <button
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, contract_type: ContractType.TIME_BASED }))}
-                        className={`p-4 rounded-xl font-medium transition-all duration-150 text-left border ${formData.contract_type === ContractType.TIME_BASED
+                        className={`py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 text-left border ${formData.contract_type === ContractType.TIME_BASED
                           ? 'bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] border-[var(--color-primary)]'
-                          : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border-transparent'
+                          : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border-[var(--border-light)] hover:border-[var(--border-medium)]'
                           }`}
                       >
-                        <div className="font-bold mb-1">Time-Based</div>
-                        <div className="text-xs opacity-80">Full completion by a specific date</div>
+                        <div className="font-semibold text-sm mb-0.5">Time-Based</div>
+                        <div className="text-xs opacity-70">Full completion by a specific date</div>
                       </button>
                       <button
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, contract_type: ContractType.MILESTONE_BASED }))}
-                        className={`p-4 rounded-xl font-medium transition-all duration-150 text-left border ${formData.contract_type === ContractType.MILESTONE_BASED
+                        className={`py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 text-left border ${formData.contract_type === ContractType.MILESTONE_BASED
                           ? 'bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] border-[var(--color-primary)]'
-                          : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border-transparent'
+                          : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border-[var(--border-light)] hover:border-[var(--border-medium)]'
                           }`}
                       >
-                        <div className="font-bold mb-1">Milestone-Based</div>
-                        <div className="text-xs opacity-80">Split into stages with partial payments</div>
+                        <div className="font-semibold text-sm mb-0.5">Milestone-Based</div>
+                        <div className="text-xs opacity-70">Split into stages with partial payments</div>
                       </button>
                     </div>
 
@@ -710,32 +654,26 @@ const CreateTransaction: React.FC = () => {
 
               {/* STEP 4: PAYMENT & PROTECTION */}
               {currentStep === 4 && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Amount */}
-                  <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm">
-                    <label className="block text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-4">
-                      Total Amount
-                    </label>
-                    <Input
-                      label="Transaction Value (₵)"
-                      name="amount"
-                      type="number"
-                      required
-                      min="0"
-                      step="0.01"
-                      value={formData.amount || ''}
-                      onChange={handleInputChange}
-                      leftIcon={<span className="text-neutral-500 font-bold">₵</span>}
-                      placeholder="0.00"
-                      className="text-lg font-bold"
-                    />
-                  </div>
+                  <Input
+                    label="Transaction Value (₵)"
+                    name="amount"
+                    type="number"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.amount || ''}
+                    onChange={handleInputChange}
+                    leftIcon={<span className="text-neutral-500 font-bold">₵</span>}
+                    placeholder="0.00"
+                  />
 
                   {/* Protection Policy */}
-                  <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-light)] shadow-sm">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Shield className="h-5 w-5 text-[var(--color-primary)]" />
-                      <label className="block text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Shield className="h-3.5 w-3.5 text-[var(--color-primary)]" />
+                      <label className="text-xs font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
                         Protection Policy
                       </label>
                     </div>
@@ -845,239 +783,109 @@ const CreateTransaction: React.FC = () => {
                   </div>
                 </div>
               )}
-              {/* STEP 5: SUMMARY */}
+              {/* STEP 5: REVIEW */}
               {currentStep === 5 && (
-                <div className="space-y-6 animate-fade-in">
+                <div className="animate-fade-in">
+                  {/* Amount hero */}
+                  <div className="text-center py-3 mb-5">
+                    <p className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-1">Total Amount</p>
+                    <p className="text-[36px] font-extrabold text-[var(--text-primary)] leading-none">₵{(formData.amount || 0).toFixed(2)}</p>
+                  </div>
 
-                  {/* Service Information */}
-                  <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
-                    <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
-                      <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                        <FileText className="h-4 w-4" /> Service Details
-                      </h3>
-                      <button type="button" onClick={() => handleStepClick(2)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit</button>
+                  {/* Summary rows */}
+                  <div className="divide-y divide-[var(--border-default)]">
+                    <div className="flex justify-between items-start py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Service</span>
+                      <div className="text-right">
+                        <p className="text-[13px] font-semibold text-[var(--text-primary)]">{formData.title}</p>
+                        <p className="text-xs text-[var(--text-tertiary)] capitalize mt-0.5">{formData.type.replace(/_/g, ' ')}</p>
+                      </div>
                     </div>
-                    <div className="p-4 space-y-4">
-                      <div>
-                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Title</span>
-                        <p className="font-semibold text-[var(--text-primary)]">{formData.title}</p>
+
+                    <div className="flex justify-between items-start py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Description</span>
+                      <p className="text-[13px] text-[var(--text-primary)] text-right max-w-[60%] line-clamp-3">{formData.description}</p>
+                    </div>
+
+                    <div className="flex justify-between items-center py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Your Role</span>
+                      <span className="text-[13px] font-medium text-[var(--text-primary)] capitalize">{role}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Counterparty</span>
+                      <span className="text-[13px] font-medium text-[var(--text-primary)]">
+                        {role === 'sender' ? (manualReceiverEmail || 'Pending — link sent later') : (manualSenderEmail || 'Pending — link sent later')}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-start py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Contract</span>
+                      <div className="text-right">
+                        <p className="text-[13px] font-medium text-[var(--text-primary)]">
+                          {formData.contract_type === ContractType.TIME_BASED ? 'Time-Based' : `Milestone-Based (${milestones.length})`}
+                        </p>
+                        {formData.contract_type === ContractType.TIME_BASED && formData.time_based_config?.completion_date && (
+                          <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+                            By {formData.time_based_config.completion_date} at {formData.time_based_config.completion_time}
+                          </p>
+                        )}
                       </div>
-                      <div>
-                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Description</span>
-                        <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap">{formData.description}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Category</span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary-light)] text-[var(--color-primary-dark)]">
-                          {formData.type.replace('_', ' ')}
-                        </span>
-                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Refund Policy</span>
+                      <span className="text-[13px] font-medium text-[var(--text-primary)] capitalize">
+                        {formData.refund_policy.type.replace(/_/g, ' ').toLowerCase()}
+                        {formData.refund_policy.type === RefundPolicyType.PARTIAL_FIXED && ` (${formData.refund_policy.refund_percentage}%)`}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-3">
+                      <span className="text-[13px] text-[var(--text-tertiary)] w-32 shrink-0">Processing Fee</span>
+                      <span className="text-[13px] font-medium text-[var(--text-primary)]">
+                        {formData.fee_config.processing_fee_percentage}% — paid by <span className="capitalize">{formData.fee_config.fee_payer}</span>
+                      </span>
                     </div>
                   </div>
 
-                  {/* Contract Specifics */}
-                  <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
-                    <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
-                      <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                        <FileText className="h-4 w-4" /> Contract Terms
-                      </h3>
-                      <button type="button" onClick={() => handleStepClick(3)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit</button>
-                    </div>
-                    <div className="p-4">
-                      {/* Time Based View */}
-                      {formData.contract_type === ContractType.TIME_BASED && (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Completion Date</span>
-                            <p className="font-medium text-[var(--text-primary)]">{formData.time_based_config?.completion_date}</p>
-                          </div>
-                          <div>
-                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Completion Time</span>
-                            <p className="font-medium text-[var(--text-primary)]">{formData.time_based_config?.completion_time}</p>
-                          </div>
-                          <div className="col-span-2">
-                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Auto-Release Buffer</span>
-                            <p className="text-sm text-[var(--text-primary)]">{formData.time_based_config?.auto_completion_buffer_hours} Hours after delivery</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Milestone View */}
-                      {formData.contract_type === ContractType.MILESTONE_BASED && (
-                        <div className="space-y-3">
-                          {milestones.map((m, i) => (
-                            <div key={i} className="flex justify-between items-center p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
-                              <div>
-                                <p className="font-bold text-[var(--text-primary)]">{m.description}</p>
-                                <p className="text-xs text-[var(--text-secondary)]">Due: {m.due_date} • {m.completion_condition}</p>
-                              </div>
-                              <div className="font-bold text-[var(--text-primary)]">{m.amount_percentage}%</div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                  {/* Edit links */}
+                  <div className="flex gap-4 pt-3 mt-1">
+                    <button type="button" onClick={() => handleStepClick(1)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit Role</button>
+                    <button type="button" onClick={() => handleStepClick(2)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit Details</button>
+                    <button type="button" onClick={() => handleStepClick(3)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit Terms</button>
+                    <button type="button" onClick={() => handleStepClick(4)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit Payment</button>
                   </div>
-
-                  {/* Financial & Protection */}
-                  <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
-                    <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-tertiary)] flex justify-between items-center">
-                      <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                        <Shield className="h-4 w-4" /> Payment & Protection
-                      </h3>
-                      <button type="button" onClick={() => handleStepClick(4)} className="text-xs text-[var(--color-primary)] font-medium hover:underline">Edit</button>
-                    </div>
-                    <div className="p-4 space-y-4">
-                      <div className="flex justify-between items-center pb-4 border-b border-[var(--border-light)]">
-                        <span className="text-sm font-medium text-[var(--text-secondary)]">Total Amount</span>
-                        <span className="text-2xl font-bold text-[var(--text-primary)]">₵{formData.amount?.toFixed(2)}</span>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Refund Policy</span>
-                          <p className="font-medium text-[var(--text-primary)] capitalize">{formData.refund_policy.type.replace('_', ' ').toLowerCase()}</p>
-
-                          {formData.refund_policy.type === RefundPolicyType.PARTIAL_FIXED && (
-                            <p className="text-xs text-[var(--text-secondary)] mt-1">{formData.refund_policy.refund_percentage}% Refund on cancellation/dispute</p>
-                          )}
-
-                          {formData.refund_policy.type === RefundPolicyType.CONDITIONAL_REFUND && (
-                            <ul className="text-xs text-[var(--text-secondary)] list-disc ml-4 mt-1">
-                              {formData.refund_policy.conditions?.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          )}
-                        </div>
-
-                        <div>
-                          <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Parties</span>
-                          <div className="text-sm">
-                            <p><span className="text-[var(--text-tertiary)]">Role:</span> {role === 'sender' ? 'Sender' : 'Receiver'}</p>
-                            <p><span className="text-[var(--text-tertiary)]">Counterparty:</span> {role === 'sender' ? (manualReceiverEmail || 'Pending') : (manualSenderEmail || 'Pending')}</p>
-                          </div>
-                        </div>
-
-                        <div className="md:col-span-2 pt-4 border-t border-[var(--border-light)] grid grid-cols-2 gap-4">
-                          <div>
-                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Fee Configuration</span>
-                            <div className="text-sm space-y-1">
-                              <p><span className="text-[var(--text-tertiary)]">Processing Fee:</span> {formData.fee_config.processing_fee_percentage}%</p>
-                              <p><span className="text-[var(--text-tertiary)]">Fee Payer:</span> <span className="capitalize">{formData.fee_config.fee_payer}</span></p>
-                            </div>
-                          </div>
-
-                          <div>
-                            <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1">Payment Structure</span>
-                            <div className="text-sm space-y-1">
-                              {formData.fee_config.fee_payer === 'sender' && (
-                                <div className="space-y-2">
-                                  <div>
-                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
-                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Amount:</span> <span>₵{(formData.amount || 0).toFixed(2)}</span></div>
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({formData.fee_config.processing_fee_percentage}%):</span> <span>₵{((formData.amount || 0) * (formData.fee_config.processing_fee_percentage / 100)).toFixed(2)}</span></div>
-                                      <div className="flex justify-between font-bold pt-1 border-t border-[var(--border-light)] mt-1"><span className="text-[var(--text-primary)]">Total:</span> <span>₵{((formData.amount || 0) * (1 + formData.fee_config.processing_fee_percentage / 100)).toFixed(2)}</span></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-
-                              {formData.fee_config.fee_payer === 'receiver' && (
-                                <div className="space-y-2">
-                                  <div>
-                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
-                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Total Payment:</span> <span>₵{(formData.amount || 0).toFixed(2)}</span></div>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Receiver</p>
-                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({formData.fee_config.processing_fee_percentage}%):</span> <span>₵{((formData.amount || 0) * (formData.fee_config.processing_fee_percentage / 100)).toFixed(2)}</span></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-
-                              {formData.fee_config.fee_payer === 'split' && (
-                                <div className="space-y-2">
-                                  <div>
-                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Sender</p>
-                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Amount:</span> <span>₵{(formData.amount || 0).toFixed(2)}</span></div>
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({(formData.fee_config.processing_fee_percentage / 2).toFixed(2).replace(/[.,]00$/, "")}%):</span> <span>₵{((formData.amount || 0) * ((formData.fee_config.processing_fee_percentage / 2) / 100)).toFixed(2)}</span></div>
-                                      <div className="flex justify-between font-bold pt-1 border-t border-[var(--border-light)] mt-1"><span className="text-[var(--text-primary)]">Total:</span> <span>₵{((formData.amount || 0) * (1 + (formData.fee_config.processing_fee_percentage / 2) / 100)).toFixed(2)}</span></div>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs font-semibold text-[var(--text-primary)] mb-1">Receiver</p>
-                                    <div className="pl-2 border-l-2 border-[var(--border-default)]">
-                                      <div className="flex justify-between"><span className="text-[var(--text-tertiary)]">Fee ({(formData.fee_config.processing_fee_percentage / 2).toFixed(2).replace(/[.,]00$/, "")}%):</span> <span>₵{((formData.amount || 0) * ((formData.fee_config.processing_fee_percentage / 2) / 100)).toFixed(2)}</span></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                 </div>
               )}
+
             </form>
+
+            {/* Navigation — inside card */}
+            <div className="flex items-center justify-between pt-5 mt-5 border-t border-[var(--border-default)]">
+              {currentStep === 1 ? (
+                <span />
+              ) : (
+                <button
+                  onClick={() => { setError(''); setCurrentStep(p => p - 1); }}
+                  disabled={loading}
+                  className="px-5 py-2.5 text-sm font-semibold bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                >
+                  ← Back
+                </button>
+              )}
+              <button
+                onClick={currentStep === 5 ? handleNext : handleNext}
+                disabled={loading}
+                className="px-5 py-2.5 text-sm font-semibold bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60"
+              >
+                {loading ? (currentStep === 5 ? 'Creating...' : 'Loading...') : (currentStep === 5 ? 'Create Transaction' : 'Next Step →')}
+              </button>
+            </div>
           </div>
 
-          {/* Footer Navigation */}
-          <div className="mt-8 pt-6 border-t border-[var(--border-light)]">
-            {currentStep === 5 ? (
-              <div className="flex gap-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    localStorage.removeItem(DRAFT_KEY);
-                    navigate(-1);
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleNext}
-                  loading={loading}
-                  className="flex-1"
-                >
-                  Create Transaction
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setError('');
-                    setCurrentStep(p => p - 1);
-                  }}
-                  disabled={currentStep === 1 || loading}
-                  className={currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}
-                >
-                  Previous Step
-                </Button>
-
-                <Button
-                  onClick={handleNext}
-                  loading={loading}
-                  className="px-8"
-                >
-                  Next Step <ArrowLeft className="h-4 w-4 rotate-180 ml-2" />
-                </Button>
-              </div>
-            )}
-          </div>
         </div>
       </div>
-    </div>
 
   );
 };

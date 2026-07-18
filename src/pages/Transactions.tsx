@@ -9,6 +9,7 @@ import {
   Calendar,
   ArrowUpDown,
   ChevronDown,
+  ChevronUp,
   FileText,
   MoreVertical
 } from 'lucide-react';
@@ -315,19 +316,7 @@ const Transactions: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--text-tertiary)]" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] text-[var(--text-primary)] transition-all"
-              />
-            </div>
-
-            <div className="relative group">
+          <div className="relative group">
               <button
                 onClick={() => user?.verified ? navigate('/transactions/create') : null}
                 disabled={!user?.verified}
@@ -346,12 +335,10 @@ const Transactions: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
         </div>
 
         {/* Filter Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center gap-3">
             {/* Status Filter (All) */}
             <div className="relative" ref={statusDropdownRef}>
               <button
@@ -362,7 +349,7 @@ const Transactions: React.FC = () => {
                 <ChevronDown className="h-4 w-4 text-[var(--text-secondary)]" />
               </button>
               {showStatusDropdown && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-50 p-2">
+                <div className="absolute top-full left-0 mt-2 w-56 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-xl shadow-xl z-[60] p-2">
                   <div className="flex items-center justify-between px-2 py-1.5 mb-1">
                     <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Status</span>
                     {statusFilters.length > 0 && (
@@ -509,17 +496,16 @@ const Transactions: React.FC = () => {
 
             <button
               onClick={() => setShowExportModal(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+              className="ml-auto flex items-center gap-2 px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
             >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Export</span>
             </button>
-          </div>
         </div>
       </div>
 
       {/* Transactions Table */}
-      <div className="flex-1 min-h-0 bg-[var(--bg-card)] rounded-xl border border-[var(--border-default)] overflow-hidden shadow-sm flex flex-col">
+      <div className="flex-1 min-h-0 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden shadow-sm flex flex-col">
         {/* Desktop Table View */}
         <div className="hidden md:block flex-1 overflow-auto">
           <table className="w-full relative">
@@ -528,28 +514,28 @@ const Transactions: React.FC = () => {
                 <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                   Name
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  <button onClick={() => handleColumnSort('date')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('date')} className={`flex items-center gap-1 transition-colors ${sortField === 'date' ? 'text-[var(--color-primary)] font-bold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>
                     Date
-                    <ArrowUpDown className="h-3 w-3" />
+                    {sortField === 'date' ? (sortTransaction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3" />}
                   </button>
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  <button onClick={() => handleColumnSort('amount')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('amount')} className={`flex items-center gap-1 transition-colors ${sortField === 'amount' ? 'text-[var(--color-primary)] font-bold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>
                     Amount
-                    <ArrowUpDown className="h-3 w-3" />
+                    {sortField === 'amount' ? (sortTransaction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3" />}
                   </button>
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  <button onClick={() => handleColumnSort('type')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('type')} className={`flex items-center gap-1 transition-colors ${sortField === 'type' ? 'text-[var(--color-primary)] font-bold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>
                     Type
-                    <ArrowUpDown className="h-3 w-3" />
+                    {sortField === 'type' ? (sortTransaction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3" />}
                   </button>
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  <button onClick={() => handleColumnSort('status')} className="flex items-center gap-1 hover:text-[var(--text-primary)]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                  <button onClick={() => handleColumnSort('status')} className={`flex items-center gap-1 transition-colors ${sortField === 'status' ? 'text-[var(--color-primary)] font-bold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>
                     Status
-                    <ArrowUpDown className="h-3 w-3" />
+                    {sortField === 'status' ? (sortTransaction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3" />}
                   </button>
                 </th>
                 <th className="px-6 py-4 text-right text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Actions</th>

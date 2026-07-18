@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, CreditCard, Banknote, ChevronRight, Wallet, X, Trash2 } from 'lucide-react';
+import { Plus, CreditCard, Wallet, X, Trash2, Pencil } from 'lucide-react';
+import { SiVodafone, SiAirtel } from 'react-icons/si';
+import { Landmark } from 'lucide-react';
 import { Account, AccountType } from '../types';
 import { useAccounts, useAddAccount, useUpdateAccount, useDeleteAccount } from '../hooks/queries/useAccounts';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useSensitiveInfo } from '../hooks/useSensitiveInfo';
@@ -150,203 +151,99 @@ const Accounts: React.FC = () => {
     );
   }
 
-  return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-primary)]">Payment Methods</h1>
-          <p className="mt-0.5 sm:mt-1 text-sm sm:text-base text-[var(--text-secondary)]">Manage your bank and mobile money accounts.</p>
+  const lastDigits = (number: string) =>
+    number ? `•••• ${number.replace(/\D/g, '').slice(-4)}` : '••••';
+
+  const ProviderIcon = ({ account }: { account: Account }) => {
+    const sp = account.service_provider.toLowerCase();
+    if (sp.includes('mtn')) {
+      return (
+        <div style={{ width: 40, height: 28, borderRadius: 6, background: '#ffcb05', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 10, fontWeight: 900, color: '#000', letterSpacing: '-0.5px' }}>MTN</span>
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-          onClick={() => setShowAddModal(true)}
-          className="text-xs sm:text-sm w-full sm:w-auto"
-        >
-          Add Account
-        </Button>
+      );
+    }
+    if (sp.includes('vodafone') || sp.includes('telecel')) {
+      return (
+        <div style={{ width: 40, height: 28, borderRadius: 6, background: '#e20714', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <SiVodafone size={16} color="#fff" />
+        </div>
+      );
+    }
+    if (sp.includes('airtel')) {
+      return (
+        <div style={{ width: 40, height: 28, borderRadius: 6, background: '#ff6600', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <SiAirtel size={16} color="#fff" />
+        </div>
+      );
+    }
+    if (account.type === AccountType.BANK) {
+      return (
+        <div style={{ width: 40, height: 28, borderRadius: 6, background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Landmark size={14} color="#fff" />
+        </div>
+      );
+    }
+    return (
+      <div style={{ width: 40, height: 28, borderRadius: 6, background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <CreditCard size={14} color="#fff" />
       </div>
+    );
+  };
 
-      {accounts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {accounts.map((account) => {
-            const isBank = account.type === AccountType.BANK;
-            const isMTN = account.service_provider.toLowerCase().includes('mtn');
-            const isVodafone = account.service_provider.toLowerCase().includes('vodafone') || account.service_provider.toLowerCase().includes('telecel');
-            const isAirtelTigo = account.service_provider.toLowerCase().includes('airtel');
+  return (
+    <div className="animate-fade-in">
+      <div style={{ background: '#fff', border: '1px solid #e6ebe8', borderRadius: '16px', padding: '28px', maxWidth: '640px' }}>
+        <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '16px' }} className="text-[var(--text-primary)]">
+          Linked payment methods
+        </div>
 
-            return (
-              <div key={account.id} className="relative group">
-                {/* Card Container with 3D effect */}
-                <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 aspect-[1.7/1] sm:aspect-[1.586/1]">
-                  {/* Background Gradient based on type */}
-                  {isBank ? (
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black"></div>
-                  ) : isMTN ? (
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600"></div>
-                  ) : isVodafone ? (
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-700 to-red-800"></div>
-                  ) : isAirtelTigo ? (
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-600 to-orange-600"></div>
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800"></div>
+        {accounts.length > 0 ? (
+          <div className="space-y-3 mb-4">
+            {accounts.map((account, idx) => (
+              <div
+                key={account.id}
+                style={{ border: '1px solid #e6ebe8', borderRadius: '12px', padding: '16px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <ProviderIcon account={account} />
+                  <span style={{ fontSize: '14px', fontWeight: 600 }} className="text-[var(--text-primary)]">
+                    {account.service_provider} {lastDigits(account.number)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {idx === 0 && (
+                    <span style={{ fontSize: '11px', fontWeight: 700, background: '#eaf4f0', color: '#318A6E', padding: '4px 10px', borderRadius: '20px' }}>
+                      DEFAULT
+                    </span>
                   )}
-
-                  {/* Decorative patterns */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24"></div>
-
-                  {/* Card Content */}
-                  <div className="relative h-full p-4 sm:p-6 flex flex-col justify-between text-white">
-                    {/* Top Section - Logo and Actions */}
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        {/* Chip */}
-                        <div className="w-9 h-7 sm:w-12 sm:h-10 relative">
-                          <svg viewBox="0 0 48 40" className="w-full h-full drop-shadow-md">
-                            <defs>
-                              <linearGradient id="chipGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
-                                <stop offset="50%" style={{ stopColor: '#FDB931', stopOpacity: 1 }} />
-                                <stop offset="100%" style={{ stopColor: '#C5A028', stopOpacity: 1 }} />
-                              </linearGradient>
-                            </defs>
-                            <rect x="0" y="0" width="48" height="40" rx="3" fill="url(#chipGradient)" />
-                            <rect x="4" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
-                            <rect x="17" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
-                            <rect x="30" y="4" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
-                            <rect x="4" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
-                            <rect x="17" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
-                            <rect x="30" y="19" width="10" height="12" rx="1" fill="#C5A028" opacity="0.5" />
-                            <line x1="14" y1="0" x2="14" y2="40" stroke="#B8941F" strokeWidth="0.5" />
-                            <line x1="27" y1="0" x2="27" y2="40" stroke="#B8941F" strokeWidth="0.5" />
-                            <line x1="0" y1="16" x2="48" y2="16" stroke="#B8941F" strokeWidth="0.5" />
-                          </svg>
-                        </div>
-                        {/* Provider Name */}
-                        <div className="text-xs font-semibold uppercase tracking-wide">
-                          {account.service_provider}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => openDeleteModal(account)}
-                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/80 hover:text-white"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => openEditModal(account)}
-                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/80 hover:text-white"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Middle Section - Card Number */}
-                    <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-wider opacity-80">
-                        {isBank ? 'Account Number' : 'Mobile Number'}
-                      </div>
-                      <div className="text-xl font-mono tracking-widest">
-                        {maskAccountNumber(account.number)}
-                      </div>
-                    </div>
-
-                    {/* Bottom Section - Name and Logo */}
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <div className="text-xs uppercase tracking-wider opacity-80 mb-1">
-                          Account Holder
-                        </div>
-                        <div className="text-base font-semibold uppercase tracking-wide">
-                          {account.name}
-                        </div>
-                      </div>
-
-                      {/* Logo */}
-                      <div className="flex items-center">
-                        {isBank ? (
-                          // Clarsix Logo
-                          <div className="text-right">
-                            <div className="px-2 py-1 bg-white rounded-md">
-                              <div className="text-lg font-black tracking-tight text-slate-900">
-                                CARD
-                              </div>
-                            </div>
-                          </div>
-                        ) : isMTN ? (
-                          // MTN Logo
-                          <div className="text-right">
-                            <div className="text-lg font-black tracking-tight" style={{ color: '#000' }}>
-                              MTN
-                            </div>
-                            <div className="text-[10px] font-bold -mt-0.5" style={{ color: '#000' }}>
-                              Mobile Money
-                            </div>
-                          </div>
-                        ) : isVodafone ? (
-                          // Vodafone/Telecel Logo
-                          <div className="text-right">
-                            <div className="flex items-center gap-1">
-                              <div className="text-lg font-bold text-white">
-                                {account.service_provider.toLowerCase().includes('telecel') ? 'Telecel' : 'Vodafone'}
-                              </div>
-                            </div>
-                            <div className="text-[10px] font-semibold text-white text-right">
-                              Cash
-                            </div>
-                          </div>
-                        ) : isAirtelTigo ? (
-                          // AirtelTigo Logo
-                          <div className="text-right">
-                            <div className="text-lg font-black text-white">
-                              AirtelTigo
-                            </div>
-                            <div className="text-[10px] font-bold text-white">
-                              Money
-                            </div>
-                          </div>
-                        ) : (
-                          // Generic Mobile Money
-                          <div className="text-right">
-                            <Wallet className="h-6 w-6 text-white" />
-                            <div className="text-[10px] font-semibold text-white mt-1">
-                              Mobile Money
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                  </div>
+                  <button onClick={() => openEditModal(account)} className="p-1.5 hover:bg-[var(--bg-secondary)] rounded-lg transition-colors text-[var(--text-secondary)]">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => openDeleteModal(account)} className="p-1.5 hover:bg-[var(--bg-secondary)] rounded-lg transition-colors text-[var(--text-secondary)]">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="p-16 text-center">
-            <div className="w-20 h-20 mx-auto bg-[var(--bg-tertiary)] rounded-3xl flex items-center justify-center mb-6">
-              <CreditCard className="h-10 w-10 text-[var(--text-tertiary)]" />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 mb-4">
+            <div className="w-12 h-12 mx-auto bg-[var(--bg-secondary)] rounded-xl flex items-center justify-center mb-3">
+              <CreditCard className="h-6 w-6 text-[var(--text-tertiary)]" />
             </div>
-            <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">No payment methods yet</h3>
-            <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
-              Add your first bank or mobile money account to start accepting payments securely.
-            </p>
-            <Button
-              variant="primary"
-              leftIcon={<Plus className="h-4 w-4" />}
-              onClick={() => setShowAddModal(true)}
-            >
-              Add Account
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+            <p className="text-sm text-[var(--text-secondary)]">No payment methods yet</p>
+          </div>
+        )}
+
+        <button
+          onClick={() => setShowAddModal(true)}
+          style={{ background: '#fff', border: '1px solid #e6ebe8', borderRadius: '10px', padding: '12px 20px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', width: '100%' }}
+          className="text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
+        >
+          + Add payment method
+        </button>
+      </div>
 
       {/* Add Account Modal */}
       {showAddModal && (
